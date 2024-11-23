@@ -51,8 +51,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: "OFF",
+            0x01: "ON"
         }
     },
     {
@@ -141,7 +141,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
+            0x00: "OFF",
             0x01: "Mo",
             0x02: "Di",
             0x03: "Mi",
@@ -188,8 +188,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: "OFF",
+            0x01: "ON"
         }
     },
     {
@@ -554,7 +554,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "map": {0xFF60 / 10.0: "Aus", **{i: f"{i} °C" for i in range(-15, 6)}}
+        "map": {0xFF60 / 10.0: "OFF", **{i: f"{i} °C" for i in range(-15, 6)}}
     },
     {
         "type": "sensor",
@@ -780,7 +780,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "map": {0xFE70 / 10.0: "Aus", **{i: f"{i} °C" for i in range(10, 41)}}
+        "map": {0xFE70 / 10.0: "OFF", **{i: f"{i} °C" for i in range(10, 41)}}
     },
     {
         "type": "select",
@@ -796,7 +796,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "map": {0x5A / 10.0: "Aus", **{i: f"{i} °C" for i in range(10, 41)}}
+        "map": {0x5A / 10.0: "OFF", **{i: f"{i} °C" for i in range(10, 41)}}
     },
     {
         "type": "number",
@@ -914,8 +914,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An",
+            0x00: "OFF",
+            0x01: "ON",
             0x02: "Nur bei Nacht"
         }
     },
@@ -927,11 +927,11 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "map": {
-            0: "Kein Fehler",
-            9001: "E9001 Rücklauffühler",
-            9002: "E9002 Vorlauffühler",
-            9003: "E9003 Frostschutzfunktion",
-            9004: "E9004 Durchfluss",
+            0: "Aucune",
+            9001: "E9001 Défaut T retour TR2",
+            9002: "E9002 Défaut sonde alim TV2",
+            9003: "E9003 Défaut fct. antigel",
+            9004: "E9004 Défaut débit",
             9005: "E9005 Vorlauftemperaturfühler",
             9006: "E9006 Vorlauftemperaturfühler",
             9007: "E9007 Platine IG defekt",
@@ -984,7 +984,7 @@ sensor_configuration = [
             8100: "E8100 Kommunikation",
             9000: "E9000 Interne vorübergehende Meldung",
             8006: "W8006 Warnung Druckverlust",
-            8007: "W8007 Wasserdruck in Anlage zu hoch"
+            8007: "W8007 Wasserdruck in ONlage zu hoch"
         }
     },
     {
@@ -1043,7 +1043,7 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
+            0x00: "OFF",
             0x01: "SG Modus 1",
             0x02: "SG Modus 2"
         }
@@ -1056,8 +1056,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: "OFF",
+            0x01: "ON"
         }
     },
     {
@@ -1082,8 +1082,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: "OFF",
+            0x01: "ON"
         }
     },
     {
@@ -1187,7 +1187,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "map": {
-            0x00: "Aus",
+            0x00: "OFF",
             0x03: "3 kW",
             0x06: "6 kW",
             0x09: "9 kW"
@@ -1288,8 +1288,8 @@ sensor_configuration = [
         "name": "optimized_defrosting",
         "icon": "mdi:snowflake-melt",
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: "OFF",
+            0x01: "ON"
         }
     }
 ]

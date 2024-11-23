@@ -897,13 +897,13 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 1,
         "map": {
-            0x01: "Bereitschaft",
-            0x03: "Heizen",
-            0x04: "Absenken",
-            0x05: "Sommer",
-            0x11: "Kühlen",
-            0x0B: "Automatik 1",
-            0x0C: "Automatik 2"
+            0x01: "Arrêt",
+            0x03: "Chauffer",
+            0x04: "Réduit",
+            0x05: "Eté",
+            0x11: "Refroidissement",
+            0x0B: "Automatique 1",
+            0x0C: "Automatique 2"
         }
     },
     {

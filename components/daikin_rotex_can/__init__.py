@@ -1070,7 +1070,7 @@ sensor_configuration = [
         "map": {
             0x00: "Aucun",
             0x01: "Backup optionnel",
-            0x02: "Production ECS et CH d'appoint,
+            0x02: "Production ECS et CH d'appoint",
             0x03: "Backup 1 pour ECS et backup 2 pour CH"
         }
     },

@@ -882,10 +882,10 @@ sensor_configuration = [
         "data_size": 1,
         "map": {
             0x00: "Standby",
-            0x01: "Heizen",
-            0x02: "Kühlen",
-            0x03: "Abtauen",
-            0x04: "Warmwasserbereitung"
+            0x01: "Chauffage",
+            0x02: "Refroidissement",
+            0x03: "Dégivrage",
+            0x04: "ECS"
         },
         "update_entity": "thermal_power"
     },
@@ -927,7 +927,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "map": {
-            0: "Aucune",
+            0: "Aucun",
             9001: "E9001 Défaut T retour TR2",
             9002: "E9002 Défaut sonde alim TV2",
             9003: "E9003 Défaut fct. antigel",

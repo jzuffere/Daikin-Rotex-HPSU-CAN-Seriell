@@ -859,7 +859,7 @@ sensor_configuration = [
         "accuracy_decimals": 1,
         "state_class": STATE_CLASS_MEASUREMENT,
         "icon": "mdi:waves-arrow-right",
-        "min_value": 35,
+        "min_value": 20, #was 35
         "max_value": 70,
         "step": 1,
         "command": "31 00 13 00 00 00 00",
@@ -867,13 +867,11 @@ sensor_configuration = [
         "data_size": 2,
         "divider": 10.0,
         "map": {
+            25: "25 °C",
             35: "35 °C",
             40: "40 °C",
             42: "42 °C",
-            45: "45 °C",
-            48: "48 °C",
-            49: "49 °C",
-            50: "50 °C"
+            45: "45 °C"
         }
     },
     {

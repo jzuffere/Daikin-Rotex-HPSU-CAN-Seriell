@@ -1,0 +1,326 @@
+esphome:
+    name: hpsu-can
+    friendly_name: HPSU.CAN
+    platformio_options:
+        build_unflags:
+            - "-std=gnu++11"
+            - "-fno-rtti"
+        build_flags:
+            - "-std=gnu++17"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+external_components:
+  - source: github://Trunks1982/Daikin-Rotex-HPSU-CAN
+
+#
+#external_components:   # Use this block instead of the one above if you want to use the development branch
+#  - source:
+#      type: git
+#      url: https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN.git
+#      ref: dev
+#    refresh: 0s
+
+logger:
+  level: INFO
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+web_server:
+  version: 3
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+
+  ap:
+    ssid: DaikinRotex Fallback Hotspot
+    password: H3jGqANSa7aL
+
+captive_portal:
+
+time:
+  - platform: homeassistant
+
+debug:
+  update_interval: 5s
+
+sensor:
+  - platform: uptime
+    type: seconds
+    name: Uptime Seconds
+  - platform: uptime
+    type: timestamp
+    name: Uptime Timestamp
+  - platform: debug
+    free:
+      name: "Heap Free"
+    block:
+      name: "Heap Max Block"
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 60s
+
+button:
+  - platform: restart
+    name: "Rotex ESP Restart"
+#switch:
+#  - platform: gpio
+#    name: Smart Grid
+#    pin:
+#      number: GPIO06
+#      inverted: true
+
+#  - platform: gpio
+#    name: EVU
+#    pin:
+#      number: GPIO05
+#      inverted: true
+
+text_sensor:
+  - platform: debug
+    device:
+      name: "Device Info"
+    reset_reason:
+      name: "Reset Reason"
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+    ssid:
+      name: ESP Connected SSID
+
+canbus:
+  - platform: esp32_can
+    id: can_bus
+    can_id: 0x680
+    tx_pin: GPIO5
+    rx_pin: GPIO6
+    bit_rate: 20kbps
+
+daikin_rotex_can:
+  id: rotext_hpsu
+  language: it
+  canbus_id: can_bus
+  update_interval: 30
+  #max_spread_tvbh_tv: 4
+  #max_spread_tvbh_tr: 4
+  log_filter:
+    name: Log Filter
+  custom_request:
+    name: Custom Request
+  dump:
+    name: Dump Senors
+  project_git_hash:
+    name: Project Git Hash
+  entities:
+
+    # Info
+
+    # mode
+    ext:
+      name: Esterno
+    # RT
+    # Pump
+    # EHS
+    # BPV
+    tv:
+      name: Temperatura di mandata (TV)
+      update_interval: 5
+    tvbh:
+      name: Temperatura Mandata Riscaldamento (TVBH)
+      update_interval: 5
+    tr:
+      name: Temperatura Ritorno Riscaldamento
+      update_interval: 5
+    # Tdhw
+    temperature_outside:
+      name: Temperatura Esterna
+    # V
+    # TVBH2
+    # TR2
+    # Tdhw2
+    tliq:
+      name: Temperatura linea liquido
+    ta2:
+      name: TA2
+    # quiet
+
+  # Übersicht
+    water_pressure:
+      name: Pressione dell'Acqua
+    t_hs:
+      name: T-WE
+    t_ext:
+      name: T-Esterno
+    flow_rate:
+      name: Portata
+      update_interval: 10
+    status_kesselpumpe:
+      name: Stato Pompa Circolazione
+    runtime_compressor:
+      name: Tempo di Funzionamento Compressore
+    runtime_pump:
+      name: Tempo di Funzionamento Pompa
+    dhw_mixer_position:
+      name: Posizione Miscelatore ACS
+    qboh:
+      name: EHS per ACS
+    ehs_for_ch:
+      name: EHS per CH
+    energy_cooling:
+      name: Energia Raffreddamento
+    qch:
+      name: Energia Riscaldamento
+    total_energy_produced:
+      name: Energia Totale Prodotta
+    qdhw:
+      name: Energia per ACS
+    total_electrical_energy:
+      name: Energia Elettrica Totale
+
+  # ESP custom sensors
+    energy_saving_mode:
+      name: Modalità Risparmio Energetico
+
+  # Betriebsart
+    operating_mode:
+      name: Modalità di Funzionamento
+      update_interval: 5
+
+  # Raum Soll Tag
+    target_room1_temperature:
+      name: Temperatura Obiettivo Stanza 1
+      type: select
+
+  # Raum Soll Nacht
+    target_hot_water_temperature:
+      name: Temperatura Obiettivo ACS
+      type: select
+
+  # WW Install
+    1_dhw:
+      name: 1 x Acqua Calda
+    hp_hyst_tdhw:
+      name: HP Hyst TDHW
+    delay_time_for_backup_heating:
+      name: Tempo di Attesa per Riscaldamento di Backup
+
+  # Konfiguration
+    outdoor_unit:
+      name: Unità Esterna
+    indoor_unit:
+      name: Unità Interna
+    function_ehs:
+      name: Funzione EHS
+    ch_support:
+      name: Supporto CH
+    smart_grid:
+      name: Smart Grid
+    sg_mode:
+      name: Modalità SG
+    external_temp_sensor:
+      name: Sensore Temperatura Esterna
+
+  # Konfiguration -> Anlagenkonfiguration
+    power_dhw:
+      name: Potenza ACS
+    power_ehs_1:
+      name: Potenza EHS Livello 1
+    power_ehs_2:
+      name: Potenza EHS Livello 2
+    power_biv:
+      name: Potenza BIV
+    tdiff_dhw_ch:
+      name: TDiff ACS CH
+    max_heating_temperature:
+      name: Temperatura Massima Riscaldamento
+    quiet:
+      name: Modalità Silenziosa
+    t_dhw_1_min:
+      name: Soglia di Commutazione TDHW
+    delta_temp_ch:
+      name: Differenza Temperatura CH
+    delta_temp_dhw:
+      name: Differenza Temperatura ACS
+    flow_rate_min:
+      name: Portata Minima
+    flow_rate_setpoint:
+      name: Setpoint Portata
+    flow_rate_calc:
+      name: Portata Calcolata
+    flow_rate_hyst:
+      name: Isteresi Portata
+    supply_temperature_adjustment_heating:
+      name: Regolazione Temperatura Mandata Riscaldamento
+    supply_temperature_adjustment_cooling:
+      name: Regolazione Temperatura Mandata Raffreddamento
+    hk_function:
+      name: Funzione HK
+    temperature_antifreeze:
+      name: Temperatura Antigelo
+    heating_limit_day:
+      name: Limite Riscaldamento Giorno
+    heating_limit_night:
+      name: Limite Riscaldamento Notte
+    heating_curve:
+      name: Curva di Riscaldamento
+    flow_temperature_day:
+      name: Temperatura Mandata Giorno
+    flow_temperature_night:
+      name: Temperatura Mandata Notte
+    max_target_flow_temp:
+      name: Temperatura Massima Mandata Obiettivo
+    min_target_flow_temp:
+      name: Temperatura Minima Mandata Obiettivo
+    circulation_with_dhw_program:
+      name: Circolazione con Programma ACS
+    circulation_interval_on:
+      name: Intervallo Circolazione On
+    circulation_interval_off:
+      name: Intervallo Circolazione Off
+    antileg_day:
+      name: Giorno Anti-Legionella
+    antileg_temp:
+      name: Temperatura Anti-Legionella
+    max_dhw_loading:
+      name: Tempo Massimo di Caricamento ACS
+    dhw_off_time:
+      name: Tempo di Spegnimento ACS
+    electric_heater:
+      name: Resistenze Elettriche - Per Pompe dopo Ottobre 2018
+    thermal_power:
+      name: Potenza Termica
+    thermal_power_smooth:
+      name: Potenza Termica Regolare        
+    optimized_defrosting:
+      name: Sbrinamento Ottimizzato
+    bypass_valve:
+      name: Valvola di Bypass
+    circulation_pump:
+      name: Pompa di Circolazione
+    circulation_pump_min:
+      name: Pompa di Circolazione Minima
+    circulation_pump_max:
+      name: Pompa di Circolazione Massima
+    dhw_run:
+      name: Esecuzione ACS
+    error_code:
+      name: Codice di Errore
+    mode_of_operating:
+      name: Stato operativo
+    status_kompressor:
+      name: Stato Compressore
+    tdhw1:
+      name: Temperatura Acqua Calda
+    target_supply_temperature:
+      name: Temperatura Mandata Obiettivo

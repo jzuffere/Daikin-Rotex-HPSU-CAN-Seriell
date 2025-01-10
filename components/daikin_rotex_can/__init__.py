@@ -7,12 +7,24 @@ from esphome.cpp_generator import MockObj
 from esphome.cpp_types import std_ns
 from esphome.components.canbus import CanbusComponent
 from esphome import core
+from .translations.translate import (
+    CONF_LANGUAGE,
+    SUPPORTED_LANGUAGES,
+    delayed_translate,
+    apply_translation_to_mapping,
+    set_language,
+    check_translations_integrity,
+    write_cpp_file
+)
+
 import subprocess
 import logging
 import os
 
+_LOGGER = logging.getLogger(__name__) 
 
-_LOGGER = logging.getLogger(__name__)
+# Before starting, check the integrity of the translation dictionaries
+check_translations_integrity()
 
 daikin_rotex_can_ns = cg.esphome_ns.namespace('daikin_rotex_can')
 DaikinRotexCanComponent = daikin_rotex_can_ns.class_('DaikinRotexCanComponent', cg.Component)
@@ -51,8 +63,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on")
         }
     },
     {
@@ -141,15 +153,15 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "Mo",
-            0x02: "Di",
-            0x03: "Mi",
-            0x04: "Do",
-            0x05: "Fr",
-            0x06: "Sa",
-            0x07: "So",
-            0x08: "Mo-So"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("monday"),
+            0x02: delayed_translate("tuesday"),
+            0x03: delayed_translate("wednesday"),
+            0x04: delayed_translate("thursday"),
+            0x05: delayed_translate("friday"),
+            0x06: delayed_translate("saturday"),
+            0x07: delayed_translate("sunday"),
+            0x08: delayed_translate("mo_to_su")
         }
     },
     {
@@ -188,8 +200,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on")
         }
     },
     {
@@ -583,7 +595,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "map": {0xFF60 / 10.0: "Aus", **{i: f"{i} °C" for i in range(-15, 6)}}
+        "map": {0xFF60 / 10.0: delayed_translate("off"), **{i: f"{i} °C" for i in range(-15, 6)}}
     },
     {
         "type": "sensor",
@@ -809,7 +821,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "map": {0xFE70 / 10.0: "Aus", **{i: f"{i} °C" for i in range(10, 41)}}
+        "map": {0xFE70 / 10.0: delayed_translate("off"), **{i: f"{i} °C" for i in range(10, 41)}}
     },
     {
         "type": "select",
@@ -825,7 +837,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "map": {0x5A / 10.0: "Aus", **{i: f"{i} °C" for i in range(10, 41)}}
+        "map": {0x5A / 10.0: delayed_translate("off"), **{i: f"{i} °C" for i in range(10, 41)}}
     },
     {
         "type": "number",
@@ -910,11 +922,11 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Standby",
-            0x01: "Heizen",
-            0x02: "Kühlen",
-            0x03: "Abtauen",
-            0x04: "Warmwasserbereitung"
+            0x00: delayed_translate("standby"),
+            0x01: delayed_translate("heating"),
+            0x02: delayed_translate("cooling"),
+            0x03: delayed_translate("defrosting"),
+            0x04: delayed_translate("hot_water_production")
         },
         "update_entity": "thermal_power"
     },
@@ -926,13 +938,13 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 1,
         "map": {
-            0x01: "Bereitschaft",
-            0x03: "Heizen",
-            0x04: "Absenken",
-            0x05: "Sommer",
-            0x11: "Kühlen",
-            0x0B: "Automatik 1",
-            0x0C: "Automatik 2"
+            0x01: delayed_translate("standby"),
+            0x03: delayed_translate("heating"),
+            0x04: delayed_translate("lowering"),
+            0x05: delayed_translate("summer"),
+            0x11: delayed_translate("cooling"),
+            0x0B: delayed_translate("automatic_1"),
+            0x0C: delayed_translate("automatic_2"),
         }
     },
     {
@@ -943,9 +955,9 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An",
-            0x02: "Nur bei Nacht"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on"),
+            0x02: delayed_translate("night_only")
         }
     },
     {
@@ -956,64 +968,64 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "map": {
-            0: "Kein Fehler",
-            9001: "E9001 Rücklauffühler",
-            9002: "E9002 Vorlauffühler",
-            9003: "E9003 Frostschutzfunktion",
-            9004: "E9004 Durchfluss",
-            9005: "E9005 Vorlauftemperaturfühler",
-            9006: "E9006 Vorlauftemperaturfühler",
-            9007: "E9007 Platine IG defekt",
-            9008: "E9008 Kältemitteltemperatur außerhalb des Bereiches",
-            9009: "E9009 STB Fehler",
-            9010: "E9010 STB Fehler",
-            9011: "E9011 Fehler Flowsensor",
-            9012: "E9012 Fehler Vorlauffühler",
-            9013: "E9013 Platine AG defekt",
-            9014: "E9014 P-Kältemittel hoch",
-            9015: "E9015 P-Kältemittel niedrig",
-            9016: "E9016 Lastschutz Verdichter",
-            9017: "E9017 Ventilator blockiert",
-            9018: "E9018 Expansionsventil",
-            9019: "E9019 Warmwassertemperatur > 85°C",
-            9020: "E9020 T-Verdampfer hoch",
-            9021: "E9021 HPS-System",
-            9022: "E9022 Fehler AT-Fühler",
-            9023: "E9023 Fehler WW-Fühler",
-            9024: "E9024 Drucksensor",
-            9025: "E9025 Fehler Rücklauffühler",
-            9026: "E9026 Drucksensor",
-            9027: "E9027 Aircoil-Fühler Defrost",
-            9028: "E9028 Aircoil-Fühler temp",
-            9029: "E9029 Fehler Kältefühler AG",
-            9030: "E9030 Defekt elektrisch",
-            9031: "E9031 Defekt elektrisch",
-            9032: "E9032 Defekt elektrisch",
-            9033: "E9033 Defekt elektrisch",
-            9034: "E9034 Defekt elektrisch",
-            9035: "E9035 Platine AG defekt",
-            9036: "E9036 Defekt elektrisch",
-            9037: "E9037 Einstellung Leistung",
-            9038: "E9038 Kältemittel Leck",
-            9039: "E9039 Unter/Überspannung",
-            9041: "E9041 Übertragungsfehler",
-            9042: "E9042 Übertragungsfehler",
-            9043: "E9043 Übertragungsfehler",
-            9044: "E9044 Übertragungsfehler",
-            75: "E75 Fehler Außentemperaturfühler",
-            76: "E76 Fehler Speichertemperaturfühler",
-            81: "E81 Kommunikationsfehler Rocon",
-            88: "E88 Kommunikationsfehler Rocon Handbuch",
-            91: "E91 Kommunikationsfehler Rocon Handbuch",
-            128: "E128 Fehler Rücklauftemperaturfühler",
-            129: "E129 Fehler Drucksensor",
-            198: "E198 Durchflussmessung nicht plausibel",
-            200: "E200 Kommunikationsfehler",
-            8005: "E8005 Wasserdruck in Heizungsanlage zu gering",
-            8100: "E8100 Kommunikation",
-            9000: "E9000 Interne vorübergehende Meldung",
-            8006: "W8006 Warnung Druckverlust",
-            8007: "W8007 Wasserdruck in Anlage zu hoch"
+            0: delayed_translate("err_0"),
+            9001: delayed_translate("err_E9001"),
+            9002: delayed_translate("err_E9002"),
+            9003: delayed_translate("err_E9003"),
+            9004: delayed_translate("err_E9004"),
+            9005: delayed_translate("err_E9005"),
+            9006: delayed_translate("err_E9006"),
+            9007: delayed_translate("err_E9007"),
+            9008: delayed_translate("err_E9008"),
+            9009: delayed_translate("err_E9009"),
+            9010: delayed_translate("err_E9010"),
+            9011: delayed_translate("err_E9011"),
+            9012: delayed_translate("err_E9012"),
+            9013: delayed_translate("err_E9013"),
+            9014: delayed_translate("err_E9014"),
+            9015: delayed_translate("err_E9015"),
+            9016: delayed_translate("err_E9016"),
+            9017: delayed_translate("err_E9017"),
+            9018: delayed_translate("err_E9018"),
+            9019: delayed_translate("err_E9019"),
+            9020: delayed_translate("err_E9020"),
+            9021: delayed_translate("err_E9021"),
+            9022: delayed_translate("err_E9022"),
+            9023: delayed_translate("err_E9023"),
+            9024: delayed_translate("err_E9024"),
+            9025: delayed_translate("err_E9025"),
+            9026: delayed_translate("err_E9026"),
+            9027: delayed_translate("err_E9027"),
+            9028: delayed_translate("err_E9028"),
+            9029: delayed_translate("err_E9029"),
+            9030: delayed_translate("err_E9030"),
+            9031: delayed_translate("err_E9031"),
+            9032: delayed_translate("err_E9032"),
+            9033: delayed_translate("err_E9033"),
+            9034: delayed_translate("err_E9034"),
+            9035: delayed_translate("err_E9035"),
+            9036: delayed_translate("err_E9036"),
+            9037: delayed_translate("err_E9037"),
+            9038: delayed_translate("err_E9038"),
+            9039: delayed_translate("err_E9039"),
+            9041: delayed_translate("err_E9041"),
+            9042: delayed_translate("err_E9042"),
+            9043: delayed_translate("err_E9043"),
+            9044: delayed_translate("err_E9044"),
+            75: delayed_translate("err_E75"),
+            76: delayed_translate("err_E76"),
+            81: delayed_translate("err_E81"),
+            88: delayed_translate("err_E88"),
+            91: delayed_translate("err_E91"),
+            128: delayed_translate("err_E128"),
+            129: delayed_translate("err_E129"),
+            198: delayed_translate("err_E198"),
+            200: delayed_translate("err_E200"),
+            8005: delayed_translate("err_E8005"),
+            8100: delayed_translate("err_E8100"),
+            9000: delayed_translate("err_E9000"),
+            8006: delayed_translate("err_W8006"),
+            8007: delayed_translate("err_W8007")
         }
     },
     {
@@ -1060,8 +1072,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Witterungsgeführt",
-            0x01: "Fest"
+            0x00: delayed_translate("weather_dependent"),
+            0x01: delayed_translate("fixed")
         }
     },
     {
@@ -1072,9 +1084,9 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "SG Modus 1",
-            0x02: "SG Modus 2"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("sg_mode_1"),
+            0x02: delayed_translate("sg_mode_2")
         }
     },
     {
@@ -1085,8 +1097,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on")
         }
     },
     {
@@ -1097,10 +1109,10 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Kein zusätzlicher Wärmeerzeuger",
-            0x01: "Optionaler Backup-Heater",
-            0x02: "WEZ für WW und HZ",
-            0x03: "WEZ1 für WW - WEZ2 für HZ"
+            0x00: delayed_translate("no_additional_heat_generator"),
+            0x01: delayed_translate("optional_backup_heater"),
+            0x02: delayed_translate("wez_for_hot_water_and_heating"),
+            0x03: delayed_translate("wez1_for_hot_water_wez2_for_heating")
         }
     },
     {
@@ -1111,8 +1123,8 @@ sensor_configuration = [
         "data_offset": 6,
         "data_size": 1,
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on")
         }
     },
     {
@@ -1216,7 +1228,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "map": {
-            0x00: "Aus",
+            0x00: delayed_translate("off"),
             0x03: "3 kW",
             0x06: "6 kW",
             0x09: "9 kW"
@@ -1244,10 +1256,10 @@ sensor_configuration = [
         "data_size": 1,
         "map": {
             0x00: "---",
-            0x03: "SGN - Normaler Modus",
-            0x04: "SG1 - WW & HZ ausgeschalten",
-            0x05: "SG2 - WW & HZ + 5°C",
-            0x06: "SG3 - WW 70°C"
+            0x03: delayed_translate("sgn_normal_mode"),
+            0x04: delayed_translate("sg1_hot_water_and_heating_off"),
+            0x05: delayed_translate("sg2_hot_water_and_heating_plus_5c"),
+            0x06: delayed_translate("sg3_hot_water_70c")
         }
     },
 
@@ -1317,8 +1329,8 @@ sensor_configuration = [
         "name": "optimized_defrosting",
         "icon": "mdi:snowflake-melt",
         "map": {
-            0x00: "Aus",
-            0x01: "An"
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on")
         }
     }
 ]
@@ -1350,6 +1362,7 @@ DEFAULT_MAX_SPREAD_TVBH_TV = 3.0
 DEFAULT_MAX_SPREAD_TVBH_TR = 3.0
 
 entity_schemas = {}
+
 for sensor_conf in sensor_configuration:
     name = sensor_conf.get("name")
     icon = sensor_conf.get("icon", sensor._UNDEF)
@@ -1452,6 +1465,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): cv.uint16_t,
         cv.Optional(CONF_MAX_SPREAD_TVBH_TV, default=DEFAULT_MAX_SPREAD_TVBH_TV): cv.float_,
         cv.Optional(CONF_MAX_SPREAD_TVBH_TR, default=DEFAULT_MAX_SPREAD_TVBH_TR): cv.float_,
+        cv.Required(CONF_LANGUAGE): cv.enum(SUPPORTED_LANGUAGES, lower=True, space="_"),
 
         ########## Texts ##########
 
@@ -1487,6 +1501,11 @@ CONFIG_SCHEMA = cv.Schema(
 ).extend(cv.COMPONENT_SCHEMA)
 
 async def to_code(config):
+
+    if CONF_LANGUAGE in config:
+        lang = config[CONF_LANGUAGE]
+        set_language(lang)
+
     global_ns = MockObj("", "")
     std_array_u8_7_const_ref = std_ns.class_("array<uint8_t, 7> const&")
     std_array_u8_7_ref = std_ns.class_("array<uint8_t, 7>&")
@@ -1500,6 +1519,9 @@ async def to_code(config):
         cg.add(var.set_canbus(canbus))
 
     cg.add(var.set_max_spread(config[CONF_MAX_SPREAD_TVBH_TV], config[CONF_MAX_SPREAD_TVBH_TR]))
+
+    # Write cpp translation file
+    write_cpp_file(os.path.dirname(__file__))
 
     ########## Texts ##########
 
@@ -1528,7 +1550,9 @@ async def to_code(config):
                 entity = None
                 divider = sens_conf.get("divider", 1.0)
 
-                mapping = sens_conf.get("map", {})
+                # translate maps
+                mapping = apply_translation_to_mapping(sens_conf.get("map", {}))
+
                 if yaml_sensor_conf.get("type") == "select" and "options" in yaml_sensor_conf:
                     mapping = yaml_sensor_conf.get("options")
                 str_map = "|".join([f"0x{int(key * divider) & 0xFFFF :02X}:{value}" for key, value in mapping.items()])

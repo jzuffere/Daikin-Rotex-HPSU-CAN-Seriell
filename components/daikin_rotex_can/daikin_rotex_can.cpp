@@ -279,7 +279,7 @@ void DaikinRotexCanComponent::loop() {
         }
     }
 
-    if (millis() > m_pid.get_last_update() + 10 * 1000) {
+    if (m_thermal_power_sensor != nullptr && m_thermal_power_smooth_sensor != nullptr && millis() > m_pid.get_last_update() + 10 * 1000) {
         float current_tp = m_thermal_power_sensor->get_state();
 
         const float smoothing_factor = 0.1;

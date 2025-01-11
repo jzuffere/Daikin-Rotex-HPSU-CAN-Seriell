@@ -32,8 +32,9 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_project_git_hash_sensor(nullptr)
 , m_project_git_hash()
 , m_thermal_power_sensor(nullptr)
-, m_thermal_power_smooth_sensor(nullptr)
-, m_pid(0.1, 0.01, 0.001)
+, m_thermal_power_sensor_raw(nullptr)
+, m_thermal_power_raw(std::numeric_limits<float>::quiet_NaN())
+, m_pid(0.2, 0.05f, 0.05f, 0.2, 0.2, 0.1f)
 {
 }
 
@@ -119,10 +120,6 @@ void DaikinRotexCanComponent::update_thermal_power() {
     CanSensor const* tv = m_entity_manager.get_sensor("tv");
     CanSensor const* tr = m_entity_manager.get_sensor("tr");
 
-    if (m_thermal_power_sensor == nullptr) {
-        ESP_LOGE(TAG, "thermal_power is not configured!");
-        return;
-    }
     if (flow_rate == nullptr) {
         ESP_LOGE(TAG, "flow_rate is not configured!");
         return;
@@ -136,8 +133,11 @@ void DaikinRotexCanComponent::update_thermal_power() {
         return;
     }
 
-    const float value = (tv->state - tr->state) * (4.19 * flow_rate->state) / 3600.0f;
-    m_thermal_power_sensor->publish_state(value);
+    m_thermal_power_raw = (tv->state - tr->state) * (4.19 * flow_rate->state) / 3600.0f;
+
+    if (m_thermal_power_sensor_raw != nullptr) {
+        m_thermal_power_sensor_raw->publish_state(m_thermal_power_raw);
+    }
 }
 
 bool DaikinRotexCanComponent::on_custom_select(std::string const& id, uint8_t value) {
@@ -271,7 +271,7 @@ void DaikinRotexCanComponent::run_dhw_lambdas() {
 void DaikinRotexCanComponent::loop() {
     m_entity_manager.sendNextPendingGet();
     for (auto it = m_later_calls.begin(); it != m_later_calls.end(); ) {
-        if (millis() > it->second) {
+        if (millis() > it->second) { // checking millis() here is important for callLater!
             it->first();
             it = m_later_calls.erase(it);
         } else {
@@ -279,20 +279,26 @@ void DaikinRotexCanComponent::loop() {
         }
     }
 
-    if (m_thermal_power_sensor != nullptr && m_thermal_power_smooth_sensor != nullptr && millis() > m_pid.get_last_update() + 10 * 1000) {
-        float current_tp = m_thermal_power_sensor->get_state();
+    if (m_thermal_power_sensor != nullptr) {
+        const float dt = (millis() - m_pid.get_last_update()) / 1000.0f; // seconds
+        if (dt > 10.0f) {
+            if (!std::isnan(m_thermal_power_raw)) {
+                float smoothed_tp = m_thermal_power_sensor->get_state();
 
-        const float smoothing_factor = 0.1;
-        float smoothed_tp = m_thermal_power_smooth_sensor->get_state();
-        if (std::isnan(smoothed_tp)) {
-            smoothed_tp = current_tp;
+                if (std::isnan(smoothed_tp)) {
+                    smoothed_tp = m_thermal_power_raw;
+                }
+
+                const float pid_output = m_pid.compute(m_thermal_power_raw, smoothed_tp, dt);
+                smoothed_tp += pid_output;
+
+                float smoothed_tp_rounded = std::ceil(smoothed_tp * 100.0) / 100.0;
+                m_thermal_power_sensor->publish_state(smoothed_tp_rounded);
+            } else {
+                m_thermal_power_sensor->publish_state(m_thermal_power_raw);
+            }
+            m_pid.set_last_update(millis());
         }
-        smoothed_tp += 0.1 * (current_tp - smoothed_tp);
-        smoothed_tp = std::ceil(smoothed_tp * 100.0) / 100.0;
-
-        m_thermal_power_smooth_sensor->publish_state(smoothed_tp);
-
-        m_pid.set_last_update(millis());
     }
 }
 

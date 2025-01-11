@@ -10,18 +10,17 @@ namespace esphome {
 namespace daikin_rotex_can {
 
 static const char* TAG = "daikin_rotex_can";
-static const char* BETRIEBS_ART = "mode_of_operating";
-static const char* BETRIEBS_MODUS = "operating_mode";
-static const char* OPTIMIZED_DEFROSTING = "optimized_defrosting";
-static const char* TEMPERATURE_ANTIFREEZE = "temperature_antifreeze";   // T-Frostschutz
-static const char* TEMPERATURE_ANTIFREEZE_OFF = translate("off").c_str();
-static const char* STATE_DHW_PRODUCTION = translate("hot_water_production").c_str();
-static const char* STATE_HEATING = translate("heating").c_str();
-static const char* STATE_COOLING = translate("cooling").c_str();
-static const char* STATE_DEFROSTING = translate("defrosting").c_str();
-static const char* STATE_SUMMER = translate("summer").c_str();
-static const char* STATE_STANDBY = translate("standby").c_str();
-static const char* DEFECT = translate("defect").c_str();
+static const std::string BETRIEBS_ART = "mode_of_operating";
+static const std::string BETRIEBS_MODUS = "operating_mode";
+static const std::string OPTIMIZED_DEFROSTING = "optimized_defrosting";
+static const std::string TEMPERATURE_ANTIFREEZE = "temperature_antifreeze";   // T-Frostschutz
+static const std::string TEMPERATURE_ANTIFREEZE_OFF = translate("off");
+static const std::string STATE_DHW_PRODUCTION = translate("hot_water_production");
+static const std::string STATE_HEATING = translate("heating");
+static const std::string STATE_DEFROSTING = translate("defrosting");
+static const std::string STATE_SUMMER = translate("summer");
+static const std::string STATE_STANDBY = translate("standby");
+static const std::string DEFECT = translate("defect");
 static const uint32_t POST_SETUP_TIMOUT = 15*1000;
 
 DaikinRotexCanComponent::DaikinRotexCanComponent()
@@ -103,7 +102,7 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
             if (p_temperature_antifreeze->state != TEMPERATURE_ANTIFREEZE_OFF && m_optimized_defrosting.value() != 0x0) {
                 p_optimized_defrosting->publish_select_key(0x0);
                 m_optimized_defrosting.save(0x0);
-                Utils::log(TAG, "set %s: %d", OPTIMIZED_DEFROSTING, m_optimized_defrosting.value());
+                Utils::log(TAG, "set %s: %d", OPTIMIZED_DEFROSTING.c_str(), m_optimized_defrosting.value());
             }
         }
     }
@@ -142,7 +141,7 @@ void DaikinRotexCanComponent::update_thermal_power() {
 
 bool DaikinRotexCanComponent::on_custom_select(std::string const& id, uint8_t value) {
     if (id == OPTIMIZED_DEFROSTING) {
-        Utils::log(TAG, "%s: %d", OPTIMIZED_DEFROSTING, value);
+        Utils::log(TAG, "%s: %d", OPTIMIZED_DEFROSTING.c_str(), value);
         CanSelect* p_temperature_antifreeze = m_entity_manager.get_select(TEMPERATURE_ANTIFREEZE);
 
         if (p_temperature_antifreeze != nullptr) {

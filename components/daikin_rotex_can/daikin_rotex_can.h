@@ -29,6 +29,7 @@ public:
     void set_project_git_hash(text_sensor::TextSensor* pSensor, std::string const& hash) { m_project_git_hash_sensor = pSensor; m_project_git_hash = hash; }
     void set_thermal_power_sensor(sensor::Sensor* pSensor) { m_thermal_power_sensor = pSensor; }
     void set_thermal_power_sensor_raw(sensor::Sensor* pSensor) { m_thermal_power_sensor_raw = pSensor; }
+    void set_temperature_spread(sensor::Sensor* pSensor) { m_temperature_spread_sensor = pSensor; }
     void set_max_spread(float tvbh_tv, float tvbh_tr) { m_max_spread = { tvbh_tv, tvbh_tr };}
     void add_entity(EntityBase* pEntity) {
         if (TEntity* pRequest = dynamic_cast<TEntity*>(pEntity)) {
@@ -54,6 +55,7 @@ public:
     }
 
     void update_thermal_power();
+    void update_temperature_spread();
 
 private:
 
@@ -94,6 +96,7 @@ private:
 
     sensor::Sensor* m_thermal_power_sensor;
     sensor::Sensor* m_thermal_power_sensor_raw;
+    sensor::Sensor* m_temperature_spread_sensor;
     MaxSpread m_max_spread;
     float m_thermal_power_raw;
     PID m_pid;

@@ -187,6 +187,10 @@ daikin_rotex_can:
       name: Energy for DHW
     total_electrical_energy:
       name: Total Electrical Energy
+#WE Typ
+#SwNr B1/U1
+#SwNr Regler
+#SwNr RTXRT
 
   # ESP custom sensors
     energy_saving_mode:
@@ -215,7 +219,10 @@ daikin_rotex_can:
     delay_time_for_backup_heating:
       name: Waiting Time for Backup Heating
 
-  # Configuration
+#Configuration
+
+#Configuration -> Installation
+#...
     outdoor_unit:
       name: Outdoor Unit
     indoor_unit:
@@ -228,10 +235,25 @@ daikin_rotex_can:
       name: Smart Grid
     sg_mode:
       name: SG Mode
+#HT/NT Funktion
+#HT/NT Anschluss
+#Raumthermostat
+#Interlinkfunktion
+#Konfig MFR 1
+#Entlüftungsfunktion
+#PWM Konfig
+#...
+#Sensor Konfig
     external_temp_sensor:
       name: Config External Temperature
 
   # Configuration -> System Configuration
+#AF Anspassung
+#Terminal Adresse
+#Konfig System
+
+#Konfiguration -> Anlagenkonfiguration
+
     power_dhw:
       name: Power DHW
     power_ehs_1:
@@ -246,12 +268,15 @@ daikin_rotex_can:
       name: Max Heating Temperature
     quiet:
       name: Silent Mode
+#Sonderfunkt Schaltk
+#Wartezeit Sonderfunkt
     t_dhw_1_min:
       name: Switch Threshold TDHW
     delta_temp_ch:
       name: CH Spread
     delta_temp_dhw:
       name: DHW Spread
+#VerzZeitPumpe                # service
     flow_rate_min:
       name: Flow Rate Min
     flow_rate_setpoint:
@@ -264,16 +289,31 @@ daikin_rotex_can:
       name: Supply Temperature Adjustment Heating
     supply_temperature_adjustment_cooling:
       name: Supply Temperature Adjustment Cooling
+#Min Druck
+#Max Druck
+#Soll Druck
+#Max Druckverlust
+#Relaistest
+
+# Konfiguration -> HZK Konfig
     hk_function:
       name: HK Function
     temperature_antifreeze:
       name: Anti-Freeze Temperature
+#Gebäudedämumng
+#Estrich
+#Estrichprogramm
+
+# Konfiguration -> HZK Konfig -> Heizen
+
     heating_limit_day:
       name: Heating Limit Day
     heating_limit_night:
       name: Heating Limit Night
     heating_curve:
       name: Heating Curve
+#Raumeinfluss
+#RF Anpassung
     flow_temperature_day:
       name: Flow Temperature Day
     flow_temperature_night:
@@ -282,6 +322,21 @@ daikin_rotex_can:
       name: Max Target Flow Temperature
     min_target_flow_temp:
       name: Min Target Flow Temperature
+#Heizk Adaption
+
+# Konfiguration -> HZK Konfig -> Kühlen
+
+#StartKühlen A-Temp
+#MaxKühlen A-Temp
+#VL-SollStartKühlen
+#VL-SollMaxKühlen
+#MinVL-SollKühlen
+#T-VLKühlen
+#T_H/K Umschaltung
+#KühlsollwertKorr
+
+#Konfiguration -> WW Konfig
+
     circulation_with_dhw_program:
       name: Circulation with DHW Program
     circulation_interval_on:
@@ -296,14 +351,19 @@ daikin_rotex_can:
       name: Max DHW Loading Time
     dhw_off_time:
       name: DHW Off Time
+
+# Others
+
     electric_heater:
       name: Electric Heater - For Pumps After October 2018
     thermal_power:
       name: Thermal Power
-    thermal_power_smooth:
-      name: Thermal Power Smooth      
     optimized_defrosting:
       name: Optimized Defrosting
+    temperature_spread:
+      name: Spreizung
+# To be categorized
+
     bypass_valve:
       name: Bypass Valve
     circulation_pump:

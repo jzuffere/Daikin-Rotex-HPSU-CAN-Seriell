@@ -7,6 +7,7 @@
 #include <functional>
 #include <stdint.h>
 #include <variant>
+#include <list>
 
 namespace esphome {
 namespace daikin_rotex_can {
@@ -29,7 +30,7 @@ public:
         uint8_t data_size;
         float divider;
         bool isSigned;
-        std::string update_entity;
+        std::list<std::string> update_entity;
         uint16_t update_interval;
         THandleFunc handle_lambda;
         TSetFunc set_lambda;
@@ -63,7 +64,7 @@ public:
             uint8_t _data_size,
             float _divider,
             bool _isSigned,
-            std::string const& _update_entity,
+            std::list<std::string> const& _update_entity,
             uint16_t _update_interval,
             THandleFunc _handle_lambda,
             TSetFunc _set_lambda,
@@ -127,7 +128,7 @@ public:
         m_post_handle_lambda = std::move(func);
     }
 
-    std::string const& get_update_entity() {
+    std::list<std::string> const& get_update_entity() {
         return m_config.update_entity;
     }
 

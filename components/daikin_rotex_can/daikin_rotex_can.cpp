@@ -32,6 +32,7 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_project_git_hash()
 , m_thermal_power_sensor(nullptr)
 , m_thermal_power_sensor_raw(nullptr)
+, m_temperature_spread_sensor(nullptr)
 , m_thermal_power_raw(std::numeric_limits<float>::quiet_NaN())
 , m_pid(0.2, 0.05f, 0.05f, 0.2, 0.2, 0.1f)
 {
@@ -79,11 +80,13 @@ void DaikinRotexCanComponent::setup() {
 }
 
 void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant const& current, TEntity::TVariant const& previous) {
-    std::string const& update_entity = pEntity->get_update_entity();
-    if (!update_entity.empty()) {
-        call_later([update_entity, this](){
-            updateState(update_entity);
-        });
+    std::list<std::string> const& update_entities = pEntity->get_update_entity();
+    for (std::string const& update_entity : update_entities) {
+        if (!update_entity.empty()) {
+            call_later([update_entity, this](){
+                updateState(update_entity);
+            });
+        }
     }
 
     const std::string id = pEntity->get_id();
@@ -111,6 +114,8 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
 void DaikinRotexCanComponent::updateState(std::string const& id) {
     if (id == "thermal_power") {
         update_thermal_power();
+    } else if (id == "temperature_spread") {
+        update_temperature_spread();
     }
 }
 
@@ -137,6 +142,26 @@ void DaikinRotexCanComponent::update_thermal_power() {
     if (m_thermal_power_sensor_raw != nullptr) {
         m_thermal_power_sensor_raw->publish_state(m_thermal_power_raw);
     }
+}
+
+void DaikinRotexCanComponent::update_temperature_spread() {
+    if (m_temperature_spread_sensor == nullptr) {
+        return;
+    }
+
+    CanSensor const* tv = m_entity_manager.get_sensor("tv");
+    CanSensor const* tr = m_entity_manager.get_sensor("tr");
+
+    if (tv == nullptr) {
+        ESP_LOGE(TAG, "tv is not configured!");
+        return;
+    }
+    if (tr == nullptr) {
+        ESP_LOGE(TAG, "tr is not configured!");
+        return;
+    }
+
+    m_temperature_spread_sensor->publish_state(tv->state - tr->state);
 }
 
 bool DaikinRotexCanComponent::on_custom_select(std::string const& id, uint8_t value) {

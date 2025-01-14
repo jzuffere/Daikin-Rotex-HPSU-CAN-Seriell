@@ -609,7 +609,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entity": "thermal_power",
+        "update_entities": ["thermal_power", "temperature_spread"],
         "range": [1, 90]
     },
     {
@@ -624,7 +624,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entity": "thermal_power",
+        "update_entities": ["thermal_power"],
         "range": [1, 90]
     },
     {
@@ -639,7 +639,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entity": "thermal_power",
+        "update_entities": ["thermal_power", "temperature_spread"],
         "range": [1, 90]
     },
     {
@@ -653,7 +653,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 1,
-        "update_entity": "thermal_power",
+        "update_entities": ["thermal_power"],
         "range": [0, 3000]
     },
     {
@@ -928,7 +928,7 @@ sensor_configuration = [
             0x03: delayed_translate("defrosting"),
             0x04: delayed_translate("hot_water_production")
         },
-        "update_entity": "thermal_power"
+        "update_entities": ["thermal_power"]
     },
     {
         "type": "select",
@@ -1353,6 +1353,7 @@ CONF_PROJECT_GIT_HASH = "project_git_hash"
 
 CONF_THERMAL_POWER = "thermal_power"
 CONF_THERMAL_POWER_RAW = "thermal_power_raw"
+CONF_TEMPERATURE_SPREAD = "temperature_spread"
 
 CONF_DUMP = "dump"
 CONF_DHW_RUN = "dhw_run"
@@ -1447,6 +1448,13 @@ entity_schemas.update({
         unit_of_measurement=UNIT_KILOWATT,
         accuracy_decimals=2,
         state_class=STATE_CLASS_MEASUREMENT
+    ).extend(),
+    cv.Optional(CONF_TEMPERATURE_SPREAD): sensor.sensor_schema(
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_of_measurement=UNIT_CELSIUS,
+        accuracy_decimals=1,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:thermometer-lines"
     ).extend(),
 
     ########## Buttons ##########
@@ -1623,7 +1631,7 @@ async def to_code(config):
                     sens_conf.get("data_size", 1),
                     divider,
                     sens_conf.get("signed", False),
-                    sens_conf.get("update_entity", ""),
+                    sens_conf.get("update_entities", []),
                     update_interval,
                     await handle_lambda(),
                     await set_lambda(),
@@ -1640,6 +1648,9 @@ async def to_code(config):
         if yaml_sensor_conf := entities.get(CONF_THERMAL_POWER_RAW):
             sens = await sensor.new_sensor(yaml_sensor_conf)
             cg.add(var.set_thermal_power_sensor_raw(sens))
+        if yaml_sensor_conf := entities.get(CONF_TEMPERATURE_SPREAD):
+            sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(var.set_temperature_spread(sens))
 
         ########## Buttons ##########
 

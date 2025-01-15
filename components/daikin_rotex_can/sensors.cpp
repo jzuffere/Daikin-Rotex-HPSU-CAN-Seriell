@@ -21,8 +21,8 @@ bool CanSensor::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
     if (valid) {
         publish_state(float_value);
     } else {
-        ESP_LOGE(TAG, "CanSensor::handleValue() => Sensor<%s> value<%f> out of range[%f, %f]",
-            get_id().c_str(), float_value, m_range.min, m_range.max);
+        ESP_LOGE(TAG, "CanSensor::handleValue() => Sensor<%s> hex<%s> uint16<%d> float<%f> out of range[%f, %f]",
+            get_id().c_str(), Utils::to_hex(value).c_str(), value, float_value, m_range.min, m_range.max);
     }
 
     return valid;

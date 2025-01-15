@@ -334,6 +334,21 @@ sensor_configuration = [
     },
     {
         "type": "sensor",
+        "name": "t_room",
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "unit_of_measurement": UNIT_CELSIUS,
+        "accuracy_decimals": 1,
+        "state_class": STATE_CLASS_MEASUREMENT,
+        "can_id": 0x300,
+        "command": "61 00 FA 00 11 00 00",
+        "data_offset": 5,
+        "data_size": 2,
+        "divider": 10.0,
+        "signed": True,
+        "range": [-30, 90]
+    },
+    {
+        "type": "sensor",
         "name": "tdhw1",
         "device_class": DEVICE_CLASS_TEMPERATURE,
         "unit_of_measurement": UNIT_CELSIUS,

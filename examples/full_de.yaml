@@ -380,6 +380,12 @@ daikin_rotex_can:
       name: Abtau-Optimierung
     temperature_spread:
       name: Spreizung
+
+# Rocon U1
+
+    #t_room:
+    #  name: Raum-Ist
+
 # To be categorized
 
     bypass_valve:

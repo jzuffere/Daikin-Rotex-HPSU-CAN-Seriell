@@ -307,6 +307,12 @@ daikin_rotex_can:
       name: Sbrinamento Ottimizzato
     temperature_spread:
       name: Delta Termico"
+
+# Rocon U1
+
+    #t_room:
+    #  name: Temperatura Attuale del Locale
+
 # To be categorized
 
     bypass_valve:

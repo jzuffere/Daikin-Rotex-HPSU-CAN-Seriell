@@ -96,6 +96,7 @@ private:
     CanSensor* m_temperature_spread_raw_sensor;
     MaxSpread m_max_spread;
     uint32_t m_low_temperature_spread_timestamp;
+    bool m_sufficient_temperature_spread_detected;
 };
 
 inline void DaikinRotexCanComponent::set_canbus(esphome::esp32_can::ESP32Can* pCanbus) {

@@ -36,6 +36,7 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_temperature_spread_sensor(new CanSensor()) // Used to detect valve malfunctions, even if the sensor has not been defined by the user.
 , m_temperature_spread_raw_sensor(new CanSensor())
 , m_low_temperature_spread_timestamp(0u)
+, m_sufficient_temperature_spread_detected(false)
 {
     m_temperature_spread_sensor->set_smooth(true);
 }
@@ -206,6 +207,7 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
 
     if (current != previous) {
         m_low_temperature_spread_timestamp = 0;
+        m_sufficient_temperature_spread_detected = false;
     }
 }
 
@@ -402,11 +404,12 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
                         if (millis() > (m_low_temperature_spread_timestamp + 20*60*1000)) { // The flow temperature (Vorlauf) may sometimes drop suddenly, even before the mode_of_operating is reported.
                             return new_state + "|" + LOW_TEMPERATURE_SPREAD;
                         }
-                    } else if (m_low_temperature_spread_timestamp == 0) {
+                    } else if (m_low_temperature_spread_timestamp == 0 && !m_sufficient_temperature_spread_detected) {
                         m_low_temperature_spread_timestamp = millis();
                     }
                 } else {
                     m_low_temperature_spread_timestamp = 0u;
+                    m_sufficient_temperature_spread_detected = true;
                 }
             }
         }

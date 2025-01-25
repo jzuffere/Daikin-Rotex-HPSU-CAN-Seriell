@@ -2,16 +2,17 @@
 [![de](https://img.shields.io/badge/lang-de-blue.svg)](README.md)
 [![en](https://img.shields.io/badge/lang-en-red.svg)](README.en.md) 
 
-# Rotex / Daikin HPSU CAN
-**Daikin-Rotex-HPSU-CAN** ist eine flexible Standalone-Lösung zum Auslesen und Steuern von Rotex/Daikin Luftwärmepumpen über den CAN-Bus und/oder die Serielle Schnittselle.
+# Rotex / Daikin - HPSU CAN/Serial
+**Daikin-Rotex-HPSU-CAN-Serial** ist eine flexible Standalone-Lösung zum Auslesen und Steuern von Rotex/Daikin Luftwärmepumpen über den CAN-Bus und/oder die [serielle Schnittselle](https://github.com/wrfz/esphome-components).
 Die Steuerung und der Datenzugriff erfolgen wahlweise über den integrierten Webserver oder bequem über Home Assistant bzw. ioBroker.
 
 ## Benötigte Hardware
 Als Hardware wird ein **ESP32** benötigt, der eine Baudrate von **20 kbit/s** unterstützt.  
-- Erfolgreich getestet wurden das **ESP32-S3-WROOM-Board** und ein **WaveShare ESP32-S3 Mini** in Kombination mit dem kompatiblen **Waveshare SN65HVD230** (3,3V) CAN-Transceiver.
 - Eine elegante Lösung, ideal für alle ohne viel Erfahrung mit ESP oder Bastelprojekten, ist das Klick-/Steck-System [ATOM S3 Lite](https://docs.m5stack.com/en/core/AtomS3%20Lite) mit einem [ATOM CAN Modul](https://docs.m5stack.com/en/atom/atom_can).
+- Ahnlich unkomplitziert lässt sich ein [AtomS3U](https://docs.m5stack.com/en/core/AtomS3U) mit einem [Unit Mini CAN](https://docs.m5stack.com/en/unit/Unit-Mini%20CAN) einrichten.
+- Erfolgreich getestet wurden auch das **ESP32-S3-WROOM-Board** und ein **WaveShare ESP32-S3 Mini** in Kombination mit dem kompatiblen **Waveshare SN65HVD230** (3,3V) CAN-Transceiver.
 
-Eine Übersicht unterstützter ESP32-Varianten und deren unterstützte Bitrate findest du in der folgenden [Tabelle](https://esphome.io/components/canbus/esp32_can).  
+Eine Übersicht unterstützter ESP32-Varianten und deren unterstützte Bitrate findest du in der folgenden [Tabelle](https://esphome.io/components/canbus/esp32_can).
 
 
 ## Homeassistant - Dashboard
@@ -130,8 +131,8 @@ Die Installation ist nun abgeschlossen, und du kannst den ESP32 gemäß den Scha
 - Heizkurven Verstellung in 0.01 Schritten (Standard in 0.1 Schritten)
 - Zwei neue Schalter angelegt um auch die Thermostat Eingänge von der Rotex / Daikin direkt zwischen Heizen / Kühlen umzuschalten.
 - Neues Feature Fehlercode Anzeige mit Beschreibung des Fehlers mit Handbuch Seitenangabe!!
-  
-<br>  
+
+<br>
 
 
 Wer Abtauprobleme hat, kann das neue Feature "Defrost" direkt über den ESP nutzen. So wird max 0.7 Grad Warmwasser aus dem Speicher verbraucht.
@@ -167,7 +168,3 @@ https://t.me/+C1iVhAjaENw0ODY0
 <br><br>
 "Ein Kaffee für nächste lange Nacht vor dem Rechner wäre toll" ist aber natürlich kein muss.
 <br>[![Paypal](https://user-images.githubusercontent.com/41958506/212499642-b2fd097a-0938-4bfc-b37b-74df64592c58.png)](https://www.paypal.com/donate/?hosted_button_id=H94LZRQW9PFQ4)
-
-
-
-

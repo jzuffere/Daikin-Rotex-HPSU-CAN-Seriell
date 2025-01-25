@@ -2,107 +2,173 @@
 [![en](https://img.shields.io/badge/lang-en-red.svg)](README.en.md) 
 [![de](https://img.shields.io/badge/lang-de-blue.svg)](README.md)
 
+# Rotex / Daikin - HPSU CAN/Serial
+**Daikin-Rotex-HPSU-CAN-Serial** is a flexible standalone solution for reading and controlling Rotex/Daikin air-to-water heat pumps via the CAN bus and/or the [serial interface](https://github.com/wrfz/esphome-components).
+Control and data access can be achieved either through the built-in web server or conveniently via Home Assistant or ioBroker.
+
+## Required Hardware
+An **ESP32** is required as the hardware, which supports a baud rate of **20 kbit/s**.
+- A sleek solution, ideal for those with little experience in ESP or DIY projects, is the click/plug system [ATOM S3 Lite](https://docs.m5stack.com/en/core/AtomS3%20Lite) combined with an [ATOM CAN Module](https://docs.m5stack.com/en/atom/atom_can).
+- Similarly, an [AtomS3U](https://docs.m5stack.com/en/core/AtomS3U) with a [Unit Mini CAN](https://docs.m5stack.com/en/unit/Unit-Mini%20CAN) can be set up easily.
+- Successfully tested options also include the **ESP32-S3-WROOM** board and a **WaveShare ESP32-S3 Mini** in combination with a compatible **Waveshare SN65HVD230** (3.3V) CAN transceiver.
+
+An overview of supported ESP32 variants and their compatible bitrates can be found in this [table](https://esphome.io/components/canbus/esp32_can).
+
+
+## Home Assistant - Dashboard
+[![Bild 1](images/ha-dashboard-thumb.png)](images/ha-dashboard.png)
+
+The [HPSU Dashboard for Home Assistant](https://github.com/wrfz/daikin-rotex-hpsu-dashboard) is an add-on that helps to easily understand the heat pump's operation in real time.
+
+## Home Assistant - Sensors
+[![Bild 1](images/ha-can-sensors-small.png)](images/ha-can-sensors.png)
+[![Bild 1](images/ha-uart-sensors-small.png)](images/ha-uart-sensors.png)
+
+The CAN and serial data from the refrigeration circuit enhance understanding of the pump's operation and make it easier to quickly diagnose issues in case of malfunctions.
+
+## Home Assistant - Settings
+[![Bild 1](images/ha-settings-small.png)](images/ha-settings.png)
+[![Bild 1](images/ha-settings-small-2.png)](images/ha-settings-2.png)
+
+Both standard settings, such as target temperatures for domestic hot water or space heating, and advanced configurations affecting the pump's core behavior can be conveniently adjusted remotely.
+
+## Integrated ESP Web Server (Usable without Home Assistant)
+
+[![Bild 1](images/esp-webserver-thumb.png)](images/esp-webserver.png)
+[![Bild 1](images/esp-webserver-settings-thumb.png)](images/esp-webserver-settings.png)
+
+The integrated ESP web server is ideal for less tech-savvy users seeking a straightforward solution to remotely control the heat pump and quickly access all relevant data without relying on Home Assistant.
+<br>
+
+# Warning!!
+
+Using Daikin-Rotex-HPSU-CAN can potentially damage your heating system. Use it at your own risk. I accept no liability for any resulting damage.
+
+Please note that using Daikin-Rotex-HPSU-CAN may void your warranty and manufacturer support!
+
+# Installation Guide (Standalone):
+
+### Step 1: Preparation
+
+1. **Browser:** Use Google Chrome (Safari and Firefox are not supported).
+2. **Firmware:** Download the file [rotex.factory-tx05-rx06.bin](bin/rotex.factory-tx05-rx06.bin) from the bin folder.
+
+### Step 2: Flashing the ESP32
+
+1. Open the website https://web.esphome.io.
+2. Connect the ESP32 to your PC using a USB-C cable.
+3. Click "**Connect**" on the website and select the USB serial interface in the popup window.
+4. Then, click "**Install**".
+5. Select the downloaded file `rotex.factory-tx05-rx06.bin` and click "Install" again. The process will take about 2 minutes.
+
+### Step 3: Configuring the ESP32 Wi-Fi Connection
+
+1. Restart the ESP32 and wait about 1–2 minutes until the "Rotex Fallback Hotspot" is created by the ESP32.
+2. Connect to the hotspot (password: `H3jGqANSa7aL`).
+3. Open the website http://192.168.4.1 or http://rotex.local in your browser.
+4. Enter your Wi-Fi SSID and Wi-Fi password to connect the ESP32 to your network.
+
+### Step 4: Verifying the Network Connection
+
+- The ESP32 should now be accessible via http://rotex.local.
+- If this doesn't work, check the ESP32's IP address in your router.
+
+## Conclusion
+
+The installation is now complete, and the system can be connected to the Rotex/Daikin unit following the **GPIO 5 and 6 pinout diagram (bin file)**.
+
+
+# Rotex/Daikin HPSU CAN Integration with ESPHome and Home Assistant
+
+This guide describes how to integrate your Rotex HPSU Compact via CAN bus using an ESP32 and ESPHome into Home Assistant without multiple flashing steps.
+
+### Requirements
+
+- Home Assistant with the ESPHome Add-on
+- ESP32-S3 microcontroller
+- USB-C cable for the initial connection
+
+## Step 1: Install the ESPHome Add-on in Home Assistant
+1. Open Home Assistant and navigate to **Settings > Add-ons > ESPHome**.
+2. Install the ESPHome Add-on and start it afterward.
+3. Open the ESPHome Add-on user interface.
+
+## Step 2: Configure the ESP32 in ESPHome and Initial Flashing
+
+1. In the ESPHome interface, click on **“New Device”**.
+2. Enter a name for the device (e.g., `Rotex_HPSU`) and select the **ESP32-S3** platform.
+3. Enter your Wi-Fi SSID and password so the ESP32 can connect to your home network later.
+4. Download the configuration file required for the initial flashing.
+5. **Connect the ESP32 to the computer running Home Assistant using a USB-C cable** (or any other computer on the network with ESPHome).
+6. If Home Assistant is installed in a virtual machine, ensure the USB ports are properly passed through.
+7. Select **“Plug into this computer”** and follow the instructions to flash the ESP32 directly from ESPHome.
+8. After successful flashing, the ESP32 will automatically connect to your Wi-Fi and appear in the ESPHome device list in Home Assistant.
+
+## Step 3: Update the Configuration in ESPHome and Flash Wirelessly
+
+1. In ESPHome, select the added device (e.g., `Rotex_HPSU`) and click **“Edit”** to open the configuration file.
+2. Replace the file’s content with the configuration from [examples/full.yaml](https://github.com/Columbo/Daikin-Rotex-HPSU-CAN/blob/main/examples/full.yaml), optimized for your Rotex HPSU Compact.
+3. Save the changes and click **“Install”**. The configuration will be sent wirelessly to the ESP32, eliminating the need for another USB flash.
+
+## Step 4: Integrate the ESP32 into Home Assistant
+
+1. The ESP32 should automatically be detected as a new device in Home Assistant.
+2. Navigate to **Settings > Devices & Services** and verify if the device (e.g., `Rotex_HPSU`) has been added.
+3. The configured sensors and controls should now be available in Home Assistant and ready to use.
+
+
+
+## Conclusion
+
+The installation is now complete, and you can connect the ESP32 to the Rotex/Daikin system as shown in the wiring diagrams.
+
+
+**Note**: Additional sensors or controls can easily be added by including new entries in the ESPHome YAML configuration.
+
+
 <br><br>
-"A coffee for the next long night in front of the computer would be great" is of course not a must.
-<br>[![Paypal](https://user-images.githubusercontent.com/41958506/212499642-b2fd097a-0938-4bfc-b37b-74df64592c58.png)](https://www.paypal.com/donate/?hosted_button_id=H94LZRQW9PFQ4)
-
-# Warning
-The use of Daikin-Rotex-HPSU-Can can damage the heating system. The use of Daikin-Rotex-HPSU-Can is at your own risk. The creator cannot be held responsible for damage.
-
-You can risk a loss of warranty and support from the manufacturer!!!!
-
-This software is not supported by the manufacturer!!!!
-
-# Rotex /Daikin HPSU CAN
-
-
-
-Hi, I would like to present my first small project, I wanted a flexible solution that runs standalone, with Homeassistant and Iobroker, to read and control my Rotex HPSU Compact using CAN BUS.
-I used an ESP32-S3-WROOM board (it should work for everyone from S1, because they support the 20kbits baudrate,
-The normal ESP32 Wroom do not work because they only work from 50kbit) and a Waveshare SN65HVD230 CAN board with 3.3V.
-An ESP32 S3 mini (Zero) also works.
-
-## Installation instructions:
-
-1. To flash the ESP32, you need the browser Google Chrome once (Safari and Firefox are not supported). Then you need the file rotex-factory.bin.
-
-2. You then open the website https://web.esphome.io and connect the ESP32 to the PC using USB-C. After connecting, click on "Connect" on the website. After that, a window will open where you select the USB serial interface.
-
-3. After that, a new window will open on the website where you click on "Install".
-
-4. Now click on "Select file" and select the previously downloaded rotex-factory.bin and click on "Install". This process takes about 2 minutes.
-
-5. After successful installation, you wait about 1-2 minutes, after which a "Rotex Fallback Hotspot" from the ESP32 should build up.
-
-6. Now you connect to the ESP32 via WLAN and enter the "Password H3jGqANSa7aL".
-
-7. Now a browser window should automatically open where you will be asked for your WLAN SSID and the password for your WLAN. Here you now enter your access data for your WLAN.
-
-8. After successfully connecting your ESP32 to the WLAN, it should be accessible via http://rotex.local. If not, please check your router for the correct IP address.
-
-9. If you do not use any other home automation software now, you are now finished with the installation and can connect the ESP32 to the Rotex / Daikin according to the diagrams.
-
-10. If you use a home automation software e.g. Home Assistant, you can now connect the ESP32. This should be found automatically by Home Assistant.
-<br><br>
-# :sparkles: Congratulation! :sparkles:
-
-
-<br><br>
-## Updating the ESP32:
-
-The Rotex.bin file is used for simplified updating via the WEB-UI interface of the ESP32. Simply select OTA Update new file and update click done!!!
 
 ## Features:
 
-- Adjustment of room soll
+- Single Hot Water Button without Heating Element (sets to 70°C for 10 seconds and then reverts to the previously set temperature).
+- Thermal performance calculation.
+- Adjustment of heating curves in 0.01 increments (standard is 0.1 increments).
+- Two new switches to toggle heating/cooling mode via the thermostat inputs on the Rotex/Daikin.
+- Error Code Display with error descriptions and manual page references.
 
-- Adjustment WW Should
-
-- 1x hot water button without heating rod (it is set to 70 degrees for 10s and then back to 45 degrees)
-
-- Thermal performance calculation
-
-- Operating mode can be adjusted
-
-- Heating curves adjustment in 0.01 steps (default in 0.1 steps)
-
-- New feature: Two new switches created to also switch the thermostat inputs from the Rotex / Daikin directly between heating / cooling.
-
-- ### New feature error code display with description of the error with Hanbuch page information!!
-
-All relevant data that you actually need is queried.
-<br>  
-## more . YAML files:
-
-If you have thawing problems, you can easily build a small script in Iobroker or Homeassitant, if defrosting is detected should be switched to summer,
-
-When heating is detected again, switches back to operating mode heating. Thus, a maximum of 0.7 degrees of hot water from the Sepicher is consumed.
-
-For Iobroker I have uploaded a Blockly Script which I use myself and works great.<br>
-
-The Defrost.yaml is intended for Home Assistant automation. This is the same automation as for IoBroker.
-
-Tested with: - Rotex HSPU Compact 508 8kw
-## WEBUI from ESP:
-![Bildschirmfoto 2023-12-17 um 11 33 51](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/assets/62701386/524a204e-801a-4fe7-aacb-ac2e731a99b7)
+<br>
 
 
-## View Homeassistant:
-![Bildschirmfoto 2024-04-01 um 01 37 19](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/assets/62701386/d9c1d703-ac4a-4466-97e3-dbd6478cbed1)
+For defrosting issues, you can use the new Defrost feature directly via the ESP. This uses a maximum of 0.7°C of hot water from the storage tank.
 
 
-## Pin assignment GPIO 47 and 48 (Beispiel)
+Tested With:
+- Rotex HPSU Compact 508 8kW with Rocon BM1
+- Rotex HPSU Compact Ultra
+- Daikin ECH2O (up to 01/2022)
 
-![ESP32-S3toCAN](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/assets/62701386/40b1881a-b7f5-40b5-a2d7-678ee19299d2)
+## GPIO 5 and 6 Pin Mapping (Binary File)
 
-## Pin assignment at the Rotex HPSU
+![TxPin5_RxPin6](https://github.com/user-attachments/assets/b0e3ae0d-2354-4871-b295-c156836afddf)
+
+## Pin Layout for the Rotex HPSU
 
 ![Rotex CAN Anschluss](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/assets/62701386/05c36ae7-ddc9-4a1e-8a73-4559c765f132)
 
 
 
+## DIY Circuit Board by (Dornieden)
+
+For more details, visit the discussion forum: https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/discussions/35:<br> 
+https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/blob/main/DIY-Platine/README
+
+<img width="554" alt="357024972-fda9cc55-63de-4862-963a-ea39f58e5028" src="https://github.com/user-attachments/assets/1640db7a-693b-45a5-8315-dcbc2e84892c">
 
 
 
+# Telegram Group Chat
+https://t.me/+C1iVhAjaENw0ODY0
 
-
+<br><br>
+A coffee for the next late night in front of the computer would be appreciated but is, of course, not mandatory.
+<br>[![Paypal](https://user-images.githubusercontent.com/41958506/212499642-b2fd097a-0938-4bfc-b37b-74df64592c58.png)](https://www.paypal.com/donate/?hosted_button_id=H94LZRQW9PFQ4)

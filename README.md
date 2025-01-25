@@ -5,6 +5,7 @@
 # Rotex / Daikin - HPSU CAN/Serial
 **Daikin-Rotex-HPSU-CAN-Serial** ist eine flexible Standalone-Lösung zum Auslesen und Steuern von Rotex/Daikin Luftwärmepumpen über den CAN-Bus und/oder die [serielle Schnittselle](https://github.com/wrfz/esphome-components).
 Die Steuerung und der Datenzugriff erfolgen wahlweise über den integrierten Webserver oder bequem über Home Assistant bzw. ioBroker.
+Mehrsprachensupport ermöglicht es, alle Sensoren flexibel in der gewünschten Sprache zu definieren.
 
 ## Benötigte Hardware
 Als Hardware wird ein **ESP32** benötigt, der eine Baudrate von **20 kbit/s** unterstützt.  

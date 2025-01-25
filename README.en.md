@@ -5,6 +5,7 @@
 # Rotex / Daikin - HPSU CAN/Serial
 **Daikin-Rotex-HPSU-CAN-Serial** is a flexible standalone solution for reading and controlling Rotex/Daikin air-to-water heat pumps via the CAN bus and/or the [serial interface](https://github.com/wrfz/esphome-components).
 Control and data access can be achieved either through the built-in web server or conveniently via Home Assistant or ioBroker.
+Multilingual support makes it possible to flexibly define all sensors in the desired language.
 
 ## Required Hardware
 An **ESP32** is required as the hardware, which supports a baud rate of **20 kbit/s**.

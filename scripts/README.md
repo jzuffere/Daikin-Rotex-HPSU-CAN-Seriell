@@ -9,8 +9,8 @@ Diese Anleitung hilft dir, ESPHome auf Linux/MacOS oder Windows zu installieren,
 ### 1. Verwendung ESPHome Manager
 
 1. Du lädst dir je nach Betriebssystem diese Datei auf deinen Computer herunter.
-   - Windows: https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/tree/dev/scripts/manage_esphome_win.ps1
-   - Linux/MAC: https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/tree/dev/scripts/manage_esphome_linux_mac.sh
+   - Windows: https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/blob/main/scripts/manage_esphome_win.ps1
+   - Linux/MAC: https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/blob/main/scripts/manage_esphome_linux_mac.sh
 
 | **Windows**                                           | **Linux/MacOS**                                   |
 |------------------------------------------------------|--------------------------------------------------|
@@ -40,7 +40,7 @@ http://localhost:6052
 
 2. **Konfigurationsdatei für den ESP32 erstellen:**
    - Im Dashboard wurde dein neues Gerät angelegt und man kommt durch klicken auf "EDIT" in den YAML-Editor.
-   - Füge den folgenden https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/blob/main/examples/full.yaml YAML-Inhalt ein.
+   - Füge den folgenden https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/blob/main/examples/full_de.yaml YAML-Inhalt ein.
 
 3. **secrets.yaml erstellen:**
    - Klicke im Dashboard oben rechts auf "SECRETS", dies erstellt eine Datei namens `secrets.yaml`.

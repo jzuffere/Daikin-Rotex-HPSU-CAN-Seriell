@@ -14,6 +14,8 @@ static const std::string BETRIEBS_ART = "mode_of_operating";
 static const std::string BETRIEBS_MODUS = "operating_mode";
 static const std::string OPTIMIZED_DEFROSTING = "optimized_defrosting";
 static const std::string TEMPERATURE_ANTIFREEZE = "temperature_antifreeze";   // T-Frostschutz
+static const std::string FLOW_RATE = "flow_rate";
+static const std::string STATE_COMPRESSOR = "status_kompressor";
 static const std::string TEMPERATURE_ANTIFREEZE_OFF = translate("off");
 static const std::string STATE_DHW_PRODUCTION = translate("hot_water_production");
 static const std::string STATE_HEATING = translate("heating");
@@ -111,6 +113,9 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
                 Utils::log(TAG, "set %s: %d", OPTIMIZED_DEFROSTING.c_str(), m_optimized_defrosting.value());
             }
         }
+    } else if (id == STATE_COMPRESSOR && current != previous) {
+        m_low_temperature_spread_timestamp = 0;
+        m_sufficient_temperature_spread_detected = false;
     }
 }
 
@@ -123,7 +128,7 @@ void DaikinRotexCanComponent::updateState(std::string const& id) {
 }
 
 void DaikinRotexCanComponent::update_thermal_power() {
-    CanSensor const* flow_rate = m_entity_manager.get_sensor("flow_rate");
+    CanSensor const* flow_rate = m_entity_manager.get_sensor(FLOW_RATE);
     CanSensor const* tv = m_entity_manager.get_sensor("tv");
     CanSensor const* tr = m_entity_manager.get_sensor("tr");
 
@@ -355,11 +360,11 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
     CanSensor const* tr = m_entity_manager.get_sensor("tr");
     CanSensor const* dhw_mixer_position = m_entity_manager.get_sensor("dhw_mixer_position");
     CanSensor const* bpv = m_entity_manager.get_sensor("bypass_valve");
-    CanSensor const* flow_rate = m_entity_manager.get_sensor("flow_rate");
+    CanSensor const* flow_rate = m_entity_manager.get_sensor(FLOW_RATE);
     CanSensor const* ta = m_entity_manager.get_sensor("temperature_outside");
     CanTextSensor const* error_code = m_entity_manager.get_text_sensor("error_code");
     CanTextSensor const* p_betriebs_art = m_entity_manager.get_text_sensor(BETRIEBS_ART);
-    CanBinarySensor const* state_compressor = m_entity_manager.get_binary_sensor("status_kompressor");
+    CanBinarySensor const* state_compressor = m_entity_manager.get_binary_sensor(STATE_COMPRESSOR);
 
     if (error_code != nullptr && pEntity == error_code) {
         if (tvbh != nullptr && flow_rate != nullptr && flow_rate->state > 600.0f) {
@@ -378,8 +383,8 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
                 }
             }
         }
-        if (p_betriebs_art != nullptr) {
-            if (Utils::is_in(p_betriebs_art->state, STATE_DHW_PRODUCTION, STATE_HEATING)) {
+        if (p_betriebs_art != nullptr && state_compressor != nullptr) {
+            if (Utils::is_in(p_betriebs_art->state, STATE_DHW_PRODUCTION, STATE_HEATING) && state_compressor->state) {
                 /*
                     Coefficients calculated using the table:
                     Tv  | minimal temperature spread
@@ -389,17 +394,17 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
                     29° | 1.2
                     27° | 0.3
                  */
-                const float minValue =
+                const float min_spread =
                     -0.00004012 * std::pow(tv->state, 4)
                     + 0.006683 * std::pow(tv->state, 3)
                     - 0.4152 * std::pow(tv->state, 2)
                     + 11.5006 * tv->state
                     - 117.7908;
 
-                ESP_LOGI(TAG, "recalculate_state() temperature_spread: %f, minValue: %f, tv: %f, millis: %d, ts: %d",
-                    m_temperature_spread_sensor->state, minValue, tv->state, millis(), m_low_temperature_spread_timestamp);
+                ESP_LOGI(TAG, "recalculate_state() temperature_spread: %f, min_spread: %f, tv: %f, millis: %d, ts: %d",
+                    m_temperature_spread_sensor->state, min_spread, tv->state, millis(), m_low_temperature_spread_timestamp);
 
-                if (m_temperature_spread_sensor->state < minValue) {
+                if (m_temperature_spread_sensor->state < min_spread) {
                     if (m_low_temperature_spread_timestamp > 0) {
                         if (millis() > (m_low_temperature_spread_timestamp + 20*60*1000)) { // The flow temperature (Vorlauf) may sometimes drop suddenly, even before the mode_of_operating is reported.
                             return new_state + "|" + LOW_TEMPERATURE_SPREAD;

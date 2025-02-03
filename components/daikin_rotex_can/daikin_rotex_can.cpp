@@ -367,16 +367,22 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
     CanBinarySensor const* state_compressor = m_entity_manager.get_binary_sensor(STATE_COMPRESSOR);
 
     if (error_code != nullptr && pEntity == error_code) {
+        if (tv != nullptr && tvbh != nullptr && tr != nullptr && dhw_mixer_position != nullptr && bpv != nullptr && flow_rate != nullptr) {
+            ESP_LOGI(TAG, "tv: %f, tvbh: %f, tr: %f, TvBH-Tv: %f, Tr-TvBH: %f, dhw: %f, bpv: %f, flow: %f, delay: %d, millis: %d, bpv_change: %d",
+                tv->state, tvbh->state, tr->state, m_max_spread.tvbh_tv, m_max_spread.tvbh_tr, dhw_mixer_position->state, bpv->state, flow_rate->state,
+                    delay, millis(), (bpv->getLastValueChange()));
+        }
+
         if (tvbh != nullptr && flow_rate != nullptr && flow_rate->state > 600.0f) {
             if (tv != nullptr && dhw_mixer_position != nullptr) {
-                if (dhw_mixer_position->state == 0.0f && tvbh->state < (tv->state - m_max_spread.tvbh_tv)) {
+                if (dhw_mixer_position->state == 0.0f && tvbh->state > (tv->state + m_max_spread.tvbh_tv)) {
                     ESP_LOGE(TAG, "3UV DHW defekt (1) => tvbh: %f, tv: %f, max_spread: %f, bpv: %f, flow_rate: %f",
                         tvbh->state, tv->state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state);
                     return new_state + "|3UV DHW " + DEFECT;
                 }
             }
             if (tr != nullptr && bpv != nullptr) {
-                if (bpv->state == 100.0f && tr->state < (tvbh->state - m_max_spread.tvbh_tr) && bpv->isChangedInLastMilliseconds(delay)) {
+                if (bpv->state == 100.0f && tvbh->state > (tr->state + m_max_spread.tvbh_tr) && bpv->isChangedInLastMilliseconds(delay)) {
                     ESP_LOGE(TAG, "3UV BPV defekt (1) => tvbh: %f, tr: %f, max_spread: %f, dhw_mixer_pos: %f, flow_rate: %f",
                         tvbh->state, tr->state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state);
                     return new_state + "|3UV BPV " + DEFECT;

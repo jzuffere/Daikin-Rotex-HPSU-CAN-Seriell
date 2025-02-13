@@ -161,7 +161,8 @@ https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN/blob/main/DIY-Platine/README
 
 <img width="554" alt="357024972-fda9cc55-63de-4862-963a-ea39f58e5028" src="https://github.com/user-attachments/assets/1640db7a-693b-45a5-8315-dcbc2e84892c">
 
-
+# FAQ
+Antworten auf einige Fragen findest du unter den [FAQs](faq/README.md)
 
 # Telegram Gruppenchat
 https://t.me/+C1iVhAjaENw0ODY0

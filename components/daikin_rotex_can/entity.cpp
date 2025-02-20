@@ -10,6 +10,7 @@ static const char* TAG = "daikin_rotex_can";
 TEntity::TEntity()
 : m_config()
 , m_pCanbus(nullptr)
+, m_pAccessor(nullptr)
 , m_expected_reponse()
 , m_last_handle_timestamp(0u)
 , m_last_get_timestamp(0u)

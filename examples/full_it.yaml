@@ -216,6 +216,35 @@ daikin_rotex_can:
       name: Tempo di Attesa per Riscaldamento di Backup
 
   # Konfiguration
+#Konfiguration -> Installation
+# Sprache
+# Datum
+    system_date_day:
+      name: Data di sistema Giorno
+      internal: true
+    system_date_month:
+      name: Data di sistema Mese
+      internal: true
+    system_date_year:
+      name: Data di sistema Anno
+      internal: true
+    system_date:
+      name: Data di sistema
+# Ora
+    system_time_hour:
+      name: Ora di sistema Ora
+      internal: true
+    system_time_minute:
+      name: Ora di sistema Minuto
+      internal: true
+    system_time_second:
+      name: Ora di sistema Secondo
+      internal: true
+      update_interval: 1
+    system_time:
+      name: Ora di sistema
+
+#...
     outdoor_unit:
       name: Unità Esterna
     indoor_unit:
@@ -224,6 +253,7 @@ daikin_rotex_can:
       name: Funzione EHS
     ch_support:
       name: Supporto CH
+#Bivalenzfunktion
     smart_grid:
       name: Smart Grid
     sg_mode:

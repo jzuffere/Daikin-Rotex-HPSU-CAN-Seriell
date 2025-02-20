@@ -1347,6 +1347,76 @@ sensor_configuration = [
             0x00: delayed_translate("off"),
             0x01: delayed_translate("on")
         }
+    },
+    {
+        "type": "sensor",
+        "name": "system_date_day",
+        "command": "31 00 FA 01 22 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "update_entities": ["system_date"]
+    },
+    {
+        "type": "sensor",
+        "name": "system_date_month",
+        "command": "31 00 FA 01 23 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "update_entities": ["system_date"]
+    },
+    {
+        "type": "sensor",
+        "name": "system_date_year",
+        "command": "31 00 FA 01 24 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "update_entities": ["system_date"]
+    },
+    {
+        "type": "sensor",
+        "name": "system_time_hour",
+        "command": "31 00 FA 01 25 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "update_entities": ["system_time"]
+    },
+    {
+        "type": "sensor",
+        "name": "system_time_minute",
+        "command": "31 00 FA 01 26 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "update_entities": ["system_time"]
+    },
+    {
+        "type": "sensor",
+        "name": "system_time_second",
+        "command": "31 00 FA 01 27 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "update_entities": ["system_time"],
+    },
+    {
+        "type": "text_sensor",
+        "name": "system_time",
+        "update_lambda": """
+            return esphome::daikin_rotex_can::Utils::format("%02d:%02d:%02d",
+                static_cast<uint16_t>(accessor.get_sensor_value("system_time_hour")),
+                static_cast<uint16_t>(accessor.get_sensor_value("system_time_minute")),
+                static_cast<uint16_t>(accessor.get_sensor_value("system_time_second"))
+            );
+        """
+    },
+    {
+        "type": "text_sensor",
+        "name": "system_date",
+        "update_lambda": """
+            return esphome::daikin_rotex_can::Utils::format("%02d:%02d:%04d",
+                static_cast<uint16_t>(accessor.get_sensor_value("system_date_day")),
+                static_cast<uint16_t>(accessor.get_sensor_value("system_date_month")),
+                static_cast<uint16_t>(accessor.get_sensor_value("system_date_year")) + 2000
+            );
+        """
     }
 ]
 
@@ -1391,9 +1461,9 @@ for sensor_conf in sensor_configuration:
                 cv.Optional(name): sensor.sensor_schema(
                     CanSensor,
                     device_class=(sensor_conf.get("device_class") if sensor_conf.get("device_class") != None else sensor._UNDEF),
-                    unit_of_measurement=sensor_conf.get("unit_of_measurement"),
-                    accuracy_decimals=sensor_conf.get("accuracy_decimals"),
-                    state_class=sensor_conf.get("state_class"),
+                    unit_of_measurement=sensor_conf.get("unit_of_measurement", sensor._UNDEF),
+                    accuracy_decimals=sensor_conf.get("accuracy_decimals", sensor._UNDEF),
+                    state_class=sensor_conf.get("state_class", sensor._UNDEF),
                     icon=sensor_conf.get("icon", sensor._UNDEF)
                 ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
             })
@@ -1537,6 +1607,9 @@ CONFIG_SCHEMA = cv.Schema(
 
 async def to_code(config):
 
+    cg.add_global(cg.RawStatement("#include \"esphome/components/daikin_rotex_can/accessor.h\""))
+    cg.add_global(cg.RawStatement("#include \"esphome/components/daikin_rotex_can/utils.h\""))
+
     if CONF_LANGUAGE in config:
         lang = config[CONF_LANGUAGE]
         set_language(lang)
@@ -1544,6 +1617,7 @@ async def to_code(config):
     global_ns = MockObj("", "")
     std_array_u8_7_const_ref = std_ns.class_("array<uint8_t, 7> const&")
     std_array_u8_7_ref = std_ns.class_("array<uint8_t, 7>&")
+    accessor_const_ref = daikin_rotex_can_ns.class_("IAccessor const&")
 
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
@@ -1641,6 +1715,14 @@ async def to_code(config):
                         return_type=cg.uint16,
                     )
 
+                async def update_lambda():
+                    lamb = str(sens_conf.get("update_lambda")) if "update_lambda" in sens_conf else "return {};"
+                    return await cg.process_lambda(
+                        Lambda(lamb),
+                        [(accessor_const_ref, "accessor")],
+                        return_type=cg.std_string,
+                    )
+
                 async def set_lambda():
                     lamb = str(sens_conf.get("set_lambda")) if "set_lambda" in sens_conf else ""
                     return await cg.process_lambda(
@@ -1649,22 +1731,28 @@ async def to_code(config):
                         return_type=cg.void,
                     )
 
-                cg.add(entity.set_entity(sens_conf.get("name"), [
-                    entity,
-                    sens_conf.get("name"), # Entity id
-                    sens_conf.get("can_id", 0x180),
-                    sens_conf.get("command", ""),
-                    sens_conf.get("data_offset", 5),
-                    sens_conf.get("data_size", 1),
-                    divider,
-                    sens_conf.get("signed", False),
-                    sens_conf.get("update_entities", []),
-                    update_interval,
-                    await handle_lambda(),
-                    await set_lambda(),
-                    "handle_lambda" in sens_conf,
-                    "set_lambda" in sens_conf
-                ]))
+                cg.add(entity.set_entity(
+                    sens_conf.get("name"),
+                    [
+                        entity,
+                        sens_conf.get("name"), # Entity id
+                        sens_conf.get("can_id", 0x180),
+                        sens_conf.get("command", ""),
+                        sens_conf.get("data_offset", 5),
+                        sens_conf.get("data_size", 1),
+                        divider,
+                        sens_conf.get("signed", False),
+                        sens_conf.get("update_entities", []),
+                        update_interval,
+                        await handle_lambda(),
+                        await update_lambda(),
+                        await set_lambda(),
+                        "handle_lambda" in sens_conf,
+                        "update_lambda" in sens_conf,
+                        "set_lambda" in sens_conf
+                    ],
+                    var
+                ))
                 cg.add(var.add_entity(entity))
 
         ########## Sensors ##########

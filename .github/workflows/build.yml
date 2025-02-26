@@ -6,7 +6,7 @@ on:
       - main
       - dev
     paths:
-      - 'examples/full.yaml'
+      - 'examples/full_de.yaml'
       - 'components/**'
   workflow_dispatch:
 
@@ -56,9 +56,9 @@ jobs:
           wget https://files.pythonhosted.org/packages/18/82/14819c1cc67c67e909abdbd9824eb756adccd47a1dee1c846f7300716646/cels-0.3.1.tar.gz
           python3 -m pip install cels-0.3.1.tar.gz
 
-      - name: Prepare full.yaml
+      - name: Prepare full_de.yaml
         run: |
-          cp examples/full.yaml .
+          cp examples/full_de.yaml .
           cp .github/workflows/resources/secrets.yaml .
 
           cp .github/workflows/src/extract_external_components_block.py .
@@ -78,7 +78,7 @@ jobs:
       - name: Compile ESPHome binary
         run: |
           # compile eshphome
-          esphome compile full.yaml
+          esphome compile full_de.yaml
 
           # rename file
           mv .esphome/build/rotex/.pioenvs/rotex/firmware.factory.bin .esphome/build/rotex/.pioenvs/rotex/rotex.factory-gpios-tx05-rx06.bin  

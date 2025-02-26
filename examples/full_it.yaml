@@ -124,15 +124,15 @@ daikin_rotex_can:
     name: Project Git Hash
   entities:
 
-    # Info
+# Info
 
-    # mode
+# mode
     ext:
       name: Esterno
-    # RT
-    # Pump
-    # EHS
-    # BPV
+# RT
+# Pump
+# EHS
+# BPV
     tv:
       name: Temperatura di mandata (TV)
       update_interval: 5
@@ -142,29 +142,35 @@ daikin_rotex_can:
     tr:
       name: Temperatura Ritorno Riscaldamento
       update_interval: 5
-    # Tdhw
+# Tdhw
     temperature_outside:
       name: Temperatura Esterna
-    # V
-    # TVBH2
-    # TR2
-    # Tdhw2
+# V
+# TVBH2
+# TR2
+# Tdhw2
     tliq:
       name: Temperatura linea liquido
     ta2:
       name: TA2
-    # quiet
+# quiet
 
-  # Übersicht
+# Übersicht
     water_pressure:
       name: Pressione dell'Acqua
     t_hs:
       name: T-WE
+# T-WE Soll
     t_ext:
       name: T-Esterno
+# T-WW
+# T-WW Soll
+# T-Rücklauf
     flow_rate:
       name: Portata
       update_interval: 10
+# T-HK
+# T-HK Soll
     status_kesselpumpe:
       name: Stato Pompa Circolazione
     runtime_compressor:
@@ -187,27 +193,40 @@ daikin_rotex_can:
       name: Energia per ACS
     total_electrical_energy:
       name: Energia Elettrica Totale
+#WE Typ
+#SwNr B1/U1
+#SwNr Regler
+#SwNr RTXRT
 
-  # ESP custom sensors
+# ESP custom sensors
     energy_saving_mode:
       name: Modalità Risparmio Energetico
 
-  # Betriebsart
+# Betriebsart
     operating_mode:
       name: Modalità di Funzionamento
       update_interval: 5
 
-  # Raum Soll Tag
+# Raum Soll Tag
     target_room1_temperature:
       name: Temperatura Obiettivo Stanza 1
       type: select
+# T-RaumSoll 2
+# T-RaumSoll 3
 
-  # Raum Soll Nacht
+# Raum Soll Nacht
+  # T-Absenkung
+  # T-Abwesend
+
+# WW Solltemp
     target_hot_water_temperature:
       name: Temperatura Obiettivo ACS
       type: select
 
-  # WW Install
+# T-WWSoll 2
+# T-WWSoll 3
+
+# WW Install
     1_dhw:
       name: 1 x Acqua Calda
     hp_hyst_tdhw:
@@ -215,35 +234,9 @@ daikin_rotex_can:
     delay_time_for_backup_heating:
       name: Tempo di Attesa per Riscaldamento di Backup
 
-  # Konfiguration
-#Konfiguration -> Installation
-# Sprache
-# Datum
-    system_date_day:
-      name: Data di sistema Giorno
-      internal: true
-    system_date_month:
-      name: Data di sistema Mese
-      internal: true
-    system_date_year:
-      name: Data di sistema Anno
-      internal: true
-    system_date:
-      name: Data di sistema
-# Ora
-    system_time_hour:
-      name: Ora di sistema Ora
-      internal: true
-    system_time_minute:
-      name: Ora di sistema Minuto
-      internal: true
-    system_time_second:
-      name: Ora di sistema Secondo
-      internal: true
-      update_interval: 1
-    system_time:
-      name: Ora di sistema
+# Konfiguration
 
+# Konfiguration -> Installation
 #...
     outdoor_unit:
       name: Unità Esterna
@@ -253,17 +246,34 @@ daikin_rotex_can:
       name: Funzione EHS
     ch_support:
       name: Supporto CH
-#Bivalenzfunktion
+    bivalence_function:
+      name: Funzione di Bivalenza
     smart_grid:
       name: Smart Grid
     sg_mode:
       name: Modalità SG
+# HT/NT Funktion
+# HT/NT Anschluss
+# Raumthermostat
+# Interlinkfunktion
+# Konfig MFR 1
+# Entlüftungsfunktion
+# PWM Konfig
+# ...
+# Sensor Konfig
     external_temp_sensor:
       name: Sensore Temperatura Esterna
+    # SKonfig T-WW
+    # SKonfig Druck
+# AF Anspassung
+# Terminal Adresse
+# Konfig System
 
-  # Konfiguration -> Anlagenkonfiguration
+# Konfiguration -> Anlagenkonfiguration
+
     power_dhw:
       name: Potenza ACS
+      #type: select
     power_ehs_1:
       name: Potenza EHS Livello 1
     power_ehs_2:
@@ -274,14 +284,19 @@ daikin_rotex_can:
       name: TDiff ACS CH
     max_heating_temperature:
       name: Temperatura Massima Riscaldamento
+    bivalence_temperature:
+      name: Temperatura di Bivalenza
     quiet:
       name: Modalità Silenziosa
+#Sonderfunkt Schaltk
+#Wartezeit Sonderfunkt
     t_dhw_1_min:
       name: Soglia di Commutazione TDHW
     delta_temp_ch:
       name: Differenza Temperatura CH
     delta_temp_dhw:
       name: Differenza Temperatura ACS
+#VerzZeitPumpe                # service
     flow_rate_min:
       name: Portata Minima
     flow_rate_setpoint:
@@ -294,16 +309,31 @@ daikin_rotex_can:
       name: Regolazione Temperatura Mandata Riscaldamento
     supply_temperature_adjustment_cooling:
       name: Regolazione Temperatura Mandata Raffreddamento
+#Min Druck
+#Max Druck
+#Soll Druck
+#Max Druckverlust
+#Relaistest
+
+# Konfiguration -> HZK Konfig
     hk_function:
       name: Funzione HK
     temperature_antifreeze:
       name: Temperatura Antigelo
+#Gebäudedämumng
+#Estrich
+#Estrichprogramm
+
+# Konfiguration -> HZK Konfig -> Heizen
+
     heating_limit_day:
       name: Limite Riscaldamento Giorno
     heating_limit_night:
       name: Limite Riscaldamento Notte
     heating_curve:
       name: Curva di Riscaldamento
+#Raumeinfluss
+#RF Anpassung
     flow_temperature_day:
       name: Temperatura Mandata Giorno
     flow_temperature_night:
@@ -312,6 +342,21 @@ daikin_rotex_can:
       name: Temperatura Massima Mandata Obiettivo
     min_target_flow_temp:
       name: Temperatura Minima Mandata Obiettivo
+#Heizk Adaption
+
+# Konfiguration -> HZK Konfig -> Kühlen
+
+#StartKühlen A-Temp
+#MaxKühlen A-Temp
+#VL-SollStartKühlen
+#VL-SollMaxKühlen
+#MinVL-SollKühlen
+#T-VLKühlen
+#T_H/K Umschaltung
+#KühlsollwertKorr
+
+#Konfiguration -> WW Konfig
+
     circulation_with_dhw_program:
       name: Circolazione con Programma ACS
     circulation_interval_on:
@@ -320,6 +365,7 @@ daikin_rotex_can:
       name: Intervallo Circolazione Off
     antileg_day:
       name: Giorno Anti-Legionella
+#AntilegZeit
     antileg_temp:
       name: Temperatura Anti-Legionella
     max_dhw_loading:

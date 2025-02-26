@@ -2,9 +2,13 @@
 #include "esphome/components/daikin_rotex_can/entity.h"
 #include "esphome/components/daikin_rotex_can/sensors.h"
 #include "esphome/components/daikin_rotex_can/translations.h"
+#include <iostream>
+#include <sstream>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <limits>
+#include <regex>
 
 namespace esphome {
 namespace daikin_rotex_can {
@@ -233,25 +237,21 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
 
 ///////////////// Texts /////////////////
 void DaikinRotexCanComponent::custom_request(std::string const& value) {
-    const uint32_t can_id = 0x680;
-    const bool use_extended_id = false;
+    std::regex pattern(R"(^((?:0x[0-9A-Fa-f]{2}|[0-9A-Fa-f]{2})(?:\s(?:0x[0-9A-Fa-f]{2}|[0-9A-Fa-f]{2})){0,6})$)");
+    std::smatch match;
+    if (std::regex_match(value, match, pattern)) {
+        uint16_t can_id = 0x680;
+        const bool use_extended_id = false;
 
-    const std::size_t pipe_pos = value.find("|");
-    if (pipe_pos != std::string::npos) { // handle response
-        uint16_t can_id = Utils::hex_to_uint16(value.substr(0, pipe_pos));
-        std::string buffer = value.substr(pipe_pos + 1);
-        const TMessage message = Utils::str_to_bytes(buffer);
+        const TMessage message = Utils::str_to_bytes(match[1].str());
 
-        m_entity_manager.handle(can_id, message);
-    } else { // send custom request
-        const TMessage buffer = Utils::str_to_bytes(value);
-        if (is_command_set(buffer)) {
-            esphome::esp32_can::ESP32Can* pCanbus = m_entity_manager.getCanbus();
-            pCanbus->send_data(can_id, use_extended_id, { buffer.begin(), buffer.end() });
+        Utils::log(TAG, "custom_request() can_id<%s> data<%s> str<%s>",
+            Utils::to_hex(can_id).c_str(), Utils::to_hex(message).c_str(), match[1].str().c_str());
 
-            Utils::log("sendGet", "can_id<%s> data<%s>",
-                Utils::to_hex(can_id).c_str(), value.c_str(), Utils::to_hex(buffer).c_str());
-        }
+        esphome::esp32_can::ESP32Can* pCanbus = m_entity_manager.getCanbus();
+        pCanbus->send_data(can_id, use_extended_id, { message.begin(), message.end() });
+    } else {
+        ESP_LOGW(TAG, "custom_request() invalid message: %s", value.c_str());
     }
 }
 

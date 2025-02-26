@@ -58,7 +58,7 @@ std::string Utils::to_hex(TMessage const& data) {
 }
 
 TMessage Utils::str_to_bytes(const std::string& str) {
-    TMessage bytes;
+    TMessage bytes = {0};
     std::stringstream ss(str);
     std::string byteStr;
 

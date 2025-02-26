@@ -126,13 +126,13 @@ daikin_rotex_can:
 
 # Info
 
-#mode
+# mode
     ext:
       name: Ext
-#RT
-#Pump
-#EHS
-#BPV
+# RT
+# Pump
+# EHS
+# BPV
     tv:
       name: Heizkreis Vorlauf (TV)
       update_interval: 5
@@ -142,35 +142,35 @@ daikin_rotex_can:
     tr:
       name: Ruecklauftemperatur Heizung
       update_interval: 5
-#Tdhw
+# Tdhw
     temperature_outside:  # ta
       name: Aussentemperatur
-#V
-#TVBH2
-#TR2
-#Tdhw2
+# V
+# TVBH2
+# TR2
+# Tdhw2
     tliq:
       name: Tliq
     ta2:
       name: TA2
-#quiet
+# quiet
 
-#Übersicht
+# Übersicht
     water_pressure:
       name: Wasserdruck
     t_hs:
       name: T-WE
-#T-WE Soll
+# T-WE Soll
     t_ext:  # Oder gehört hier temperature_outside rein?
       name: T-Aussen
-#T-WW
-#T-WW Soll
-#T-Rücklauf
+# T-WW
+# T-WW Soll
+# T-Rücklauf
     flow_rate:
       name: Durchfluss
       update_interval: 10
-#T-HK
-#T-HK Soll
+# T-HK
+# T-HK Soll
     status_kesselpumpe:
       name: Status Kesselpumpe
     runtime_compressor:
@@ -211,8 +211,8 @@ daikin_rotex_can:
     target_room1_temperature:
       name: Raumsoll 1
       type: select
-  # T-RaumSoll 2
-  # T-RaumSoll 3
+# T-RaumSoll 2
+# T-RaumSoll 3
 
 # Raum Soll Nacht
   # T-Absenkung
@@ -223,8 +223,8 @@ daikin_rotex_can:
       name: T-WW-Soll1
       type: select
 
-  # T-WWSoll 2
-  # T-WWSoll 3
+# T-WWSoll 2
+# T-WWSoll 3
 
 # WW Install
     1_dhw:
@@ -234,36 +234,9 @@ daikin_rotex_can:
     delay_time_for_backup_heating:
       name: Wartezeit BOH
 
-#Konfiguration
+# Konfiguration
 
-#Konfiguration -> Installation
-# Sprache
-# Datum
-    system_date_day:
-      name: Systemdatum Tag
-      internal: true
-    system_date_month:
-      name: Systemdatum Monat
-      internal: true
-    system_date_year:
-      name: Systemdatum Jahr
-      internal: true
-    system_date:
-      name: Systemdatum
-# Uhrzeit
-    system_time_hour:
-      name: Systemzeit Stunde
-      internal: true
-    system_time_minute:
-      name: Systemzeit Minute
-      internal: true
-    system_time_second:
-      name: Systemzeit Sekunde
-      internal: true
-      update_interval: 1
-    system_time:
-      name: Systemzeit
-
+# Konfiguration -> Installation
 #...
     outdoor_unit:
       name: Aussengerät
@@ -273,29 +246,30 @@ daikin_rotex_can:
       name: Funktion EHS
     ch_support:
       name: HZ Unterstützung
-#Bivalenzfunktion
+    bivalence_function:
+      name: Bivalenzfunktion
     smart_grid:
       name: Smart Grid
     sg_mode:
       name: SG Modus
-#HT/NT Funktion
-#HT/NT Anschluss
-#Raumthermostat
-#Interlinkfunktion
-#Konfig MFR 1
-#Entlüftungsfunktion
-#PWM Konfig
-#...
-#Sensor Konfig
+# HT/NT Funktion
+# HT/NT Anschluss
+# Raumthermostat
+# Interlinkfunktion
+# Konfig MFR 1
+# Entlüftungsfunktion
+# PWM Konfig
+# ...
+# Sensor Konfig
     external_temp_sensor:
       name: SKonfig T-Außen
     # SKonfig T-WW
     # SKonfig Druck
-#AF Anspassung
-#Terminal Adresse
-#Konfig System
+# AF Anspassung
+# Terminal Adresse
+# Konfig System
 
-#Konfiguration -> Anlagenkonfiguration
+# Konfiguration -> Anlagenkonfiguration
 
     power_dhw:
       name: Leistung WW
@@ -310,6 +284,8 @@ daikin_rotex_can:
       name: TDiff-WW HZU
     max_heating_temperature:
       name: Max Temp Heizung
+    bivalence_temperature:
+      name: Bivalenztemperatur
     quiet:
       name: Flüsterbetrieb
 #Sonderfunkt Schaltk
@@ -384,14 +360,14 @@ daikin_rotex_can:
     circulation_with_dhw_program:
       name: Zirk mit WW-Prog
     circulation_interval_on:
-        name: ZirkInterval An
+      name: ZirkInterval An
     circulation_interval_off:
-        name: ZirkInterval Aus
+      name: ZirkInterval Aus
     antileg_day:
-        name: AntilegTag
+      name: AntilegTag
 #AntilegZeit
     antileg_temp:
-        name: AntilegTemp
+      name: AntilegTemp
     max_dhw_loading:
       name: Max WW Ladezeit
     dhw_off_time:

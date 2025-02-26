@@ -124,15 +124,15 @@ daikin_rotex_can:
     name: Project Git Hash
   entities:
 
-    # Info
+# Info
 
-    # mode
+# mode
     ext:
       name: Ext
-    # RT
-    # Pump
-    # EHS
-    # BPV
+# RT
+# Pump
+# EHS
+# BPV
     tv:
       name: Flow Temperature (TV)
       update_interval: 5
@@ -142,29 +142,35 @@ daikin_rotex_can:
     tr:
       name: Return Temperature Heating
       update_interval: 5
-    # Tdhw
+# Tdhw
     temperature_outside:
       name: Outside Temperature
-    # V
-    # TVBH2
-    # TR2
-    # Tdhw2
+# V
+# TVBH2
+# TR2
+# Tdhw2
     tliq:
       name: Liquid Line Temperature
     ta2:
       name: TA2
-    # quiet
+# quiet
 
-  # Overview
+# Overview
     water_pressure:
       name: Water Pressure
     t_hs:
       name: T-WE
+# T-WE Soll
     t_ext:
       name: T-Outside
+# T-WW
+# T-WW Soll
+# T-Rücklauf
     flow_rate:
       name: Flow Rate
       update_interval: 10
+# T-HK
+# T-HK Soll
     status_kesselpumpe:
       name: Boiler Pump Status
     runtime_compressor:
@@ -192,26 +198,35 @@ daikin_rotex_can:
 #SwNr Regler
 #SwNr RTXRT
 
-  # ESP custom sensors
+# ESP custom sensors
     energy_saving_mode:
       name: ES Mode
 
-  # Betriebsart
+# Betriebsart
     operating_mode:
       name: Operating Mode
       update_interval: 5
 
-  # Room Set Day
+# Room Set Day
     target_room1_temperature:
       name: Target Room 1 Temperature
       type: select
+# T-RaumSoll 2
+# T-RaumSoll 3
 
-  # Room Set Night
+# Room Set Night
+  # T-Absenkung
+  # T-Abwesend
+
+# WW Solltemp
     target_hot_water_temperature:
       name: Target Hot Water Temperature
       type: select
 
-  # WW Install
+# T-WWSoll 2
+# T-WWSoll 3
+
+# WW Install
     1_dhw:
       name: 1 x Domestic Hot Water
     hp_hyst_tdhw:
@@ -219,36 +234,9 @@ daikin_rotex_can:
     delay_time_for_backup_heating:
       name: Waiting Time for Backup Heating
 
-#Configuration
+# Configuration
 
-#Configuration -> Installation
-# Sprache
-# Date
-    system_date_day:
-      name: System Date Day
-      internal: true
-    system_date_month:
-      name: System Date Month
-      internal: true
-    system_date_year:
-      name: System Date Year
-      internal: true
-    system_date:
-      name: System Date
-# Time
-    system_time_hour:
-      name: System Time Hour
-      internal: true
-    system_time_minute:
-      name: System Time Minute
-      internal: true
-    system_time_second:
-      name: System Time Second
-      internal: true
-      update_interval: 1
-    system_time:
-      name: System Time
-
+# Configuration -> Installation
 #...
     outdoor_unit:
       name: Outdoor Unit
@@ -258,31 +246,34 @@ daikin_rotex_can:
       name: Function EHS
     ch_support:
       name: CH Support
+    bivalence_function:
+      name: Bivalence Function
     smart_grid:
       name: Smart Grid
     sg_mode:
       name: SG Mode
-#HT/NT Funktion
-#HT/NT Anschluss
-#Raumthermostat
-#Interlinkfunktion
-#Konfig MFR 1
-#Entlüftungsfunktion
-#PWM Konfig
-#...
-#Sensor Konfig
+# HT/NT Funktion
+# HT/NT Anschluss
+# Raumthermostat
+# Interlinkfunktion
+# Konfig MFR 1
+# Entlüftungsfunktion
+# PWM Konfig
+# ...
+# Sensor Konfig
     external_temp_sensor:
       name: Config External Temperature
+    # SKonfig T-WW
+    # SKonfig Druck
+# AF Anspassung
+# Terminal Adresse
+# Konfig System
 
-  # Configuration -> System Configuration
-#AF Anspassung
-#Terminal Adresse
-#Konfig System
-
-#Konfiguration -> Anlagenkonfiguration
+# Configuration -> System Configuration
 
     power_dhw:
       name: Power DHW
+      #type: select
     power_ehs_1:
       name: Power EHS Level 1
     power_ehs_2:
@@ -293,6 +284,8 @@ daikin_rotex_can:
       name: TDiff DHW CH
     max_heating_temperature:
       name: Max Heating Temperature
+    bivalence_temperature:
+      name: bivalence point
     quiet:
       name: Silent Mode
 #Sonderfunkt Schaltk
@@ -372,6 +365,7 @@ daikin_rotex_can:
       name: Circulation Interval Off
     antileg_day:
       name: Anti-Legionella Day
+#AntilegZeit
     antileg_temp:
       name: Anti-Legionella Temperature
     max_dhw_loading:

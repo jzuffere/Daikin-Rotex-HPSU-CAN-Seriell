@@ -78,10 +78,10 @@ jobs:
           esphome compile full_de.yaml
 
           # rename file
-          mv .esphome/build/rotex/.pioenvs/rotex/firmware.factory.bin .esphome/build/rotex/.pioenvs/rotex/rotex.factory-gpios-tx05-rx06.bin  
+          mv .esphome/build/hpsu-can/.pioenvs/hpsu-can/firmware.factory.bin .esphome/build/hpsu-can/.pioenvs/hpsu-can/hpsu-can.factory-gpios-tx05-rx06.bin  
 
       - name: Archive compiled binary
         uses: actions/upload-artifact@v4
         with:
           name: compiled-binary
-          path: .esphome/build/rotex/.pioenvs/rotex/rotex.factory-gpios-tx05-rx06.bin
+          path: .esphome/build/hpsu-can/.pioenvs/hpsu-can/hpsu-can.factory-gpios-tx05-rx06.bin

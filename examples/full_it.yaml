@@ -309,10 +309,14 @@ daikin_rotex_can:
       name: Regolazione Temperatura Mandata Riscaldamento
     supply_temperature_adjustment_cooling:
       name: Regolazione Temperatura Mandata Raffreddamento
-#Min Druck
-#Max Druck
-#Soll Druck
-#Max Druckverlust
+    min_pressure:
+      name: Pressione Minima
+    max_pressure:
+      name: Pressione Massima
+    set_pressure:
+      name: Pressione Desiderata
+    max_pressure_drop:
+      name: Perdita di Pressione Massima
 #Relaistest
 
 # Konfiguration -> HZK Konfig

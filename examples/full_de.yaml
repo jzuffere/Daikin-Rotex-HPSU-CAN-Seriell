@@ -309,10 +309,14 @@ daikin_rotex_can:
       name: Anpassung T-VL Heizen
     supply_temperature_adjustment_cooling:
       name: Anpassung T-VL Kühlen
-#Min Druck
-#Max Druck
-#Soll Druck
-#Max Druckverlust
+    min_pressure:
+      name: Min Druck
+    max_pressure:
+      name: Max Druck
+    set_pressure:
+      name: Soll Druck
+    max_pressure_drop:
+      name: Max Druckverlust
 #Relaistest
 
 # Konfiguration -> HZK Konfig

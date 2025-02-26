@@ -309,10 +309,14 @@ daikin_rotex_can:
       name: Supply Temperature Adjustment Heating
     supply_temperature_adjustment_cooling:
       name: Supply Temperature Adjustment Cooling
-#Min Druck
-#Max Druck
-#Soll Druck
-#Max Druckverlust
+    min_pressure:
+      name: Min Pressure
+    max_pressure:
+      name: Max Pressure
+    set_pressure:
+      name: Set Pressure
+    max_pressure_drop:
+      name: Max Pressure Drop
 #Relaistest
 
 # Konfiguration -> HZK Konfig

@@ -131,6 +131,21 @@ sensor_configuration = [
         }
     },
     {
+        "type": "select",
+        "name": "building_insulation" ,
+        "icon": ICON_SUN_SNOWFLAKE_VARIANT,
+        "command": "31 00 FA 01 OC 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "map": {
+            0x00: delayed_translate("off"),
+            0x02: delayed_translate("low"),
+            0x04: delayed_translate("normal"),
+            0x08: delayed_translate("good"),
+            0x0C: delayed_translate("very_good")
+        }
+    },
+    {
         "type": "number",
         "name": "antileg_temp",
         "device_class": DEVICE_CLASS_TEMPERATURE,

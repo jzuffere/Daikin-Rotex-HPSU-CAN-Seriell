@@ -97,5 +97,9 @@ translations_de = {
     "sg1_hot_water_and_heating_off": "SG1 - WW & HZ ausgeschalten",
     "sg2_hot_water_and_heating_plus_5c": "SG2 - WW & HZ + 5°C",
     "sg3_hot_water_70c": "SG3 - WW 70°C",
-    "low_temperature_spread": "Geringe Spreizung"
+    "low_temperature_spread": "Geringe Spreizung",
+    "low": "Gering",
+    "normal": "Normal",
+    "good": "Gut",
+    "very_good": "Sehr gut"
 }

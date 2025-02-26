@@ -320,7 +320,8 @@ daikin_rotex_can:
       name: Funzione HK
     temperature_antifreeze:
       name: Temperatura Antigelo
-#Gebäudedämumng
+    building_insulation:
+      name: Isolamento Dell’edificio
 #Estrich
 #Estrichprogramm
 

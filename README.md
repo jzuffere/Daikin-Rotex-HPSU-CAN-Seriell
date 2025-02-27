@@ -103,7 +103,7 @@ Die Installation ist nun abgeschlossen, und du kannst den ESP32 gemäß den Scha
 ### Schritt 1: Vorbereitung
 
 1. **Browser:** Verwende **Google Chrome** (Safari und Firefox werden nicht unterstützt).
-2. **Firmware:** Lade die Datei `hpsu-can-de.factory-gpios-tx05-rx06.bin` herunter. Gehe dazu auf [Actions](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN-Seriell/actions) und klicke oben auf den aktuellsten `Worflow Run`. Anschlissend findest du unten bei den `Actions` das Archiv `compiled-binaries`, das das Binary enthält.
+2. **Firmware:** Lade die Datei `hpsu-can-de.factory-gpios-tx05-rx06.bin` herunter. Gehe dazu auf [Actions](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN-Seriell/actions) und klicke oben auf den aktuellsten `Worflow Run`, der rechts den Branch-Namen `main` enthält. Anschlissend findest du unten bei den `Actions` das Archiv `compiled-binaries`, das das Binary enthält.
 
 ### Schritt 2: ESP32 flashen
 

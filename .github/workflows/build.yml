@@ -2,9 +2,9 @@ name: Compile ESPHome Binary
 
 on:
   push:
-    #branches:
-    #  - main
-    #  - dev
+    branches:
+      - main
+      - dev
     paths:
       - '.github/**'
       - 'examples/full_*.yaml'

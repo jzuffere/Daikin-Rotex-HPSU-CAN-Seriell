@@ -104,7 +104,7 @@ The installation is now complete, and you can connect the ESP32 to the Rotex/Dai
 ### Step 1: Preparation
 
 1. **Browser:** Use Google Chrome (Safari and Firefox are not supported).
-2. **Firmware:** Download the file `hpsu-can-en.factory-gpios-tx05-rx06.bin`. To do this, go to [Actions](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN-Seriell/actions)  and click on the latest `Workflow Run` at the top. Then, under `Actions`, you will find the `compiled-binaries` archive, which contains the binary.
+2. **Firmware:** Download the file `hpsu-can-en.factory-gpios-tx05-rx06.bin`. To do this, go to [Actions](https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN-Seriell/actions) and click on the latest Workflow Run at the top, which has the branch name `main` on the right. Then, under `Actions`, you will find the `compiled-binaries` archive, which contains the binary.
 
 ### Step 2: Flashing the ESP32
 

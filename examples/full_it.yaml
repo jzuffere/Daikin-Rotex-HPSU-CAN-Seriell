@@ -237,6 +237,33 @@ daikin_rotex_can:
 # Konfiguration
 
 # Konfiguration -> Installation
+# Sprache
+# Datum
+    #system_date_day:
+    #  name: Giorno della data di sistema
+    #  internal: true
+    #system_date_month:
+    #  name: Mese della data di sistema
+    #  internal: true
+    #system_date_year:
+    #  name: Anno della data di sistema
+    #  internal: true
+    #system_date:
+    #  name: Data di sistema
+# Uhrzeit
+    #system_time_hour:
+    #  name: Ora del sistema
+    #  internal: true
+    #system_time_minute:
+    #  name: Minuto del sistema
+    #  internal: true
+    #system_time_second:
+    #  name: Secondo del sistema
+    #  internal: true
+    #  update_interval: 1
+    #system_time:
+    #  name: Ora di sistema
+
 #...
     outdoor_unit:
       name: Unità Esterna

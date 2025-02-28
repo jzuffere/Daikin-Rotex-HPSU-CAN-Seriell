@@ -261,7 +261,7 @@ daikin_rotex_can:
       name: System Time Second
       internal: true
       update_interval: 1
-    system_time:
+    system_time:         # This entity causes the HA database to grow rapidly! Please add it to HA -> recorder -> exclude -> entities!
       name: System Time
 
 #...

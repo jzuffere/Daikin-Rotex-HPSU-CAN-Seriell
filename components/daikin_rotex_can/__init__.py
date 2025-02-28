@@ -1345,7 +1345,8 @@ sensor_configuration = [
         "command": "A1 00 FA 06 D4 00 00",
         "data_offset": 5,
         "data_size": 2,
-        "divider": 10.0
+        "divider": 10.0,
+        "signed": True
     },
     {
         "type": "number",

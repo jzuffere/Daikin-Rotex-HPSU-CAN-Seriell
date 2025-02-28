@@ -150,6 +150,8 @@ daikin_rotex_can:
       update_interval: 5
     tdhw1:
       name: Temperatura Acqua Calda
+    tdhw2:
+      name: Temperatura Acqua Calda 2
     temperature_outside:
       name: Temperatura Esterna
 # V

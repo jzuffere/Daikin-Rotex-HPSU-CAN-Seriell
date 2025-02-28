@@ -126,13 +126,19 @@ daikin_rotex_can:
 
 # Info
 
-# mode
+    error_code:
+      name: Error Code
+
+    mode_of_operating:
+      name: Mode of Operating
     ext:
       name: Ext
 # RT
-# Pump
+    circulation_pump:
+      name: Circulation Pump
 # EHS
-# BPV
+    bypass_valve:
+      name: Bypass Valve
     tv:
       name: Flow Temperature (TV)
       update_interval: 5
@@ -142,7 +148,8 @@ daikin_rotex_can:
     tr:
       name: Return Temperature Heating
       update_interval: 5
-# Tdhw
+    tdhw1:
+      name: Hot Water Temperature
     temperature_outside:
       name: Outside Temperature
 # V
@@ -173,6 +180,8 @@ daikin_rotex_can:
 # T-HK Soll
     status_kesselpumpe:
       name: Boiler Pump Status
+    status_kompressor:
+      name: Compressor Status
     runtime_compressor:
       name: Compressor Runtime
     runtime_pump:
@@ -227,6 +236,8 @@ daikin_rotex_can:
 # T-WWSoll 3
 
 # WW Install
+    dhw_run:
+      name: DHW Run
     1_dhw:
       name: 1 x Domestic Hot Water
     hp_hyst_tdhw:
@@ -286,6 +297,10 @@ daikin_rotex_can:
 # Konfig MFR 1
 # Entlüftungsfunktion
 # PWM Konfig
+    circulation_pump_min:
+      name: Circulation Pump Min
+    circulation_pump_max:
+      name: Circulation Pump Max
 # ...
 # Sensor Konfig
     external_temp_sensor:
@@ -423,23 +438,5 @@ daikin_rotex_can:
 
 # To be categorized
 
-    bypass_valve:
-      name: Bypass Valve
-    circulation_pump:
-      name: Circulation Pump
-    circulation_pump_min:
-      name: Circulation Pump Min
-    circulation_pump_max:
-      name: Circulation Pump Max
-    dhw_run:
-      name: DHW Run
-    error_code:
-      name: Error Code
-    mode_of_operating:
-      name: Mode of Operating
-    status_kompressor:
-      name: Compressor Status
-    tdhw1:
-      name: Hot Water Temperature
     target_supply_temperature:
       name: Target Supply Temperature

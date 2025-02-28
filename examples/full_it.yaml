@@ -126,13 +126,19 @@ daikin_rotex_can:
 
 # Info
 
-# mode
+    error_code:
+      name: Codice di Errore
+
+    mode_of_operating:
+      name: Stato operativo
     ext:
       name: Esterno
 # RT
-# Pump
+    circulation_pump:
+      name: Pompa di Circolazione
 # EHS
-# BPV
+    bypass_valve:
+      name: Valvola di Bypass
     tv:
       name: Temperatura di mandata (TV)
       update_interval: 5
@@ -142,7 +148,8 @@ daikin_rotex_can:
     tr:
       name: Temperatura Ritorno Riscaldamento
       update_interval: 5
-# Tdhw
+    tdhw1:
+      name: Temperatura Acqua Calda
     temperature_outside:
       name: Temperatura Esterna
 # V
@@ -173,6 +180,8 @@ daikin_rotex_can:
 # T-HK Soll
     status_kesselpumpe:
       name: Stato Pompa Circolazione
+    status_kompressor:
+      name: Stato Compressore
     runtime_compressor:
       name: Tempo di Funzionamento Compressore
     runtime_pump:
@@ -227,6 +236,8 @@ daikin_rotex_can:
 # T-WWSoll 3
 
 # WW Install
+    dhw_run:
+      name: Esecuzione ACS
     1_dhw:
       name: 1 x Acqua Calda
     hp_hyst_tdhw:
@@ -286,6 +297,10 @@ daikin_rotex_can:
 # Konfig MFR 1
 # Entlüftungsfunktion
 # PWM Konfig
+    circulation_pump_min:
+      name: Pompa di Circolazione Minima
+    circulation_pump_max:
+      name: Pompa di Circolazione Massima
 # ...
 # Sensor Konfig
     external_temp_sensor:
@@ -423,23 +438,5 @@ daikin_rotex_can:
 
 # To be categorized
 
-    bypass_valve:
-      name: Valvola di Bypass
-    circulation_pump:
-      name: Pompa di Circolazione
-    circulation_pump_min:
-      name: Pompa di Circolazione Minima
-    circulation_pump_max:
-      name: Pompa di Circolazione Massima
-    dhw_run:
-      name: Esecuzione ACS
-    error_code:
-      name: Codice di Errore
-    mode_of_operating:
-      name: Stato operativo
-    status_kompressor:
-      name: Stato Compressore
-    tdhw1:
-      name: Temperatura Acqua Calda
     target_supply_temperature:
       name: Temperatura Mandata Obiettivo

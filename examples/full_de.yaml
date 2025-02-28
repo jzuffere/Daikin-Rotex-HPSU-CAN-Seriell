@@ -126,13 +126,19 @@ daikin_rotex_can:
 
 # Info
 
-# mode
+    error_code:
+      name: Fehlercode
+
+    mode_of_operating:
+      name: Betriebsart
     ext:
       name: Ext
 # RT
-# Pump
+    circulation_pump:
+      name: Umwaelzpumpe
 # EHS
-# BPV
+    bypass_valve:
+      name: BPV
     tv:
       name: Heizkreis Vorlauf (TV)
       update_interval: 5
@@ -142,7 +148,8 @@ daikin_rotex_can:
     tr:
       name: Ruecklauftemperatur Heizung
       update_interval: 5
-# Tdhw
+    tdhw1:
+      name: Warmwassertemperatur
     temperature_outside:  # ta
       name: Aussentemperatur
 # V
@@ -173,6 +180,8 @@ daikin_rotex_can:
 # T-HK Soll
     status_kesselpumpe:
       name: Status Kesselpumpe
+    status_kompressor:
+      name: Status Kompressor
     runtime_compressor:
       name: Laufzeit Compressor
     runtime_pump:
@@ -227,6 +236,8 @@ daikin_rotex_can:
 # T-WWSoll 3
 
 # WW Install
+    dhw_run:
+      name: Warmwasser bereiten
     1_dhw:
       name: 1 x Warmwasser
     hp_hyst_tdhw:
@@ -286,6 +297,10 @@ daikin_rotex_can:
 # Konfig MFR 1
 # Entlüftungsfunktion
 # PWM Konfig
+    circulation_pump_min:
+      name: Umwälzpumpe Min
+    circulation_pump_max:
+      name: Umwälzpumpe Max
 # ...
 # Sensor Konfig
     external_temp_sensor:
@@ -423,23 +438,5 @@ daikin_rotex_can:
 
 # To be categorized
 
-    bypass_valve:
-      name: BPV
-    circulation_pump:
-      name: Umwaelzpumpe
-    circulation_pump_min:
-      name: Umwälzpumpe Min
-    circulation_pump_max:
-      name: Umwälzpumpe Max
-    dhw_run:
-      name: Warmwasser bereiten
-    error_code:
-      name: Fehlercode
-    mode_of_operating:
-      name: Betriebsart
-    status_kompressor:
-      name: Status Kompressor
-    tdhw1:
-      name: Warmwassertemperatur
     target_supply_temperature:
       name: Vorlauf Soll

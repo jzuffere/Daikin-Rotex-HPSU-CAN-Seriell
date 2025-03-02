@@ -30,28 +30,33 @@ static const std::string DEFECT = translate("defect");
 static const std::string LOW_TEMPERATURE_SPREAD = translate("low_temperature_spread");
 static const uint32_t POST_SETUP_TIMOUT = 15*1000;
 
-DaikinRotexCanComponent::ErrorDetection::ErrorDetection(uint32_t detection_time_ms)
-: m_error_detected(false)
-, m_error_timestamp(0u)
+DaikinRotexCanComponent::ErrorDetection::ErrorDetection(uint32_t detection_time_ms, bool stop_detection_in_good_case)
+: m_error_timestamp(0u)
 , m_detection_time_ms(detection_time_ms * 1000u)
+, m_good_case_detected(false)
+, m_stop_detection_in_good_case(stop_detection_in_good_case)
 {
-
 }
 
 bool DaikinRotexCanComponent::ErrorDetection::handle_error_detection(bool is_error_state) {
     if (is_error_state) {
-        if (m_error_timestamp == 0u) {
+        if (m_error_timestamp == 0u && !m_good_case_detected) {
             m_error_timestamp = millis();
         }
 
-        if (millis() > (m_error_timestamp + m_detection_time_ms)) {
+        if (m_error_timestamp != 0 && millis() > (m_error_timestamp + m_detection_time_ms)) {
             return true;
         }
     } else {
-        m_error_detected = false;
         m_error_timestamp = 0u;
+        m_good_case_detected = m_stop_detection_in_good_case;
     }
     return false;
+}
+
+void DaikinRotexCanComponent::ErrorDetection::reset_good_case() {
+    m_error_timestamp = 0;
+    m_good_case_detected = false;
 }
 
 DaikinRotexCanComponent::DaikinRotexCanComponent()
@@ -65,9 +70,9 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_thermal_power_raw_sensor(new CanSensor())
 , m_temperature_spread_sensor(new CanSensor()) // Used to detect valve malfunctions, even if the sensor has not been defined by the user.
 , m_temperature_spread_raw_sensor(new CanSensor())
-, m_dhw_spread_error_detection(1*60) // 1 minute
-, m_bpv_spread_error_detection(2*60) // 2 minutes
-, m_spread_error_detection(20 * 60)  // 20 minutes
+, m_dhw_error_detection(1*60, false)        // 1 minute
+, m_bpv_error_detection(2*60, false)        // 2 minutes
+, m_spread_error_detection(20 * 60, true)   // 20 minutes
 {
     m_temperature_spread_sensor->set_smooth(true);
 }
@@ -142,6 +147,8 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
                 Utils::log(TAG, "set %s: %d", OPTIMIZED_DEFROSTING.c_str(), m_optimized_defrosting.value());
             }
         }
+    } else if (id == STATE_COMPRESSOR && current != previous) {
+        m_spread_error_detection.reset_good_case();
     }
 }
 
@@ -249,6 +256,10 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
         } else {
             ESP_LOGE(TAG, "on_betriebsart(): current has no valid string value!");
         }
+    }
+
+    if (current != previous) {
+        m_spread_error_detection.reset_good_case();
     }
 }
 
@@ -385,8 +396,6 @@ bool DaikinRotexCanComponent::is_command_set(TMessage const& message) {
 }
 
 std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std::string const& new_state) {
-    const uint32_t delay = 2*60*1000; // 2 minutes. HPSU v4 immediately changes the BPV position to 100%, which leads to false positives!
-
     CanSensor const* tv = m_entity_manager.get_sensor("tv");
     CanSensor const* tvbh = m_entity_manager.get_sensor("tvbh");
     CanSensor const* tr = m_entity_manager.get_sensor("tr");
@@ -399,17 +408,15 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
     CanBinarySensor const* state_compressor = m_entity_manager.get_binary_sensor(STATE_COMPRESSOR);
 
     if (error_code != nullptr && pEntity == error_code) {
-        if (tv != nullptr && tvbh != nullptr && tr != nullptr && dhw_mixer_position != nullptr && bpv != nullptr && flow_rate != nullptr) {
-            ESP_LOGI(TAG, "tv: %f, tvbh: %f, tr: %f, TvBH-Tv: %f, Tr-TvBH: %f, dhw: %f, bpv: %f, flow: %f, delay: %d, millis: %d, dhw_detected: %d, dhw_ts: %d, bpv_detected: %d, bpv_ts: %d",
-                tv->state, tvbh->state, tr->state, m_max_spread.tvbh_tv, m_max_spread.tvbh_tr, dhw_mixer_position->state, bpv->state, flow_rate->state,
-                    delay, millis(),
-                    m_dhw_spread_error_detection.is_error_detect(), m_dhw_spread_error_detection.get_error_detection_timestamp(),
-                    m_bpv_spread_error_detection.is_error_detect(), m_bpv_spread_error_detection.get_error_detection_timestamp());
-        }
-
         if (tv != nullptr && tvbh != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && dhw_mixer_position->state == 0.0f && tvbh->state > (tv->state + m_max_spread.tvbh_tv);
-            if (m_dhw_spread_error_detection.handle_error_detection(is_error_state)) {
+
+            ESP_LOGI(TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_detected: %d, dhw_ts: %d, millis: %d",
+                tv->state, tvbh->state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state,
+                    m_dhw_error_detection.is_error_detect(), m_dhw_error_detection.get_error_detection_timestamp(),
+                    millis());
+
+            if (m_dhw_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(TAG, "3UV DHW defekt (1) => tvbh: %f, tv: %f, max_spread: %f, bpv: %f, flow_rate: %f",
                     tvbh->state, tv->state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state);
                 return new_state + "|3UV DHW " + DEFECT;
@@ -418,7 +425,13 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
 
         if (tvbh != nullptr && tr != nullptr && flow_rate != nullptr && bpv != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && bpv->state == 100.0f && tvbh->state > (tr->state + m_max_spread.tvbh_tr);
-            if (m_bpv_spread_error_detection.handle_error_detection(is_error_state)) {
+
+            ESP_LOGI(TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_detected: %d, bpv_ts: %d, millis: %d",
+                tvbh->state, tr->state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state,
+                    m_bpv_error_detection.is_error_detect(), m_bpv_error_detection.get_error_detection_timestamp(),
+                    millis());
+
+            if (m_bpv_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(TAG, "3UV BPV defekt (1) => tvbh: %f, tr: %f, max_spread: %f, dhw_mixer_pos: %f, flow_rate: %f",
                     tvbh->state, tr->state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state);
                 return new_state + "|3UV BPV " + DEFECT;
@@ -435,7 +448,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
                     35° | 2.5
                     29° | 1.2
                     27° | 0.3
-                 */
+                */
                 const float min_spread =
                     -0.00004012 * std::pow(tv->state, 4)
                     + 0.006683 * std::pow(tv->state, 3)
@@ -443,10 +456,15 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
                     + 11.5006 * tv->state
                     - 117.7908;
 
-                const bool is_error_state = Utils::is_in(p_betriebs_art->state, STATE_DHW_PRODUCTION, STATE_HEATING) && state_compressor->state && m_temperature_spread_sensor->state < min_spread;
+                const bool is_error_state = state_compressor->state && m_temperature_spread_sensor->state < min_spread;
+
+                ESP_LOGI(TAG, "betriebsart: %s, compressor: %d, spread: %f, min_spread: %f, error_detected: %d, error_ts: %d, millis: %d",
+                    p_betriebs_art->state.c_str(), state_compressor->state, m_temperature_spread_sensor->state, min_spread,
+                    m_spread_error_detection.is_error_detect(), m_spread_error_detection.get_error_detection_timestamp(), millis());
+
                 if (m_spread_error_detection.handle_error_detection(is_error_state)) {
                     ESP_LOGE(TAG, "Low spread => spread: %f, min_spread: %f", m_temperature_spread_sensor->state, min_spread,
-                        m_spread_error_detection.is_error_detect(), m_spread_error_detection.get_error_detection_timestamp());
+                        m_spread_error_detection.is_error_detect(), m_spread_error_detection.get_error_detection_timestamp(), millis());
 
                     return new_state + "|" + LOW_TEMPERATURE_SPREAD;
                 }

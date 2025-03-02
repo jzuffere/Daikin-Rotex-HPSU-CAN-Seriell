@@ -25,15 +25,18 @@ class DaikinRotexCanComponent: public Component, public SensorAccessor, public I
 
     class ErrorDetection {
     public:
-        ErrorDetection(uint32_t detection_time_ms);
+        ErrorDetection(uint32_t detection_time_ms, bool m_stop_detection_in_good_case);
         bool handle_error_detection(bool is_error_state);
         bool is_error_detect() const { return m_error_detected; }
         uint32_t get_error_detection_timestamp() const { return m_error_timestamp; }
+        void reset_good_case();
 
     private:
         bool m_error_detected;
         uint32_t m_error_timestamp;
         uint32_t m_detection_time_ms;
+        bool m_good_case_detected;
+        bool m_stop_detection_in_good_case;
     };
 public:
     using TVoidFunc = std::function<void()>;
@@ -120,8 +123,8 @@ private:
     CanSensor* m_temperature_spread_raw_sensor;
     MaxSpread m_max_spread;
     TvTvBHTrOffset m_tv_tvbh_tr_offset;
-    ErrorDetection m_dhw_spread_error_detection;
-    ErrorDetection m_bpv_spread_error_detection;
+    ErrorDetection m_dhw_error_detection;
+    ErrorDetection m_bpv_error_detection;
     ErrorDetection m_spread_error_detection;
 };
 

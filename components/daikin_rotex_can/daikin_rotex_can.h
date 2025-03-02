@@ -27,12 +27,11 @@ class DaikinRotexCanComponent: public Component, public SensorAccessor, public I
     public:
         ErrorDetection(uint32_t detection_time_ms, bool m_stop_detection_in_good_case);
         bool handle_error_detection(bool is_error_state);
-        bool is_error_detect() const { return m_error_detected; }
+        bool is_good_case_detected() const { return m_good_case_detected; }
         uint32_t get_error_detection_timestamp() const { return m_error_timestamp; }
         void reset_good_case();
 
     private:
-        bool m_error_detected;
         uint32_t m_error_timestamp;
         uint32_t m_detection_time_ms;
         bool m_good_case_detected;

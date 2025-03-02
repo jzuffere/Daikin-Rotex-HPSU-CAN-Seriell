@@ -411,9 +411,9 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
         if (tv != nullptr && tvbh != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && dhw_mixer_position->state == 0.0f && tvbh->state > (tv->state + m_max_spread.tvbh_tv);
 
-            ESP_LOGI(TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_detected: %d, dhw_ts: %d, millis: %d",
+            ESP_LOGI(TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_ts: %d, millis: %d",
                 tv->state, tvbh->state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state,
-                    m_dhw_error_detection.is_error_detect(), m_dhw_error_detection.get_error_detection_timestamp(),
+                    m_dhw_error_detection.get_error_detection_timestamp(),
                     millis());
 
             if (m_dhw_error_detection.handle_error_detection(is_error_state)) {
@@ -426,9 +426,9 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
         if (tvbh != nullptr && tr != nullptr && flow_rate != nullptr && bpv != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && bpv->state == 100.0f && tvbh->state > (tr->state + m_max_spread.tvbh_tr);
 
-            ESP_LOGI(TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_detected: %d, bpv_ts: %d, millis: %d",
+            ESP_LOGI(TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_ts: %d, millis: %d",
                 tvbh->state, tr->state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state,
-                    m_bpv_error_detection.is_error_detect(), m_bpv_error_detection.get_error_detection_timestamp(),
+                    m_bpv_error_detection.get_error_detection_timestamp(),
                     millis());
 
             if (m_bpv_error_detection.handle_error_detection(is_error_state)) {
@@ -458,14 +458,12 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
 
                 const bool is_error_state = state_compressor->state && m_temperature_spread_sensor->state < min_spread;
 
-                ESP_LOGI(TAG, "betriebsart: %s, compressor: %d, spread: %f, min_spread: %f, error_detected: %d, error_ts: %d, millis: %d",
+                ESP_LOGI(TAG, "betriebsart: %s, compressor: %d, spread: %f, min_spread: %f, is_good_case_detected: %d, error_ts: %d, millis: %d",
                     p_betriebs_art->state.c_str(), state_compressor->state, m_temperature_spread_sensor->state, min_spread,
-                    m_spread_error_detection.is_error_detect(), m_spread_error_detection.get_error_detection_timestamp(), millis());
+                    m_spread_error_detection.is_good_case_detected(), m_spread_error_detection.get_error_detection_timestamp(), millis());
 
                 if (m_spread_error_detection.handle_error_detection(is_error_state)) {
-                    ESP_LOGE(TAG, "Low spread => spread: %f, min_spread: %f", m_temperature_spread_sensor->state, min_spread,
-                        m_spread_error_detection.is_error_detect(), m_spread_error_detection.get_error_detection_timestamp(), millis());
-
+                    ESP_LOGE(TAG, "Low spread!");
                     return new_state + "|" + LOW_TEMPERATURE_SPREAD;
                 }
             }

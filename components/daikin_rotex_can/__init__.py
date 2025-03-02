@@ -1529,6 +1529,9 @@ AUTO_LOAD = ['binary_sensor', 'button', 'number', 'sensor', 'select', 'text', 't
 
 CONF_CAN_ID = "canbus_id"
 CONF_UPDATE_INTERVAL = "update_interval"
+CONF_TV_OFFSET = "tv_offset"
+CONF_TVBH_OFFSET = "tvbh_offset"
+CONF_TR_OFFSET = "tr_offset"
 CONF_MAX_SPREAD_TVBH_TV = "max_spread_tvbh_tv"
 CONF_MAX_SPREAD_TVBH_TR = "max_spread_tvbh_tr"
 CONF_LOG_FILTER_TEXT = "log_filter"
@@ -1548,8 +1551,11 @@ CONF_DUMP = "dump"
 CONF_DHW_RUN = "dhw_run"
 
 DEFAULT_UPDATE_INTERVAL = 30 # seconds
-DEFAULT_MAX_SPREAD_TVBH_TV = 3.0
-DEFAULT_MAX_SPREAD_TVBH_TR = 3.0
+DEFAULT_TV_OFFSET = 0.0
+DEFAULT_TVBH_OFFSET = 0.0
+DEFAULT_TR_OFFSET = 0.0
+DEFAULT_MAX_SPREAD_TVBH_TV = 0.3
+DEFAULT_MAX_SPREAD_TVBH_TR = 0.3
 
 entity_schemas = {}
 
@@ -1671,6 +1677,9 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(DaikinRotexCanComponent),
         cv.Required(CONF_CAN_ID): cv.use_id(CanbusComponent),
         cv.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): cv.uint16_t,
+        cv.Optional(CONF_TV_OFFSET, default=DEFAULT_TV_OFFSET): cv.float_,
+        cv.Optional(CONF_TVBH_OFFSET, default=DEFAULT_TVBH_OFFSET): cv.float_,
+        cv.Optional(CONF_TR_OFFSET, default=DEFAULT_TR_OFFSET): cv.float_,
         cv.Optional(CONF_MAX_SPREAD_TVBH_TV, default=DEFAULT_MAX_SPREAD_TVBH_TV): cv.float_,
         cv.Optional(CONF_MAX_SPREAD_TVBH_TR, default=DEFAULT_MAX_SPREAD_TVBH_TR): cv.float_,
         cv.Required(CONF_LANGUAGE): cv.enum(SUPPORTED_LANGUAGES, lower=True, space="_"),
@@ -1731,6 +1740,7 @@ async def to_code(config):
         cg.add(var.set_canbus(canbus))
 
     cg.add(var.set_max_spread(config[CONF_MAX_SPREAD_TVBH_TV], config[CONF_MAX_SPREAD_TVBH_TR]))
+    cg.add(var.set_tv_tvbh_tr_offset(config[CONF_TV_OFFSET], config[CONF_TVBH_OFFSET], config[CONF_TR_OFFSET]))
 
     # Write cpp translation file
     write_cpp_file(os.path.dirname(__file__))

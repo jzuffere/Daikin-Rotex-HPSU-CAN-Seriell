@@ -112,8 +112,19 @@ daikin_rotex_can:
   language: it
   canbus_id: can_bus
   update_interval: 30
-  #max_spread_tvbh_tv: 4
-  #max_spread_tvbh_tr: 4
+
+  # Alcuni sensori Tv, TvBH o Tr forniscono valori con deviazioni.
+  # Queste deviazioni possono essere corrette utilizzando un offset per migliorare la precisione nel rilevamento di valvole a 3 vie difettose.
+  # Ad esempio, se il sensore Tv mostra una temperatura superiore di 1,5°C, l'offset Tv dovrebbe essere impostato a -1,5.
+  # Se invece fornisce valori inferiori di 1,2°C, l'offset dovrebbe essere impostato a 1,2.
+  # Lo stesso vale per TvBH e Tr.
+  #tv_offset: -1.0
+  #tvbh_offset: -1.0
+  #tr_offset: -1.0
+
+  #max_spread_tvbh_tv: 0.5  # Legt Tv-TVBH-Schwellwert fest, bei dem die DHW-Ventil-Fehler-Erkennung auslösen soll
+  #max_spread_tvbh_tr: 0.5  # Legt TVBH-Tr-Schwellwert fest, bei dem die BPV-Ventil-Fehler-Erkennung auslösen soll
+
   log_filter:
     name: Log Filter
   custom_request:

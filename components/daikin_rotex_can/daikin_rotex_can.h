@@ -16,6 +16,25 @@ class DaikinRotexCanComponent: public Component, public SensorAccessor, public I
         float tvbh_tv;
         float tvbh_tr;
     };
+
+    struct TvTvBHTrOffset {
+        float tv_offset;
+        float tvbh_offset;
+        float tr_offset;
+    };
+
+    class ErrorDetection {
+    public:
+        ErrorDetection(uint32_t detection_time_ms);
+        bool handle_error_detection(bool is_error_state);
+        bool is_error_detect() const { return m_error_detected; }
+        uint32_t get_error_detection_timestamp() const { return m_error_timestamp; }
+
+    private:
+        bool m_error_detected;
+        uint32_t m_error_timestamp;
+        uint32_t m_detection_time_ms;
+    };
 public:
     using TVoidFunc = std::function<void()>;
 
@@ -32,6 +51,7 @@ public:
     void set_temperature_spread(CanSensor* pSensor) { m_temperature_spread_sensor = pSensor; pSensor->set_smooth(true); }
     void set_temperature_spread_raw(CanSensor* pSensor) { m_temperature_spread_raw_sensor = pSensor; }
     void set_max_spread(float tvbh_tv, float tvbh_tr) { m_max_spread = { tvbh_tv, tvbh_tr };}
+    void set_tv_tvbh_tr_offset(float tv_offset, float tvbh_offset, float tr_offset) { m_tv_tvbh_tr_offset = { tv_offset, tvbh_offset, tr_offset }; }
     void add_entity(TEntity* pEntity) { m_entity_manager.add(pEntity); }
 
     void on_post_handle(TEntity* pRequest, TEntity::TVariant const& current, TEntity::TVariant const& previous);
@@ -99,8 +119,10 @@ private:
     CanSensor* m_temperature_spread_sensor;
     CanSensor* m_temperature_spread_raw_sensor;
     MaxSpread m_max_spread;
-    uint32_t m_low_temperature_spread_timestamp;
-    bool m_sufficient_temperature_spread_detected;
+    TvTvBHTrOffset m_tv_tvbh_tr_offset;
+    ErrorDetection m_dhw_spread_error_detection;
+    ErrorDetection m_bpv_spread_error_detection;
+    ErrorDetection m_spread_error_detection;
 };
 
 inline void DaikinRotexCanComponent::set_canbus(esphome::esp32_can::ESP32Can* pCanbus) {

@@ -453,3 +453,5 @@ daikin_rotex_can:
 
     target_supply_temperature:
       name: Vorlauf Soll
+    supply_setpoint_regulated:
+      name: Vorlauf Soll Geregelt

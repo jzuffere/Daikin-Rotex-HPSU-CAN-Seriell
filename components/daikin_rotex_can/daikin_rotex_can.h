@@ -55,6 +55,7 @@ public:
     void set_max_spread(float tvbh_tv, float tvbh_tr) { m_max_spread = { tvbh_tv, tvbh_tr };}
     void set_tv_tvbh_tr_offset(float tv_offset, float tvbh_offset, float tr_offset) { m_tv_tvbh_tr_offset = { tv_offset, tvbh_offset, tr_offset }; }
     void add_entity(TEntity* pEntity) { m_entity_manager.add(pEntity); }
+    void set_supply_setpoint_regulated(number::Number* pNumber) { m_supply_setpoint_regulated = pNumber; }
 
     void on_post_handle(TEntity* pRequest, TEntity::TVariant const& current, TEntity::TVariant const& previous);
 
@@ -64,6 +65,9 @@ public:
     // Buttons
     virtual void dhw_run() override;
     virtual void dump() override;
+
+    // CustomCanNumbers
+    void on_custom_number(number::Number& number, float value);
 
     // IAccessor
     virtual float get_sensor_value(std::string const& sensor_id) const override;
@@ -103,6 +107,7 @@ private:
     void throwPeriodicError(std::string const& message);
     bool is_command_set(TMessage const&);
     std::string recalculate_state(EntityBase* pEntity, std::string const& new_state);
+    void update_supply_setpoint_regulated();
 
     esphome::daikin_rotex_can::TEntityManager m_entity_manager;
     std::shared_ptr<esphome::canbus::CanbusTrigger> m_canbus_trigger;
@@ -125,6 +130,8 @@ private:
     ErrorDetection m_dhw_error_detection;
     ErrorDetection m_bpv_error_detection;
     ErrorDetection m_spread_error_detection;
+    number::Number* m_supply_setpoint_regulated;
+    uint32_t m_last_supply_setpoint_regulated_ts;
 };
 
 inline void DaikinRotexCanComponent::set_canbus(esphome::esp32_can::ESP32Can* pCanbus) {

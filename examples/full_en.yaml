@@ -450,3 +450,5 @@ daikin_rotex_can:
 
     target_supply_temperature:
       name: Target Supply Temperature
+    supply_setpoint_regulated:
+      name: Flow Setpoint Controlled

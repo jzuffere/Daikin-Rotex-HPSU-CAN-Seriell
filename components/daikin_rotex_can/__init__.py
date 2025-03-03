@@ -40,6 +40,7 @@ CustomRequestText = daikin_rotex_can_ns.class_("CustomRequestText", text.Text)
 
 DHWRunButton = daikin_rotex_can_ns.class_("DHWRunButton", button.Button)
 DumpButton = daikin_rotex_can_ns.class_("DumpButton", button.Button)
+CustomNumber = daikin_rotex_can_ns.class_("CustomNumber", number.Number)
 
 UNIT_BAR = "bar"
 UNIT_LITER_PER_HOUR = "L/h"
@@ -1549,6 +1550,7 @@ CONF_TEMPERATURE_SPREAD_RAW = "temperature_spread_raw"
 
 CONF_DUMP = "dump"
 CONF_DHW_RUN = "dhw_run"
+CONF_SUPPLY_SETPOINT_REGULATED = "supply_setpoint_regulated"
 
 DEFAULT_UPDATE_INTERVAL = 30 # seconds
 DEFAULT_TV_OFFSET = 0.0
@@ -1670,6 +1672,15 @@ entity_schemas.update({
         entity_category=ENTITY_CATEGORY_CONFIG,
         icon=ICON_SUN_SNOWFLAKE_VARIANT
     ).extend(),
+
+    ########## Numbers ##########
+
+    cv.Optional(CONF_SUPPLY_SETPOINT_REGULATED): number.number_schema(
+        CustomNumber,
+        entity_category=ENTITY_CATEGORY_CONFIG
+    ).extend({
+        cv.Optional(CONF_MODE, default="BOX"): cv.enum(number.NUMBER_MODES, upper=True)
+    })
 })
 
 CONFIG_SCHEMA = cv.Schema(
@@ -1888,3 +1899,15 @@ async def to_code(config):
         if button_conf := entities.get(CONF_DHW_RUN):
             but = await button.new_button(button_conf)
             await cg.register_parented(but, var)
+
+        ########## Numbers ##########
+        if number_conf := entities.get(CONF_SUPPLY_SETPOINT_REGULATED):
+            num = await number.new_number(
+                number_conf,
+                min_value=20.0,
+                max_value=90.0,
+                step=1.0
+            )
+            cg.add(var.set_supply_setpoint_regulated(num))
+
+            await cg.register_parented(num, var)

@@ -20,6 +20,7 @@ static const std::string OPTIMIZED_DEFROSTING = "optimized_defrosting";
 static const std::string TEMPERATURE_ANTIFREEZE = "temperature_antifreeze";   // T-Frostschutz
 static const std::string FLOW_RATE = "flow_rate";
 static const std::string STATE_COMPRESSOR = "status_kompressor";
+static const std::string SUPPLY_SETPOINT_REGULATED = "supply_setpoint_regulated";
 static const std::string TEMPERATURE_ANTIFREEZE_OFF = translate("off");
 static const std::string STATE_DHW_PRODUCTION = translate("hot_water_production");
 static const std::string STATE_HEATING = translate("heating");
@@ -73,6 +74,8 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_dhw_error_detection(1*60, false)        // 1 minute
 , m_bpv_error_detection(2*60, false)        // 2 minutes
 , m_spread_error_detection(20 * 60, true)   // 20 minutes
+, m_supply_setpoint_regulated(nullptr)
+, m_last_supply_setpoint_regulated_ts(0u)
 {
     m_temperature_spread_sensor->set_smooth(true);
 }
@@ -291,10 +294,8 @@ void DaikinRotexCanComponent::dhw_run() {
         float temp1 {70};
         float temp2 {0};
 
-        temp1 *= pEntity->get_config().divider;
-
         if (CanNumber const* pNumber = dynamic_cast<CanNumber const*>(pEntity)) {
-            temp2 = pNumber->state * pEntity->get_config().divider;
+            temp2 = pNumber->state;
         } else if (CanSelect const* pSelect = dynamic_cast<CanSelect const*>(pEntity)) {
             temp2 = pSelect->getKey(pSelect->state);
         }
@@ -342,6 +343,13 @@ void DaikinRotexCanComponent::dump() {
     ESP_LOGI(TAG, "------------------------------------------");
 }
 
+void DaikinRotexCanComponent::on_custom_number(number::Number& number, float value) {
+    if (&number == m_supply_setpoint_regulated) {
+        ESP_LOGE(TAG, "on_custom_number(%f) => supply_setpoint_regulated", value);
+        number.publish_state(value);
+    }
+}
+
 void DaikinRotexCanComponent::run_dhw_lambdas() {
     if (!m_dhw_run_lambdas.empty()) {
         auto& lambda = m_dhw_run_lambdas.front();
@@ -367,6 +375,60 @@ void DaikinRotexCanComponent::loop() {
     }
     m_thermal_power_sensor->update(millis);
     m_temperature_spread_sensor->update(millis);
+
+    update_supply_setpoint_regulated();
+}
+
+void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
+    CanTextSensor const* p_betriebs_art = m_entity_manager.get_text_sensor(BETRIEBS_ART);
+    CanBinarySensor const* state_compressor = m_entity_manager.get_binary_sensor(STATE_COMPRESSOR);
+    CanNumber const* pMaxTVorlauf = m_entity_manager.get_number("max_target_flow_temp"); // pMax_target_flow_temp
+    CanSensor const* pTv = m_entity_manager.get_sensor("tv");
+    CanSensor const* pVorlaufSoll = m_entity_manager.get_sensor("target_supply_temperature");
+
+    if (p_betriebs_art == nullptr || pMaxTVorlauf == nullptr || pTv == nullptr || pVorlaufSoll == nullptr || m_supply_setpoint_regulated == nullptr) {
+        return;
+    }
+
+    if (p_betriebs_art->state != STATE_HEATING) {
+        return;
+    }
+
+    if (state_compressor == nullptr || !state_compressor->state) {
+        return;
+    }
+
+    const float max_t_vorlauf = pMaxTVorlauf->state;
+    const float tv = pTv->state;
+    const float vorlauf_soll = pVorlaufSoll->state;
+    const float vorlauf_soll_reguliert = m_supply_setpoint_regulated->state;
+
+    if (std::isnan(vorlauf_soll_reguliert) || vorlauf_soll_reguliert == 0) {
+        return;
+    }
+
+    if (m_last_supply_setpoint_regulated_ts == 0u || millis() > (m_last_supply_setpoint_regulated_ts + 30 * 1000)) {
+        if (max_t_vorlauf != vorlauf_soll_reguliert) {
+            float vorlauf_soll_request = vorlauf_soll;
+            if (tv > vorlauf_soll && (tv - vorlauf_soll) > 2.5) {
+                vorlauf_soll_request = std::round(tv - 1.5);
+            } else if (vorlauf_soll_reguliert >= tv) {
+                vorlauf_soll_request = vorlauf_soll_reguliert;
+            } else if ((tv - vorlauf_soll_reguliert) < 1.5) {
+                vorlauf_soll_request = vorlauf_soll_reguliert;
+            } else {
+                vorlauf_soll_request = std::round(tv - 1.5);
+            }
+            if (vorlauf_soll_request != vorlauf_soll) {
+                ESP_LOGI(TAG, "request vorlauf_soll_request: %f, tv: %f, max_t_vorlauf: %f, vorlauf_soll_reguliert: %f",
+                    vorlauf_soll_request, tv, max_t_vorlauf, vorlauf_soll_reguliert);
+
+                m_entity_manager.sendSet(pMaxTVorlauf->get_name(), vorlauf_soll_request);
+            }
+            m_entity_manager.sendSet(pMaxTVorlauf->get_name(), std::round(tv - 1.5));
+        }
+        m_last_supply_setpoint_regulated_ts = millis();
+    }
 }
 
 void DaikinRotexCanComponent::handle(uint32_t can_id, std::vector<uint8_t> const& data) {

@@ -156,7 +156,7 @@ void TEntityManager::sendSet(std::string const& request_name, float value) {
         [&request_name](auto pEntity) { return pEntity->getName() == request_name; }
     );
     if (it != m_entities.end()) {
-        (*it)->sendSet(m_pCanbus, value);
+        (*it)->sendSet(m_pCanbus, value * (*it)->get_config().divider);
     } else {
         ESP_LOGE(TAG, "sendSet: Unknown request: %s", request_name.c_str());
     }

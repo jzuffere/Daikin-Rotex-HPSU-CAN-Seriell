@@ -453,3 +453,5 @@ daikin_rotex_can:
 
     target_supply_temperature:
       name: Temperatura Mandata Obiettivo
+    supply_setpoint_regulated:
+      name: Setpoint Mandata Regolato

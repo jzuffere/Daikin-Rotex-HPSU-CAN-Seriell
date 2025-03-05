@@ -71,8 +71,8 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_thermal_power_raw_sensor(new CanSensor())
 , m_temperature_spread_sensor(new CanSensor()) // Used to detect valve malfunctions, even if the sensor has not been defined by the user.
 , m_temperature_spread_raw_sensor(new CanSensor())
-, m_dhw_error_detection(1*60, false)        // 1 minute
-, m_bpv_error_detection(2*60, false)        // 2 minutes
+, m_dhw_error_detection(2*60, false)        // 2 minute
+, m_bpv_error_detection(3*60, false)        // 3 minutes
 , m_spread_error_detection(20 * 60, true)   // 20 minutes
 , m_supply_setpoint_regulated(nullptr)
 , m_last_supply_setpoint_regulated_ts(0u)

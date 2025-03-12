@@ -237,14 +237,27 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
     CanSelect* p_betriebs_modus = m_entity_manager.get_select(BETRIEBS_MODUS);
     if (m_optimized_defrosting.value() && p_betriebs_modus != nullptr) {
         if (std::holds_alternative<std::string>(current)) {
-            if (std::get<std::string>(current) == STATE_DEFROSTING && p_betriebs_modus->state != STATE_SUMMER) {
-                m_entity_manager.sendSet(p_betriebs_modus->get_name(), 0x05); // Sommer
-            } else if (std::get<std::string>(current) == STATE_HEATING && p_betriebs_modus->state != STATE_HEATING) {
-                m_entity_manager.sendSet(p_betriebs_modus->get_name(), 0x03); // Heizen
-            } else if (std::get<std::string>(current) == STATE_STANDBY && std::get<std::string>(previous) == STATE_DEFROSTING && p_betriebs_modus->state == STATE_SUMMER) {
-                m_entity_manager.sendSet(p_betriebs_modus->get_name(), 0x03); // Heizen
-            } else if (std::get<std::string>(current) == STATE_DHW_PRODUCTION && std::get<std::string>(previous) == STATE_DEFROSTING && p_betriebs_modus->state != STATE_HEATING) {
-                m_entity_manager.sendSet(p_betriebs_modus->get_name(), 0x03); // Heizen
+            const auto art_current = std::get<std::string>(current);
+            const auto art_previous = std::get<std::string>(previous);
+            const auto modus = p_betriebs_modus->state;
+            const uint32_t MODE_HEATING = 0x03;
+            const uint32_t MODE_SUMMER = 0x05;
+            uint8_t new_mode = 0x0;
+
+            if (art_current == STATE_DEFROSTING && art_previous == STATE_HEATING && modus == STATE_HEATING) {
+                new_mode = MODE_SUMMER;
+            } else if (art_current == STATE_DEFROSTING && art_previous == STATE_DHW_PRODUCTION && modus == STATE_HEATING) {
+                new_mode = MODE_SUMMER;
+            } else if (art_current == STATE_HEATING && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) {
+                new_mode = MODE_HEATING;
+            } else if (art_current == STATE_STANDBY && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) {
+                new_mode = MODE_HEATING;
+            } else if (art_current == STATE_DHW_PRODUCTION && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) {
+                new_mode = MODE_HEATING;
+            }
+
+            if (new_mode != 0x0) {
+                m_entity_manager.sendSet(p_betriebs_modus->get_name(), new_mode);
             }
         } else {
             ESP_LOGE(TAG, "on_betriebsart(): current has no valid string value!");

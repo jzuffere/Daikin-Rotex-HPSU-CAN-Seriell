@@ -13,8 +13,15 @@ CanSensor::CanSensor()
 , m_range()
 , m_pid(0.2, 0.05f, 0.05f, 0.2, 0.2, 0.1f)
 , m_smooth(false)
+, m_logging(false)
 , m_smooth_state(std::numeric_limits<float>::quiet_NaN())
 {
+}
+
+CanSensor::CanSensor(std::string const& id)
+: CanSensor()
+{
+    m_config.id = id;
 }
 
 bool CanSensor::handleValue(uint16_t value, TEntity::TVariant& current, TVariant& previous) {
@@ -27,6 +34,7 @@ bool CanSensor::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
 
     const float float_value = std::get<float>(current);
     const bool valid = !m_range.required() || (float_value >= m_range.min && float_value <= m_range.max);
+
     if (valid) {
         publish_state(float_value);
     } else {
@@ -39,13 +47,18 @@ bool CanSensor::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
 
 void CanSensor::update(uint32_t millis) {
     TEntity::update(millis);
+
     if (m_smooth) {
         const float dt = (::millis() - m_pid.get_last_update()) / 1000.0f; // seconds
         if (dt > 10.0f) {
             if (std::isnan(m_smooth_state)) {
                 m_smooth_state = m_state;
             }
-            m_smooth_state += m_pid.compute(m_state, m_smooth_state, dt);
+
+            std::string logstr;
+            m_smooth_state += m_pid.compute(m_state, m_smooth_state, dt, logstr);
+            ESP_LOGI("PID", "%s: %s, val: %f", get_id().c_str(), logstr.c_str(), m_smooth_state);
+
             m_smooth_state = std::ceil(m_smooth_state * 100.0) / 100.0;
 
             publish_state(m_smooth_state);

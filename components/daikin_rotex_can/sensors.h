@@ -25,8 +25,10 @@ class CanSensor : public sensor::Sensor, public TEntity, public Parented<SensorA
 
 public:
     CanSensor();
+    CanSensor(std::string const& id);
     void set_range(Range const& range) { m_range = range; }
     void set_smooth(bool smooth) { m_smooth = smooth; }
+    void set_logging(bool logging) { m_logging = logging; m_pid.set_logging(logging); }
     virtual void update(uint32_t millis) override;
     void publish(float state);
 protected:
@@ -36,6 +38,7 @@ private:
     Range m_range;
     PID m_pid;
     bool m_smooth;
+    bool m_logging;
     float m_smooth_state;
 };
 

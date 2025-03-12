@@ -102,6 +102,7 @@ public:
     TEntity();
 
     std::string const& get_id() const { return m_config.id; }
+    void set_id(std::string const& id) { m_config.id = id; }
 
     std::string getName() const {
         return m_config.pEntity != nullptr ? m_config.pEntity->get_name().str() : "<INVALID>";

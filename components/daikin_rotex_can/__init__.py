@@ -1883,15 +1883,19 @@ async def to_code(config):
 
         if yaml_sensor_conf := entities.get(CONF_THERMAL_POWER):
             sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(sens.set_id(CONF_THERMAL_POWER))
             cg.add(var.set_thermal_power_sensor(sens))
         if yaml_sensor_conf := entities.get(CONF_THERMAL_POWER_RAW):
             sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(sens.set_id(CONF_THERMAL_POWER_RAW))
             cg.add(var.set_thermal_power_sensor_raw(sens))
         if yaml_sensor_conf := entities.get(CONF_TEMPERATURE_SPREAD):
             sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(sens.set_id(CONF_TEMPERATURE_SPREAD))
             cg.add(var.set_temperature_spread(sens))
         if yaml_sensor_conf := entities.get(CONF_TEMPERATURE_SPREAD_RAW):
             sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(sens.set_id(CONF_TEMPERATURE_SPREAD_RAW))
             cg.add(var.set_temperature_spread_raw(sens))
 
         ########## Buttons ##########

@@ -14,6 +14,7 @@ namespace esphome {
 namespace daikin_rotex_can {
 
 static const char* TAG = "daikin_rotex_can";
+static const char* ERROR_CODE_TAG = "error code";
 static const std::string BETRIEBS_ART = "mode_of_operating";
 static const std::string BETRIEBS_MODUS = "operating_mode";
 static const std::string OPTIMIZED_DEFROSTING = "optimized_defrosting";
@@ -67,10 +68,10 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_optimized_defrosting(false)
 , m_project_git_hash_sensor(nullptr)
 , m_project_git_hash()
-, m_thermal_power_sensor(new CanSensor()) // Create dummy sensors to avoid nullptr without HA api communicaction. Can be overwritten by the user.
-, m_thermal_power_raw_sensor(new CanSensor())
-, m_temperature_spread_sensor(new CanSensor()) // Used to detect valve malfunctions, even if the sensor has not been defined by the user.
-, m_temperature_spread_raw_sensor(new CanSensor())
+, m_thermal_power_sensor(new CanSensor("thermal_power")) // Create dummy sensors to avoid nullptr without HA api communicaction. Can be overwritten by the user.
+, m_thermal_power_raw_sensor(new CanSensor("thermal_power_raw"))
+, m_temperature_spread_sensor(new CanSensor("temperature_spread")) // Used to detect valve malfunctions, even if the sensor has not been defined by the user.
+, m_temperature_spread_raw_sensor(new CanSensor("temperature_spread_raw"))
 , m_dhw_error_detection(2*60, false)        // 2 minute
 , m_bpv_error_detection(3*60, false)        // 3 minutes
 , m_spread_error_detection(20 * 60, true)   // 20 minutes
@@ -414,7 +415,6 @@ void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
 
                 m_entity_manager.sendSet(pMaxTVorlauf->get_name(), vorlauf_soll_request);
             }
-            m_entity_manager.sendSet(pMaxTVorlauf->get_name(), std::round(tv - 1.5));
         }
         m_last_supply_setpoint_regulated_ts = millis();
     }
@@ -462,13 +462,13 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
         if (tv != nullptr && tvbh != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && dhw_mixer_position->state == 0.0f && tvbh->state > (tv->state + m_max_spread.tvbh_tv);
 
-            ESP_LOGI(TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_ts: %d, millis: %d",
+            ESP_LOGI(ERROR_CODE_TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_ts: %d, millis: %d",
                 tv->state, tvbh->state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state,
                     m_dhw_error_detection.get_error_detection_timestamp(),
                     millis());
 
             if (m_dhw_error_detection.handle_error_detection(is_error_state)) {
-                ESP_LOGE(TAG, "3UV DHW defekt (1) => tvbh: %f, tv: %f, max_spread: %f, bpv: %f, flow_rate: %f",
+                ESP_LOGE(ERROR_CODE_TAG, "3UV DHW defekt (1) => tvbh: %f, tv: %f, max_spread: %f, bpv: %f, flow_rate: %f",
                     tvbh->state, tv->state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state);
                 return new_state + "|3UV DHW " + DEFECT;
             }
@@ -477,13 +477,13 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
         if (tvbh != nullptr && tr != nullptr && flow_rate != nullptr && bpv != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && bpv->state == 100.0f && tvbh->state > (tr->state + m_max_spread.tvbh_tr);
 
-            ESP_LOGI(TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_ts: %d, millis: %d",
+            ESP_LOGI(ERROR_CODE_TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_ts: %d, millis: %d",
                 tvbh->state, tr->state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state,
                     m_bpv_error_detection.get_error_detection_timestamp(),
                     millis());
 
             if (m_bpv_error_detection.handle_error_detection(is_error_state)) {
-                ESP_LOGE(TAG, "3UV BPV defekt (1) => tvbh: %f, tr: %f, max_spread: %f, dhw_mixer_pos: %f, flow_rate: %f",
+                ESP_LOGE(ERROR_CODE_TAG, "3UV BPV defekt (1) => tvbh: %f, tr: %f, max_spread: %f, dhw_mixer_pos: %f, flow_rate: %f",
                     tvbh->state, tr->state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state);
                 return new_state + "|3UV BPV " + DEFECT;
             }

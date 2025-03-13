@@ -57,7 +57,7 @@ void CanSensor::update(uint32_t millis) {
 
             std::string logstr;
             m_smooth_state += m_pid.compute(m_state, m_smooth_state, dt, logstr);
-            ESP_LOGI("PID", "%s: %s, val: %f", get_id().c_str(), logstr.c_str(), m_smooth_state);
+            Utils::log("PID", "%s: %s, val: %f", get_id().c_str(), logstr.c_str(), m_smooth_state);
 
             m_smooth_state = std::ceil(m_smooth_state * 100.0) / 100.0;
 

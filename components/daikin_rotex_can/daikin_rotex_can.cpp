@@ -437,7 +437,7 @@ void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
                 vorlauf_soll_request = std::round(tv - 1.5);
             }
             if (vorlauf_soll_request != vorlauf_soll) {
-                ESP_LOGI(TAG, "request vorlauf_soll_request: %f, tv: %f, max_t_vorlauf: %f, vorlauf_soll_reguliert: %f",
+                Utils::log(TAG, "request vorlauf_soll_request: %f, tv: %f, max_t_vorlauf: %f, vorlauf_soll_reguliert: %f",
                     vorlauf_soll_request, tv, max_t_vorlauf, vorlauf_soll_reguliert);
 
                 m_entity_manager.sendSet(pMaxTVorlauf->get_name(), vorlauf_soll_request);
@@ -489,7 +489,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
         if (tv != nullptr && tvbh != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && dhw_mixer_position->state == 0.0f && tvbh->state > (tv->state + m_max_spread.tvbh_tv);
 
-            ESP_LOGI(ERROR_CODE_TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_ts: %d, millis: %d",
+            Utils::log(ERROR_CODE_TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_ts: %d, millis: %d",
                 tv->state, tvbh->state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state,
                     m_dhw_error_detection.get_error_detection_timestamp(),
                     millis());
@@ -504,7 +504,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
         if (tvbh != nullptr && tr != nullptr && flow_rate != nullptr && bpv != nullptr) {
             const bool is_error_state = flow_rate->state > 600.0f && bpv->state == 100.0f && tvbh->state > (tr->state + m_max_spread.tvbh_tr);
 
-            ESP_LOGI(ERROR_CODE_TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_ts: %d, millis: %d",
+            Utils::log(ERROR_CODE_TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_ts: %d, millis: %d",
                 tvbh->state, tr->state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state,
                     m_bpv_error_detection.get_error_detection_timestamp(),
                     millis());
@@ -536,7 +536,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
 
                 const bool is_error_state = state_compressor->state && m_temperature_spread_sensor->state < min_spread;
 
-                ESP_LOGI(TAG, "betriebsart: %s, compressor: %d, spread: %f, min_spread: %f, is_good_case_detected: %d, error_ts: %d, millis: %d",
+                Utils::log(TAG, "betriebsart: %s, compressor: %d, spread: %f, min_spread: %f, is_good_case_detected: %d, error_ts: %d, millis: %d",
                     p_betriebs_art->state.c_str(), state_compressor->state, m_temperature_spread_sensor->state, min_spread,
                     m_spread_error_detection.is_good_case_detected(), m_spread_error_detection.get_error_detection_timestamp(), millis());
 

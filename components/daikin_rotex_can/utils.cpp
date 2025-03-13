@@ -151,14 +151,18 @@ template void Utils::log<char const*, char const*, char const*, char const*>(std
 template void Utils::log<char const*, float, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, float arg2, char const* arg3, char const* arg4);
 template void Utils::log<char const*, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, char const* arg2, char const* arg3);
 template void Utils::log<char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, char const* arg2);
-template void Utils::log<unsigned char>(std::string const& tag, std::string const& str_format, unsigned char arg);
-template void Utils::log<int>(std::string const& tag, std::string const& str_format, int arg);
-template void Utils::log<>(std::string const& tag, std::string const& str_format);
 template void Utils::log<char const*>(std::string const& tag, std::string const& str_format, char const* arg);
-template void Utils::log<void*, void*>(std::string const& tag, std::string const& str_format, void* arg1, void* arg2);
 template void Utils::log<char const*, unsigned char>(std::string const&, std::string const&, char const*, unsigned char);
 template void Utils::log<char const*, bool>(std::string const&, std::string const&, char const*, bool);
 template void Utils::log<char const*, char const*, char const*, char const*, bool>(std::string const&, std::string const&, char const*, char const*, char const*, char const*, bool);
+template void Utils::log<const char*, const char*, float>(std::string const&, std::string const&, const char*, const char*, float);
+template void Utils::log<const char*, bool, float, float, bool, unsigned int, unsigned long>(std::string const&, std::string const&, const char*, bool, float, float, bool, unsigned int, unsigned long);
+template void Utils::log<float, float, float, float, float, unsigned int, unsigned long>(std::string const&, std::string const&, float, float, float, float, float, unsigned int, unsigned long);
+template void Utils::log<float, float, float, float>(std::string const&, std::string const&, float, float, float, float);
+template void Utils::log<unsigned char>(std::string const& tag, std::string const& str_format, unsigned char arg);
+template void Utils::log<int>(std::string const& tag, std::string const& str_format, int arg);
+template void Utils::log<void*, void*>(std::string const& tag, std::string const& str_format, void* arg1, void* arg2);
+template void Utils::log<>(std::string const& tag, std::string const& str_format);
 
 }
 }

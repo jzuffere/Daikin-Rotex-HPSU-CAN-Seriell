@@ -1389,6 +1389,18 @@ sensor_configuration = [
         }
     },
     {
+        "type": "select",
+        "name": "heating_curve_adaptation" ,
+        "can_id": 0x300,
+        "command": "61 00 FA 01 15 00 00",
+        "data_offset": 5,
+        "data_size": 1,
+        "map": {
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on")
+        }
+    },
+    {
         "type": "sensor",
         "name": "system_date_day",
         "command": "31 00 FA 01 22 00 00",

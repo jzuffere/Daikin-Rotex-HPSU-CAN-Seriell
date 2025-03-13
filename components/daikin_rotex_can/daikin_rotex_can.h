@@ -117,7 +117,7 @@ private:
     std::list<TVoidFunc> m_dhw_run_lambdas;
 
     PersistentValue<bool> m_optimized_defrosting;
-    std::string m_betriebsmodus_before_dhw;
+    std::string m_betriebsmodus_before_dhw_and_defrosting;
     text_sensor::TextSensor* m_project_git_hash_sensor;
     std::string m_project_git_hash;
     esphome::esp32_can::ESP32Can* m_pCanbus;

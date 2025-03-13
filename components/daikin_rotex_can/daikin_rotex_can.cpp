@@ -66,6 +66,7 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_later_calls()
 , m_dhw_run_lambdas()
 , m_optimized_defrosting(false)
+, m_betriebsmodus_before_dhw()
 , m_project_git_hash_sensor(nullptr)
 , m_project_git_hash()
 , m_thermal_power_sensor(new CanSensor("thermal_power")) // Create dummy sensors to avoid nullptr without HA api communicaction. Can be overwritten by the user.
@@ -244,6 +245,10 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
             const uint32_t MODE_SUMMER = 0x05;
             uint8_t new_mode = 0x0;
 
+            if (art_current != STATE_DHW_PRODUCTION && art_current != STATE_DEFROSTING) {
+                m_betriebsmodus_before_dhw = art_current;
+            }
+
             if (art_current == STATE_DEFROSTING && art_previous == STATE_HEATING && modus == STATE_HEATING) {
                 new_mode = MODE_SUMMER;
             } else if (art_current == STATE_DEFROSTING && art_previous == STATE_DHW_PRODUCTION && modus == STATE_HEATING) {
@@ -252,7 +257,7 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
                 new_mode = MODE_HEATING;
             } else if (art_current == STATE_STANDBY && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) {
                 new_mode = MODE_HEATING;
-            } else if (art_current == STATE_DHW_PRODUCTION && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) {
+            } else if (art_current == STATE_DHW_PRODUCTION && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER && m_betriebsmodus_before_dhw == STATE_HEATING) {
                 new_mode = MODE_HEATING;
             }
 

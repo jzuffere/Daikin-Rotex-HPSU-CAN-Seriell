@@ -312,9 +312,9 @@ void DaikinRotexCanComponent::dhw_run() {
         float temp2 {0};
 
         if (CanNumber const* pNumber = dynamic_cast<CanNumber const*>(pEntity)) {
-            temp2 = pNumber->state;
+            temp2 = pNumber->state / pEntity->get_config().divider;
         } else if (CanSelect const* pSelect = dynamic_cast<CanSelect const*>(pEntity)) {
-            temp2 = pSelect->getKey(pSelect->state);
+            temp2 = pSelect->getKey(pSelect->state) / pEntity->get_config().divider;
         }
 
         if (temp2 > 0) {

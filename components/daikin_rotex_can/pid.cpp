@@ -15,6 +15,7 @@ float PID::compute(float setpoint, float current_value, float dt, std::string& l
 
      // P-Anteil filtern
     m_filtered_p = m_alpha_p * error + (1 - m_alpha_p) * m_filtered_p;
+    const float filtered_p = m_filtered_p;
     float p_term = m_p * m_filtered_p;
 
     // I-Anteil (mit Anti-Windup)
@@ -34,7 +35,8 @@ float PID::compute(float setpoint, float current_value, float dt, std::string& l
 
     m_last_update = millis();
 
-    logstr += Utils::format(", p: %f, i: %f, d: %f, o: %f", p_term, i_term, d_term, output);
+    logstr += Utils::format(", p: %f, i: %f, d: %f, map: %f, fp: %f, mfp: %f, mp: %f, o: %f",
+        p_term, i_term, d_term, m_alpha_p, filtered_p, m_filtered_p, m_p, output);
 
     return output;
 }

@@ -104,7 +104,6 @@ private:
     bool on_custom_select(std::string const& id, uint8_t value);
     void on_betriebsart(TEntity::TVariant const& current, TEntity::TVariant const& previous);
 
-    void throwPeriodicError(std::string const& message);
     bool is_command_set(TMessage const&);
     std::string recalculate_state(EntityBase* pEntity, std::string const& new_state);
     void update_supply_setpoint_regulated();

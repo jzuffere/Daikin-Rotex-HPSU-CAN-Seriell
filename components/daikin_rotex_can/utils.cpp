@@ -1,5 +1,6 @@
 #include "esphome/components/daikin_rotex_can/utils.h"
 #include "esphome/core/log.h"
+#include "esphome/core/hal.h"
 #include <iomanip>
 #include <regex>
 
@@ -131,7 +132,7 @@ void Utils::setBytes(TMessage& data, uint16_t value, uint8_t offset, uint8_t len
 
 template<typename... Args>
 void Utils::log(std::string const& tag, std::string const& str_format, Args... args) {
-    const std::string formated = Utils::format(str_format, args...);
+    std::string formated = Utils::format(str_format, args...);
     const std::string log_filter = g_log_filter;
     bool found = log_filter.empty();
     if (!found) {
@@ -143,10 +144,12 @@ void Utils::log(std::string const& tag, std::string const& str_format, Args... a
         }
     }
     if (found) {
+        formated = Utils::format("millis: %d|", millis()) + formated;
         ESP_LOGI(tag.c_str(), formated.c_str(), "");
     }
 }
 
+template void Utils::log<char const*, char const*, char const*, char const*, char const*>(const std::string &msg1, const std::string &msg2, const char* param1, const char* param2, const char* param3, const char* param4, const char* param5);
 template void Utils::log<char const*, char const*, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, char const* arg2, char const* arg3, char const* arg4);
 template void Utils::log<char const*, float, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, float arg2, char const* arg3, char const* arg4);
 template void Utils::log<char const*, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, char const* arg2, char const* arg3);

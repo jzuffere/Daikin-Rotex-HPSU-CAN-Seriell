@@ -17,6 +17,8 @@ public:
     , m_max_integral(max_integral)
     , m_alpha_p(alpha_p)
     , m_alpha_d(alpha_d)
+    , m_filtered_p(0)
+    , m_filtered_d(0)
     , m_last_update(0)
     , m_logging(false)
     {
@@ -35,8 +37,10 @@ private:
     float m_previous_error;
     float m_integral;
     float m_max_integral;
-    float m_alpha_p, m_alpha_d;
-    float m_filtered_p, m_filtered_d;
+    float m_alpha_p;
+    float m_alpha_d;
+    float m_filtered_p;
+    float m_filtered_d;
     uint32_t m_last_update;
     bool m_logging;
 };

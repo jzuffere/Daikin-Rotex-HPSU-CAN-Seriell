@@ -32,7 +32,6 @@ static const std::string STATE_SUMMER = translate("summer");
 static const std::string STATE_STANDBY = translate("standby");
 static const std::string DEFECT = translate("defect");
 static const std::string LOW_TEMPERATURE_SPREAD = translate("low_temperature_spread");
-static const uint32_t POST_SETUP_TIMOUT = 15*1000;
 
 DaikinRotexCanComponent::ErrorDetection::ErrorDetection(uint32_t detection_time_ms, bool stop_detection_in_good_case)
 : m_error_timestamp(0u)
@@ -88,11 +87,9 @@ void DaikinRotexCanComponent::setup() {
     ESP_LOGI(TAG, "setup");
 
     for (auto const& pEntity : m_entity_manager.get_entities()) {
-        call_later([pEntity](){
-            ESP_LOGI("setup", "name: %s, id: %s, can_id: %s, command: %s",
-                pEntity->getName().c_str(), pEntity->get_id().c_str(),
-                Utils::to_hex(pEntity->get_config().can_id).c_str(), Utils::to_hex(pEntity->get_config().command).c_str());
-        }, POST_SETUP_TIMOUT);
+        ESP_LOGI("setup", "name: %s, id: %s, can_id: %s, command: %s",
+            pEntity->getName().c_str(), pEntity->get_id().c_str(),
+            Utils::to_hex(pEntity->get_config().can_id).c_str(), Utils::to_hex(pEntity->get_config().command).c_str());
 
         pEntity->set_canbus(m_pCanbus);
         if (CanTextSensor* pTextSensor = dynamic_cast<CanTextSensor*>(pEntity)) {
@@ -112,9 +109,7 @@ void DaikinRotexCanComponent::setup() {
     m_entity_manager.removeInvalidRequests();
     const uint32_t size = m_entity_manager.size();
 
-    call_later([size](){
-        ESP_LOGI(TAG, "entities.size: %d", size);
-    }, POST_SETUP_TIMOUT);
+    ESP_LOGI(TAG, "entities.size: %d", size);
 
     CanSelect* p_optimized_defrosting = m_entity_manager.get_select(OPTIMIZED_DEFROSTING);
     if (p_optimized_defrosting != nullptr) {
@@ -202,6 +197,8 @@ void DaikinRotexCanComponent::update_thermal_power() {
 
     const float thermal_power_raw = (tv->state - tr->state) * (4.19 * flow_rate->state) / 3600.0f;
 
+    ESP_LOGI("update_thermal_power", "tv: %f, tr: %f, flow: %f, power_raw: %f", tv->state, tr->state, flow_rate->state, thermal_power_raw);
+
     m_thermal_power_raw_sensor->publish(thermal_power_raw);
     m_thermal_power_sensor->publish(thermal_power_raw);
 }
@@ -212,6 +209,8 @@ void DaikinRotexCanComponent::update_temperature_spread() {
 
     if (tv != nullptr && tr != nullptr) {
         const float temperature_spread = tv->state - tr->state;
+
+        ESP_LOGI("update_temperature_spread", "tv: %f, tr: %f", tv->state, tr->state);
 
         m_temperature_spread_sensor->publish(temperature_spread);
         m_temperature_spread_raw_sensor->publish(temperature_spread);
@@ -266,6 +265,9 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
             } else if (art_current == STATE_STANDBY && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) { // Special case: Defrost -> Standby
                 new_mode = m_betriebsmodus_before_dhw_and_defrosting;
             }
+
+            Utils::log(TAG, "on_betriebsart art_current: %s, art_previous: %s, modus: %s, new_mode: %s, before_dhw_defrosting: %s",
+                art_current.c_str(), art_previous.c_str(), modus.c_str(), new_mode.c_str(), m_betriebsmodus_before_dhw_and_defrosting.c_str());
 
             if (new_mode != modus) {
                 const uint16_t ui_new_mode = p_betriebs_modus->getKey(new_mode);
@@ -377,6 +379,7 @@ void DaikinRotexCanComponent::run_dhw_lambdas() {
 
 void DaikinRotexCanComponent::loop() {
     m_entity_manager.sendNextPendingGet();
+
     for (auto it = m_later_calls.begin(); it != m_later_calls.end(); ) {
         if (millis() > it->second) { // checking millis() here is important for callLater!
             it->first();
@@ -455,13 +458,6 @@ void DaikinRotexCanComponent::handle(uint32_t can_id, std::vector<uint8_t> const
 
 void DaikinRotexCanComponent::dump_config() {
     ESP_LOGCONFIG(TAG, "DaikinRotexCanComponent");
-}
-
-void DaikinRotexCanComponent::throwPeriodicError(std::string const& message) {
-    call_later([message, this]() {
-        ESP_LOGE(TAG, message.c_str());
-        throwPeriodicError(message);
-    }, POST_SETUP_TIMOUT);
 }
 
 bool DaikinRotexCanComponent::is_command_set(TMessage const& message) {

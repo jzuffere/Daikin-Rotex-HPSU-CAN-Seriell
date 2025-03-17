@@ -103,8 +103,10 @@ private:
     void updateState(std::string const& id);
     bool on_custom_select(std::string const& id, uint8_t value);
     void on_betriebsart(TEntity::TVariant const& current, TEntity::TVariant const& previous);
+    void on_betriebsmodus(TEntity::TVariant const& current, TEntity::TVariant const& previous);
 
     bool is_command_set(TMessage const&);
+    static bool is_modus_heating(std::string const& modus);
     std::string recalculate_state(EntityBase* pEntity, std::string const& new_state);
     void update_supply_setpoint_regulated();
 

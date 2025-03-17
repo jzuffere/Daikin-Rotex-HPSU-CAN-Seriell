@@ -67,7 +67,7 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_later_calls()
 , m_dhw_run_lambdas()
 , m_optimized_defrosting(false)
-, m_betriebsmodus_before_dhw_and_defrosting()
+, m_betriebsmodus_before_dhw_and_defrosting(STATE_STANDBY)
 , m_project_git_hash_sensor(nullptr)
 , m_project_git_hash()
 , m_thermal_power_sensor(new CanSensor("thermal_power")) // Create dummy sensors to avoid nullptr without HA api communicaction. Can be overwritten by the user.
@@ -136,8 +136,12 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
             run_dhw_lambdas();
         });
     } else if (id == BETRIEBS_ART) {
-        call_later([this, current, previous](){ // copy arguments -> temporary values
+        call_later([this, current, previous](){
             on_betriebsart(current, previous);
+        });
+    } else if (id == BETRIEBS_MODUS) {
+        call_later([this, current, previous](){
+            on_betriebsmodus(current, previous);
         });
     } else if (id == TEMPERATURE_ANTIFREEZE) {
         CanSelect* p_optimized_defrosting = m_entity_manager.get_select(OPTIMIZED_DEFROSTING);
@@ -244,32 +248,31 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
             const auto modus = p_betriebs_modus->state;
             std::string new_mode = modus;
 
-            if (art_current != STATE_DHW_PRODUCTION && art_current != STATE_DEFROSTING) {
-                m_betriebsmodus_before_dhw_and_defrosting = modus;
-            }
-
-            const auto is_modus_heating = [](std::string const& modus) {
-                return modus == STATE_HEATING || modus == STATE_AUTOMATIC1 || modus == STATE_AUTOMATIC2;
-            };
-
             const bool modus_is_heating = is_modus_heating(modus);
 
             if (art_current == STATE_DEFROSTING && art_previous == STATE_HEATING && modus_is_heating) { // Heating -> Defrost
                 new_mode = STATE_SUMMER;
             } else if (art_current == STATE_HEATING && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) { // Defrost -> Heating
                 new_mode = m_betriebsmodus_before_dhw_and_defrosting; // Heating, Automatic 1 or Automatic 2
+                m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
             } else if (art_current == STATE_DEFROSTING && art_previous == STATE_DHW_PRODUCTION && modus_is_heating) { // DHW -> Defrost
                 new_mode = STATE_SUMMER;
             } else if (art_current == STATE_DHW_PRODUCTION && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER && is_modus_heating(m_betriebsmodus_before_dhw_and_defrosting)) { // Defrost -> DHW
                 new_mode = m_betriebsmodus_before_dhw_and_defrosting;
+                m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
             } else if (art_current == STATE_STANDBY && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) { // Special case: Defrost -> Standby
                 new_mode = m_betriebsmodus_before_dhw_and_defrosting;
+                m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
             }
 
             Utils::log(TAG, "on_betriebsart art_current: %s, art_previous: %s, modus: %s, new_mode: %s, before_dhw_defrosting: %s",
                 art_current.c_str(), art_previous.c_str(), modus.c_str(), new_mode.c_str(), m_betriebsmodus_before_dhw_and_defrosting.c_str());
 
             if (new_mode != modus) {
+                if (art_current == STATE_DEFROSTING && modus_is_heating) {
+                    m_betriebsmodus_before_dhw_and_defrosting = modus;
+                }
+
                 const uint16_t ui_new_mode = p_betriebs_modus->getKey(new_mode);
                 if (ui_new_mode != 0x0) {
                     m_entity_manager.sendSet(p_betriebs_modus->get_name(), ui_new_mode);
@@ -282,6 +285,25 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
 
     if (current != previous) {
         m_spread_error_detection.reset_good_case();
+    }
+}
+
+void DaikinRotexCanComponent::on_betriebsmodus(TEntity::TVariant const& current, TEntity::TVariant const& previous) {
+    CanTextSensor const* p_betriebs_art = m_entity_manager.get_text_sensor(BETRIEBS_ART);
+
+    if (p_betriebs_art == nullptr) {
+        return;
+    }
+
+    const auto modus_current = std::get<std::string>(current);
+    const auto modus_previous = std::get<std::string>(previous);
+    const std::string art = p_betriebs_art->state;
+
+    Utils::log(TAG, "on_betriebsmodus current: %s, previous: %s, art: %s", modus_current.c_str(), modus_previous.c_str(), art.c_str());
+
+
+    if (!is_modus_heating(modus_current) && art != STATE_DEFROSTING) {
+        m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
     }
 }
 
@@ -466,6 +488,10 @@ bool DaikinRotexCanComponent::is_command_set(TMessage const& message) {
         }
     }
     return false;
+}
+
+bool DaikinRotexCanComponent::is_modus_heating(std::string const& modus) {
+    return modus == STATE_HEATING || modus == STATE_AUTOMATIC1 || modus == STATE_AUTOMATIC2;
 }
 
 std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std::string const& new_state) {

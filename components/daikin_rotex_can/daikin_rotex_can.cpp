@@ -364,7 +364,6 @@ void DaikinRotexCanComponent::dump() {
 
 void DaikinRotexCanComponent::on_custom_number(number::Number& number, float value) {
     if (&number == m_supply_setpoint_regulated) {
-        ESP_LOGE(TAG, "on_custom_number(%f) => supply_setpoint_regulated", value);
         number.publish_state(value);
     }
 }

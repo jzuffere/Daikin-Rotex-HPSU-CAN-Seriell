@@ -481,7 +481,8 @@ sensor_configuration = [
         "data_offset": 3,
         "data_size": 2,
         "divider": 10.0,
-        "range": [0, 90]
+        "range": [0, 90],
+        "update_entities": ["vorlauf_soll_tv_delta"]
     },
     {
         "type": "sensor",
@@ -653,7 +654,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entities": ["thermal_power", "temperature_spread", "tv_tvbh_delta"],
+        "update_entities": ["thermal_power", "temperature_spread", "tv_tvbh_delta", "vorlauf_soll_tv_delta"],
         "range": [1, 90]
     },
     {
@@ -1561,6 +1562,7 @@ CONF_TEMPERATURE_SPREAD = "temperature_spread"
 CONF_TEMPERATURE_SPREAD_RAW = "temperature_spread_raw"
 CONF_TV_TVBH_DELTA = "tv_tvbh_delta"
 CONF_TVBH_TR_DELTA = "tvbh_tr_delta"
+CONF_VORLAUF_SOLL_TV_DELTA = "vorlauf_soll_tv_delta"
 
 CONF_DUMP = "dump"
 CONF_DHW_RUN = "dhw_run"
@@ -1687,6 +1689,14 @@ entity_schemas.update({
         icon="mdi:thermometer-lines"
     ).extend(),
     cv.Optional(CONF_TVBH_TR_DELTA): sensor.sensor_schema(
+        CanSensor,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_of_measurement=UNIT_CELSIUS,
+        accuracy_decimals=1,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:thermometer-lines"
+    ).extend(),
+    cv.Optional(CONF_VORLAUF_SOLL_TV_DELTA): sensor.sensor_schema(
         CanSensor,
         device_class=DEVICE_CLASS_TEMPERATURE,
         unit_of_measurement=UNIT_CELSIUS,
@@ -1935,6 +1945,10 @@ async def to_code(config):
             sens = await sensor.new_sensor(yaml_sensor_conf)
             cg.add(sens.set_id(CONF_TVBH_TR_DELTA))
             cg.add(var.set_tvbh_tr_delta(sens))
+        if yaml_sensor_conf := entities.get(CONF_VORLAUF_SOLL_TV_DELTA):
+            sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(sens.set_id(CONF_VORLAUF_SOLL_TV_DELTA))
+            cg.add(var.set_vorlauf_soll_tv_delta(sens))
 
         ########## Buttons ##########
 

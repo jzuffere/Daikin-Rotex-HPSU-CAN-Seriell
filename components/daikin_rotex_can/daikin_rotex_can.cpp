@@ -76,6 +76,7 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_temperature_spread_raw_sensor(new CanSensor("temperature_spread_raw"))
 , m_tv_tvbh_delta_sensor(new CanSensor("tv_tvbh_delta"))
 , m_tvbh_tr_delta_sensor(new CanSensor("tvbh_tr_delta"))
+, m_vorlauf_soll_tv_delta(new CanSensor("vorlauf_soll_tv_delta"))
 , m_dhw_error_detection(10 * 60, false)      // 10 minute
 , m_bpv_error_detection(10 * 60, false)      // 10 minutes
 , m_spread_error_detection(20 * 60, true)    // 20 minutes
@@ -198,6 +199,15 @@ void DaikinRotexCanComponent::updateState(std::string const& id) {
         }
 
         m_tvbh_tr_delta_sensor->publish_state(tvbh->state - tr->state);
+    } else if (id == "vorlauf_soll_tv_delta") {
+        CanSensor const* vorlauf_soll = m_entity_manager.get_sensor("target_supply_temperature");
+        CanSensor const* tv = m_entity_manager.get_sensor("tv");
+
+        if (vorlauf_soll == nullptr || tv == nullptr) {
+            return;
+        }
+
+        m_vorlauf_soll_tv_delta->publish_state(vorlauf_soll->state - tv->state);
     }
 }
 

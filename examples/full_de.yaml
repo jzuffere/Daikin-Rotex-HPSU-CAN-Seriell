@@ -444,6 +444,10 @@ daikin_rotex_can:
       name: Abtau-Optimierung
     temperature_spread:
       name: Spreizung
+    tv_tvbh_delta:
+      name: Tv-TVBH Delta
+    tvbh_tr_delta:
+      name: TVBH-Tr Delta
 
 # Rocon U1
 

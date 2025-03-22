@@ -653,7 +653,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entities": ["thermal_power", "temperature_spread"],
+        "update_entities": ["thermal_power", "temperature_spread", "tv_tvbh_delta"],
         "range": [1, 90]
     },
     {
@@ -668,7 +668,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entities": ["thermal_power"],
+        "update_entities": ["thermal_power", "tv_tvbh_delta", "tvbh_tr_delta"],
         "range": [1, 90]
     },
     {
@@ -683,7 +683,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entities": ["thermal_power", "temperature_spread"],
+        "update_entities": ["thermal_power", "temperature_spread", "tvbh_tr_delta"],
         "range": [1, 90]
     },
     {
@@ -1559,6 +1559,8 @@ CONF_THERMAL_POWER = "thermal_power"
 CONF_THERMAL_POWER_RAW = "thermal_power_raw"
 CONF_TEMPERATURE_SPREAD = "temperature_spread"
 CONF_TEMPERATURE_SPREAD_RAW = "temperature_spread_raw"
+CONF_TV_TVBH_DELTA = "tv_tvbh_delta"
+CONF_TVBH_TR_DELTA = "tvbh_tr_delta"
 
 CONF_DUMP = "dump"
 CONF_DHW_RUN = "dhw_run"
@@ -1669,6 +1671,22 @@ entity_schemas.update({
         icon="mdi:thermometer-lines"
     ).extend(),
     cv.Optional(CONF_TEMPERATURE_SPREAD_RAW): sensor.sensor_schema(
+        CanSensor,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_of_measurement=UNIT_CELSIUS,
+        accuracy_decimals=1,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:thermometer-lines"
+    ).extend(),
+    cv.Optional(CONF_TV_TVBH_DELTA): sensor.sensor_schema(
+        CanSensor,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        unit_of_measurement=UNIT_CELSIUS,
+        accuracy_decimals=1,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:thermometer-lines"
+    ).extend(),
+    cv.Optional(CONF_TVBH_TR_DELTA): sensor.sensor_schema(
         CanSensor,
         device_class=DEVICE_CLASS_TEMPERATURE,
         unit_of_measurement=UNIT_CELSIUS,
@@ -1909,6 +1927,14 @@ async def to_code(config):
             sens = await sensor.new_sensor(yaml_sensor_conf)
             cg.add(sens.set_id(CONF_TEMPERATURE_SPREAD_RAW))
             cg.add(var.set_temperature_spread_raw(sens))
+        if yaml_sensor_conf := entities.get(CONF_TV_TVBH_DELTA):
+            sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(sens.set_id(CONF_TV_TVBH_DELTA))
+            cg.add(var.set_tv_tvbh_delta(sens))
+        if yaml_sensor_conf := entities.get(CONF_TVBH_TR_DELTA):
+            sens = await sensor.new_sensor(yaml_sensor_conf)
+            cg.add(sens.set_id(CONF_TVBH_TR_DELTA))
+            cg.add(var.set_tvbh_tr_delta(sens))
 
         ########## Buttons ##########
 

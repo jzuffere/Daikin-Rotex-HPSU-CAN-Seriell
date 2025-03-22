@@ -74,6 +74,8 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_thermal_power_raw_sensor(new CanSensor("thermal_power_raw"))
 , m_temperature_spread_sensor(new CanSensor("temperature_spread")) // Used to detect valve malfunctions, even if the sensor has not been defined by the user.
 , m_temperature_spread_raw_sensor(new CanSensor("temperature_spread_raw"))
+, m_tv_tvbh_delta_sensor(new CanSensor("tv_tvbh_delta"))
+, m_tvbh_tr_delta_sensor(new CanSensor("tvbh_tr_delta"))
 , m_dhw_error_detection(10 * 60, false)      // 10 minute
 , m_bpv_error_detection(10 * 60, false)      // 10 minutes
 , m_spread_error_detection(20 * 60, true)    // 20 minutes
@@ -178,6 +180,24 @@ void DaikinRotexCanComponent::updateState(std::string const& id) {
         update_thermal_power();
     } else if (id == "temperature_spread") {
         update_temperature_spread();
+    } else if (id == "tv_tvbh_delta") {
+        CanSensor const* tv = m_entity_manager.get_sensor("tv");
+        CanSensor const* tvbh = m_entity_manager.get_sensor("tvbh");
+
+        if (tv == nullptr || tvbh == nullptr) {
+            return;
+        }
+
+        m_tv_tvbh_delta_sensor->publish_state(tv->state - tvbh->state);
+    } else if (id == "tvbh_tr_delta") {
+        CanSensor const* tvbh = m_entity_manager.get_sensor("tvbh");
+        CanSensor const* tr = m_entity_manager.get_sensor("tr");
+
+        if (tvbh == nullptr || tr == nullptr) {
+            return;
+        }
+
+        m_tvbh_tr_delta_sensor->publish_state(tvbh->state - tr->state);
     }
 }
 

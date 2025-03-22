@@ -52,6 +52,8 @@ public:
     void set_thermal_power_sensor_raw(CanSensor* pSensor);
     void set_temperature_spread(CanSensor* pSensor);
     void set_temperature_spread_raw(CanSensor* pSensor);
+    void set_tv_tvbh_delta(CanSensor* pSensor);
+    void set_tvbh_tr_delta(CanSensor* pSensor);
     void set_max_spread(float tvbh_tv, float tvbh_tr);
     void set_tv_tvbh_tr_offset(float tv_offset, float tvbh_offset, float tr_offset);
     void add_entity(TEntity* pEntity);
@@ -127,6 +129,8 @@ private:
     CanSensor* m_thermal_power_raw_sensor;
     CanSensor* m_temperature_spread_sensor;
     CanSensor* m_temperature_spread_raw_sensor;
+    CanSensor* m_tv_tvbh_delta_sensor;
+    CanSensor* m_tvbh_tr_delta_sensor;
     MaxSpread m_max_spread;
     TvTvBHTrOffset m_tv_tvbh_tr_offset;
     ErrorDetection m_dhw_error_detection;
@@ -170,6 +174,15 @@ inline void DaikinRotexCanComponent::set_temperature_spread(CanSensor* pSensor) 
 inline void DaikinRotexCanComponent::set_temperature_spread_raw(CanSensor* pSensor) {
     m_temperature_spread_raw_sensor = pSensor;
 }
+
+inline void DaikinRotexCanComponent::set_tv_tvbh_delta(CanSensor* pSensor) {
+    m_tv_tvbh_delta_sensor = pSensor;
+}
+
+inline void DaikinRotexCanComponent::set_tvbh_tr_delta(CanSensor* pSensor) {
+    m_tvbh_tr_delta_sensor = pSensor;
+}
+
 
 inline void DaikinRotexCanComponent::set_max_spread(float tvbh_tv, float tvbh_tr) {
     m_max_spread = { tvbh_tv, tvbh_tr };

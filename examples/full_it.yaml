@@ -444,6 +444,10 @@ daikin_rotex_can:
       name: Sbrinamento Ottimizzato
     temperature_spread:
       name: Delta Termico"
+    tv_tvbh_delta:
+      name: Tv-TVBH Delta
+    tvbh_tr_delta:
+      name: TVBH-Tr Delta
 
 # Rocon U1
 

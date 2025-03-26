@@ -18,9 +18,9 @@ class DaikinRotexCanComponent: public Component, public SensorAccessor, public I
     };
 
     struct TvTvBHTrOffset {
-        float tv_offset;
-        float tvbh_offset;
-        float tr_offset;
+        float tv;
+        float tvbh;
+        float tr;
     };
 
     class ErrorDetection {

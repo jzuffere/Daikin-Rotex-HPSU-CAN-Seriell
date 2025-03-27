@@ -160,6 +160,7 @@ template void Utils::log<char const*, bool>(std::string const&, std::string cons
 template void Utils::log<char const*, char const*, char const*, char const*, bool>(std::string const&, std::string const&, char const*, char const*, char const*, char const*, bool);
 template void Utils::log<const char*, const char*, float>(std::string const&, std::string const&, const char*, const char*, float);
 template void Utils::log<const char*, bool, float, float, bool, unsigned int, unsigned long>(std::string const&, std::string const&, const char*, bool, float, float, bool, unsigned int, unsigned long);
+template void Utils::log<char const*, bool, float, float, bool, unsigned long, unsigned long>(std::string const&, std::string const&, char const*, bool, float, float, bool, unsigned long, unsigned long);
 template void Utils::log<float, float, float, float, float, unsigned int, unsigned long>(std::string const&, std::string const&, float, float, float, float, float, unsigned int, unsigned long);
 template void Utils::log<float, float, float, float, float, unsigned long, unsigned long>(std::string const&, std::string const&, float, float, float, float, float, unsigned long, unsigned long);
 template void Utils::log<float, float, float, float>(std::string const&, std::string const&, float, float, float, float);

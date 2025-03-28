@@ -9,6 +9,8 @@ namespace esphome {
 namespace daikin_rotex_can {
 
 class Utils {
+    friend class LogFilterText;
+
     using TVoidFunc = std::function<void()>;
 public:
     template<typename... Args>
@@ -22,8 +24,7 @@ public:
     }
 
     template<typename First, typename ... T>
-    static bool is_in(First &&first, T && ... t)
-    {
+    static bool is_in(First &&first, T && ... t) {
         return ((first == t) || ...);
     }
 
@@ -38,7 +39,12 @@ public:
     static void setBytes(TMessage& data, uint16_t value, uint8_t offset, uint8_t len);
 
     template<typename... Args>
-    static void log(std::string const& tag, std::string const& str_format, Args... args);
+    static void log(std::string const& tag, std::string const& str_format, Args... args) {
+        log_impl(tag, Utils::format(str_format, args...));
+    }
+
+private:
+    static void log_impl(std::string const& tag, std::string const& formatted);
 
     static std::string g_log_filter;
 };

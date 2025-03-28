@@ -130,44 +130,22 @@ void Utils::setBytes(TMessage& data, uint16_t value, uint8_t offset, uint8_t len
     }
 }
 
-template<typename... Args>
-void Utils::log(std::string const& tag, std::string const& str_format, Args... args) {
-    std::string formated = Utils::format(str_format, args...);
+void Utils::log_impl(std::string const& tag, std::string const& formatted) {
     const std::string log_filter = g_log_filter;
     bool found = log_filter.empty();
     if (!found) {
         for (auto segment : Utils::split(log_filter)) {
-            if (Utils::find(tag, segment) || Utils::find(formated, segment)) {
+            if (Utils::find(tag, segment) || Utils::find(formatted, segment)) {
                 found = true;
                 break;
             }
         }
     }
     if (found) {
-        formated = Utils::format("millis: %d|", millis()) + formated;
-        ESP_LOGI(tag.c_str(), formated.c_str(), "");
+        std::string final_log = Utils::format("millis: %d|", millis()) + formatted;
+        ESP_LOGI(tag.c_str(), "%s", final_log.c_str());
     }
 }
-
-template void Utils::log<char const*, char const*, char const*, char const*, char const*>(const std::string &msg1, const std::string &msg2, const char* param1, const char* param2, const char* param3, const char* param4, const char* param5);
-template void Utils::log<char const*, char const*, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, char const* arg2, char const* arg3, char const* arg4);
-template void Utils::log<char const*, float, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, float arg2, char const* arg3, char const* arg4);
-template void Utils::log<char const*, char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, char const* arg2, char const* arg3);
-template void Utils::log<char const*, char const*>(std::string const& tag, std::string const& str_format, char const* arg1, char const* arg2);
-template void Utils::log<char const*>(std::string const& tag, std::string const& str_format, char const* arg);
-template void Utils::log<char const*, unsigned char>(std::string const&, std::string const&, char const*, unsigned char);
-template void Utils::log<char const*, bool>(std::string const&, std::string const&, char const*, bool);
-template void Utils::log<char const*, char const*, char const*, char const*, bool>(std::string const&, std::string const&, char const*, char const*, char const*, char const*, bool);
-template void Utils::log<const char*, const char*, float>(std::string const&, std::string const&, const char*, const char*, float);
-template void Utils::log<const char*, bool, float, float, bool, unsigned int, unsigned long>(std::string const&, std::string const&, const char*, bool, float, float, bool, unsigned int, unsigned long);
-template void Utils::log<char const*, bool, float, float, bool, unsigned long, unsigned long>(std::string const&, std::string const&, char const*, bool, float, float, bool, unsigned long, unsigned long);
-template void Utils::log<float, float, float, float, float, unsigned int, unsigned long>(std::string const&, std::string const&, float, float, float, float, float, unsigned int, unsigned long);
-template void Utils::log<float, float, float, float, float, unsigned long, unsigned long>(std::string const&, std::string const&, float, float, float, float, float, unsigned long, unsigned long);
-template void Utils::log<float, float, float, float>(std::string const&, std::string const&, float, float, float, float);
-template void Utils::log<unsigned char>(std::string const& tag, std::string const& str_format, unsigned char arg);
-template void Utils::log<int>(std::string const& tag, std::string const& str_format, int arg);
-template void Utils::log<void*, void*>(std::string const& tag, std::string const& str_format, void* arg1, void* arg2);
-template void Utils::log<>(std::string const& tag, std::string const& str_format);
 
 }
 }

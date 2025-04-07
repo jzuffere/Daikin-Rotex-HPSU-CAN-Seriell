@@ -453,7 +453,7 @@ void DaikinRotexCanComponent::loop() {
 void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
     CanTextSensor const* p_betriebs_art = m_entity_manager.get_text_sensor(BETRIEBS_ART);
     CanBinarySensor const* state_compressor = m_entity_manager.get_binary_sensor(STATE_COMPRESSOR);
-    CanNumber const* pMaxTVorlauf = m_entity_manager.get_number("max_target_flow_temp"); // pMax_target_flow_temp
+    CanNumber const* pMaxTVorlauf = m_entity_manager.get_number("max_target_flow_temp", false); // pMax_target_flow_temp
     CanSensor const* pTv = m_entity_manager.get_sensor("tv");
     CanSensor const* pVorlaufSoll = m_entity_manager.get_sensor("target_supply_temperature");
 

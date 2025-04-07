@@ -27,21 +27,21 @@ void TEntityManager::removeInvalidRequests() {
     );
 }
 
-EntityBase* TEntityManager::get_entity_base(std::string const& id) {
+EntityBase* TEntityManager::get_entity_base(std::string const& id, bool log_missing) {
     TEntity const* pEntity = get(id);
     if (pEntity != nullptr) {
         return pEntity->get_entity_base();
-    } else {
+    } else if (log_missing) {
         ESP_LOGE(TAG, "get_entity_base: Entity not found: %s", id.c_str());
     }
     return nullptr;
 }
 
-EntityBase const* TEntityManager::get_entity_base(std::string const& id) const {
+EntityBase const* TEntityManager::get_entity_base(std::string const& id, bool log_missing) const {
     TEntity const* pEntity = get(id);
     if (pEntity != nullptr) {
         return pEntity->get_entity_base();
-    } else {
+    } else if (log_missing) {
         ESP_LOGE(TAG, "get_entity_base: Entity not found: %s", id.c_str());
     }
     return nullptr;
@@ -107,14 +107,16 @@ CanBinarySensor const* TEntityManager::get_binary_sensor(std::string const& id) 
     return nullptr;
 }
 
-CanNumber const* TEntityManager::get_number(std::string const& id) const {
-    EntityBase const* pEntity = get_entity_base(id);
+CanNumber const* TEntityManager::get_number(std::string const& id, bool log_missing) const {
+    EntityBase const* pEntity = get_entity_base(id, log_missing);
     if (CanNumber const* pNumber = dynamic_cast<CanNumber const*>(pEntity)) {
         return pNumber;
-    } else if (pEntity) {
-        ESP_LOGE(TAG, "Entity is not a number: %s", pEntity->get_name().c_str());
-    } else {
-        ESP_LOGE(TAG, "const get_number() => Entity is null!");
+    } else if (log_missing) {
+        if (pEntity) {
+            ESP_LOGE(TAG, "Entity is not a number: %s", pEntity->get_name().c_str());
+        } else {
+            ESP_LOGE(TAG, "const get_number() => Entity is null!");
+        }
     }
     return nullptr;
 }

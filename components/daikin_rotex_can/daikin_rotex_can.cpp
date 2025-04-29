@@ -440,7 +440,7 @@ void DaikinRotexCanComponent::loop() {
         }
     }
 
-    const uint32_t millis = ::millis();
+    const uint32_t millis = esphome::millis();
     for (TEntity* pEntity : m_entity_manager.get_entities()) {
         pEntity->update(millis);
     }

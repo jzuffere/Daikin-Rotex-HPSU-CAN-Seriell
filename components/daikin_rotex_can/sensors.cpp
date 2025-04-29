@@ -49,7 +49,7 @@ void CanSensor::update(uint32_t millis) {
     TEntity::update(millis);
 
     if (m_smooth) {
-        const float dt = (::millis() - m_pid.get_last_update()) / 1000.0f; // seconds
+        const float dt = (esphome::millis() - m_pid.get_last_update()) / 1000.0f; // seconds
         if (dt > 10.0f) {
             if (std::isnan(m_smooth_state)) {
                 m_smooth_state = m_state;

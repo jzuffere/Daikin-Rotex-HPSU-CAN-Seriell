@@ -231,7 +231,7 @@ void DaikinRotexCanComponent::update_thermal_power() {
 
     const float thermal_power_raw = (tv->state - tr->state) * (4.19 * flow_rate->state) / 3600.0f;
 
-    ESP_LOGI("update_thermal_power", "tv: %f, tr: %f, flow: %f, power_raw: %f", tv->state, tr->state, flow_rate->state, thermal_power_raw);
+    Utils::log("update_thermal_power", "tv: %f, tr: %f, flow: %f, power_raw: %f", tv->state, tr->state, flow_rate->state, thermal_power_raw);
 
     m_thermal_power_raw_sensor->publish(thermal_power_raw);
     m_thermal_power_sensor->publish(thermal_power_raw);
@@ -244,7 +244,7 @@ void DaikinRotexCanComponent::update_temperature_spread() {
     if (tv != nullptr && tr != nullptr) {
         const float temperature_spread = tv->state - tr->state;
 
-        ESP_LOGI("update_temperature_spread", "tv: %f, tr: %f", tv->state, tr->state);
+        Utils::log("update_temperature_spread", "tv: %f, tr: %f", tv->state, tr->state);
 
         m_temperature_spread_sensor->publish(temperature_spread);
         m_temperature_spread_raw_sensor->publish(temperature_spread);

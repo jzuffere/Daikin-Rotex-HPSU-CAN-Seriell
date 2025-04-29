@@ -5,6 +5,7 @@
 #include "esphome/components/daikin_rotex_can/utils.h"
 #include "esphome/components/esp32_can/esp32_can.h"
 #include "esphome/core/entity_base.h"
+#include "esphome/core/hal.h"
 #include <functional>
 #include <stdint.h>
 #include <variant>

@@ -32,6 +32,8 @@ static const std::string STATE_SUMMER = translate("summer");
 static const std::string STATE_STANDBY = translate("standby");
 static const std::string DEFECT = translate("defect");
 static const std::string LOW_TEMPERATURE_SPREAD = translate("low_temperature_spread");
+static const std::string T_MISSING_FLOW = translate("missing_flow");
+static const std::string T_WRONG_MIXER_POSITION = translate("wrong_mixer_position");
 
 DaikinRotexCanComponent::ErrorDetection::ErrorDetection(uint32_t detection_time_ms, bool stop_detection_in_good_case)
 : m_error_timestamp(0u)
@@ -77,9 +79,10 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_tv_tvbh_delta_sensor(new CanSensor("tv_tvbh_delta"))
 , m_tvbh_tr_delta_sensor(new CanSensor("tvbh_tr_delta"))
 , m_vorlauf_soll_tv_delta(new CanSensor("vorlauf_soll_tv_delta"))
-, m_dhw_error_detection(10 * 60, false)      // 10 minute
+, m_mixer_error_detection(10 * 60, false)      // 10 minute
 , m_bpv_error_detection(10 * 60, false)      // 10 minutes
 , m_spread_error_detection(20 * 60, true)    // 20 minutes
+, m_dhw_error_detection(5 * 60, false)
 , m_supply_setpoint_regulated(nullptr)
 , m_last_supply_setpoint_regulated_ts(0u)
 {
@@ -546,10 +549,10 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
 
             Utils::log(ERROR_CODE_TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_ts: %d, millis: %d",
                 tv_state, tvbh_state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state,
-                    m_dhw_error_detection.get_error_detection_timestamp(),
+                    m_mixer_error_detection.get_error_detection_timestamp(),
                     millis());
 
-            if (m_dhw_error_detection.handle_error_detection(is_error_state)) {
+            if (m_mixer_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(ERROR_CODE_TAG, "3UV DHW defekt (1) => tvbh: %f, tv: %f, max_spread: %f, bpv: %f, flow_rate: %f",
                     tvbh_state, tv_state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state);
                 return new_state + "|3UV DHW " + DEFECT;
@@ -599,6 +602,14 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
                     ESP_LOGE(TAG, "Low spread!");
                     return new_state + "|" + LOW_TEMPERATURE_SPREAD;
                 }
+            }
+        }
+
+        if (p_betriebs_art != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr && state_compressor != nullptr) {
+            const bool is_error_state = p_betriebs_art->state == STATE_DHW_PRODUCTION && (flow_rate->state == 0.0f || dhw_mixer_position->state == 0.0f || !state_compressor->state);
+            if (m_dhw_error_detection.handle_error_detection(is_error_state)) {
+                ESP_LOGE(TAG, "DHW error => flow: %d, mixer_pos: %d, state_compressor: %d", flow_rate->state, dhw_mixer_position->state, state_compressor->state);
+                return new_state + "|" + T_MISSING_FLOW;
             }
         }
     }

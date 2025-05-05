@@ -135,9 +135,10 @@ private:
     CanSensor* m_vorlauf_soll_tv_delta;
     MaxSpread m_max_spread;
     TvTvBHTrOffset m_tv_tvbh_tr_offset;
-    ErrorDetection m_dhw_error_detection;
+    ErrorDetection m_mixer_error_detection;
     ErrorDetection m_bpv_error_detection;
     ErrorDetection m_spread_error_detection;
+    ErrorDetection m_dhw_error_detection;
     number::Number* m_supply_setpoint_regulated;
     uint32_t m_last_supply_setpoint_regulated_ts;
 };

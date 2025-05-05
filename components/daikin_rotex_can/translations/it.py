@@ -98,6 +98,7 @@ translations_it = {
     "sg2_hot_water_and_heating_plus_5c": "SG2 - Acqua Calda e Riscaldamento +5°C",
     "sg3_hot_water_70c": "SG3 - Acqua Calda 70°C",
     "low_temperature_spread": "Bassa differenza di temperatura",
+    "missing_flow": "Assenza di circolazione",
     "low": "Basso",
     "normal": "Normale",
     "good": "Buono",

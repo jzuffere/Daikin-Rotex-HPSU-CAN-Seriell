@@ -22,18 +22,30 @@ static const std::string TEMPERATURE_ANTIFREEZE = "temperature_antifreeze";   //
 static const std::string FLOW_RATE = "flow_rate";
 static const std::string STATE_COMPRESSOR = "status_kompressor";
 static const std::string SUPPLY_SETPOINT_REGULATED = "supply_setpoint_regulated";
-static const std::string TEMPERATURE_ANTIFREEZE_OFF = translate("off");
-static const std::string STATE_DHW_PRODUCTION = translate("hot_water_production");
-static const std::string STATE_HEATING = translate("heating");
-static const std::string STATE_AUTOMATIC1 = translate("automatic_1");
-static const std::string STATE_AUTOMATIC2 = translate("automatic_2");
-static const std::string STATE_DEFROSTING = translate("defrosting");
-static const std::string STATE_SUMMER = translate("summer");
-static const std::string STATE_STANDBY = translate("standby");
-static const std::string DEFECT = translate("defect");
-static const std::string LOW_TEMPERATURE_SPREAD = translate("low_temperature_spread");
-static const std::string T_MISSING_FLOW = translate("missing_flow");
-static const std::string T_WRONG_MIXER_POSITION = translate("wrong_mixer_position");
+
+inline bool operator==(const Translation& lhs, const std::string& rhs) {
+    return static_cast<std::string>(lhs) == rhs;
+}
+
+inline bool operator==(const std::string& lhs, const Translation& rhs) {
+    return lhs == static_cast<std::string>(rhs);
+}
+
+inline bool operator!=(const Translation& lhs, const std::string& rhs) {
+    return static_cast<std::string>(lhs) != rhs;
+}
+
+inline bool operator!=(const std::string& lhs, const Translation& rhs) {
+    return lhs != static_cast<std::string>(rhs);
+}
+
+inline std::string operator+(const Translation& lhs, const std::string& rhs) {
+    return static_cast<std::string>(lhs) + rhs;
+}
+
+inline std::string operator+(const std::string& lhs, const Translation& rhs) {
+    return lhs + static_cast<std::string>(rhs);
+}
 
 DaikinRotexCanComponent::ErrorDetection::ErrorDetection(uint32_t detection_time_ms, bool stop_detection_in_good_case)
 : m_error_timestamp(0u)
@@ -69,7 +81,7 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_later_calls()
 , m_dhw_run_lambdas()
 , m_optimized_defrosting(false)
-, m_betriebsmodus_before_dhw_and_defrosting(STATE_STANDBY)
+, m_betriebsmodus_before_dhw_and_defrosting(Translation::T_STANDBY)
 , m_project_git_hash_sensor(nullptr)
 , m_project_git_hash()
 , m_thermal_power_sensor(new CanSensor("thermal_power")) // Create dummy sensors to avoid nullptr without HA api communicaction. Can be overwritten by the user.
@@ -153,7 +165,7 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
         CanSelect* p_optimized_defrosting = m_entity_manager.get_select(OPTIMIZED_DEFROSTING);
         CanSelect* p_temperature_antifreeze = m_entity_manager.get_select(TEMPERATURE_ANTIFREEZE);
         if (p_optimized_defrosting != nullptr && p_temperature_antifreeze != nullptr) {
-            if (p_temperature_antifreeze->state != TEMPERATURE_ANTIFREEZE_OFF && m_optimized_defrosting.value() != 0x0) {
+            if (p_temperature_antifreeze->state != Translation::T_OFF && m_optimized_defrosting.value() != 0x0) {
                 p_optimized_defrosting->publish_select_key(0x0);
                 m_optimized_defrosting.save(0x0);
                 Utils::log(TAG, "set %s: %d", OPTIMIZED_DEFROSTING.c_str(), m_optimized_defrosting.value());
@@ -261,7 +273,7 @@ bool DaikinRotexCanComponent::on_custom_select(std::string const& id, uint8_t va
 
         if (p_temperature_antifreeze != nullptr) {
             if (value != 0) {
-                m_entity_manager.sendSet(p_temperature_antifreeze->get_name(), p_temperature_antifreeze->getKey(TEMPERATURE_ANTIFREEZE_OFF));
+                m_entity_manager.sendSet(p_temperature_antifreeze->get_name(), p_temperature_antifreeze->getKey(Translation::T_OFF));
             }
         } else {
             ESP_LOGE(TAG, "on_custom_select(%s, %d) => temperature_antifreeze select is missing!", id.c_str(), value);
@@ -283,26 +295,26 @@ void DaikinRotexCanComponent::on_betriebsart(TEntity::TVariant const& current, T
 
             const bool modus_is_heating = is_modus_heating(modus);
 
-            if (art_current == STATE_DEFROSTING && art_previous == STATE_HEATING && modus_is_heating) { // Heating -> Defrost
-                new_mode = STATE_SUMMER;
-            } else if (art_current == STATE_HEATING && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) { // Defrost -> Heating
+            if (art_current == Translation::T_DEFROSTING && art_previous == Translation::T_HEATING && modus_is_heating) { // Heating -> Defrost
+                new_mode = Translation::T_SUMMER;
+            } else if (art_current == Translation::T_HEATING && art_previous == Translation::T_DEFROSTING && modus == Translation::T_SUMMER) { // Defrost -> Heating
                 new_mode = m_betriebsmodus_before_dhw_and_defrosting; // Heating, Automatic 1 or Automatic 2
-                m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
-            } else if (art_current == STATE_DEFROSTING && art_previous == STATE_DHW_PRODUCTION && modus_is_heating) { // DHW -> Defrost
-                new_mode = STATE_SUMMER;
-            } else if (art_current == STATE_DHW_PRODUCTION && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER && is_modus_heating(m_betriebsmodus_before_dhw_and_defrosting)) { // Defrost -> DHW
+                m_betriebsmodus_before_dhw_and_defrosting = Translation::T_STANDBY;
+            } else if (art_current == Translation::T_DEFROSTING && art_previous == Translation::T_HOT_WATER_PRODUCTION && modus_is_heating) { // DHW -> Defrost
+                new_mode = Translation::T_SUMMER;
+            } else if (art_current == Translation::T_HOT_WATER_PRODUCTION && art_previous == Translation::T_DEFROSTING && modus == Translation::T_SUMMER && is_modus_heating(m_betriebsmodus_before_dhw_and_defrosting)) { // Defrost -> DHW
                 new_mode = m_betriebsmodus_before_dhw_and_defrosting;
-                m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
-            } else if (art_current == STATE_STANDBY && art_previous == STATE_DEFROSTING && modus == STATE_SUMMER) { // Special case: Defrost -> Standby
+                m_betriebsmodus_before_dhw_and_defrosting = Translation::T_STANDBY;
+            } else if (art_current == Translation::T_STANDBY && art_previous == Translation::T_DEFROSTING && modus == Translation::T_SUMMER) { // Special case: Defrost -> Standby
                 new_mode = m_betriebsmodus_before_dhw_and_defrosting;
-                m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
+                m_betriebsmodus_before_dhw_and_defrosting = Translation::T_STANDBY;
             }
 
             Utils::log(TAG, "on_betriebsart art_current: %s, art_previous: %s, modus: %s, new_mode: %s, before_dhw_defrosting: %s",
                 art_current.c_str(), art_previous.c_str(), modus.c_str(), new_mode.c_str(), m_betriebsmodus_before_dhw_and_defrosting.c_str());
 
             if (new_mode != modus) {
-                if (art_current == STATE_DEFROSTING && modus_is_heating) {
+                if (art_current == Translation::T_DEFROSTING && modus_is_heating) {
                     m_betriebsmodus_before_dhw_and_defrosting = modus;
                 }
 
@@ -335,8 +347,8 @@ void DaikinRotexCanComponent::on_betriebsmodus(TEntity::TVariant const& current,
     Utils::log(TAG, "on_betriebsmodus current: %s, previous: %s, art: %s", modus_current.c_str(), modus_previous.c_str(), art.c_str());
 
 
-    if (!is_modus_heating(modus_current) && art != STATE_DEFROSTING) {
-        m_betriebsmodus_before_dhw_and_defrosting = STATE_STANDBY;
+    if (!is_modus_heating(modus_current) && art != Translation::T_DEFROSTING) {
+        m_betriebsmodus_before_dhw_and_defrosting = Translation::T_STANDBY;
     }
 }
 
@@ -464,7 +476,7 @@ void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
         return;
     }
 
-    if (p_betriebs_art->state != STATE_HEATING) {
+    if (p_betriebs_art->state != Translation::T_HEATING) {
         return;
     }
 
@@ -524,7 +536,7 @@ bool DaikinRotexCanComponent::is_command_set(TMessage const& message) {
 }
 
 bool DaikinRotexCanComponent::is_modus_heating(std::string const& modus) {
-    return modus == STATE_HEATING || modus == STATE_AUTOMATIC1 || modus == STATE_AUTOMATIC2;
+    return modus == Translation::T_HEATING || modus == Translation::T_AUTOMATIC_1 || modus == Translation::T_AUTOMATIC_2;
 }
 
 std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std::string const& new_state) {
@@ -555,7 +567,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
             if (m_mixer_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(ERROR_CODE_TAG, "3UV DHW defekt (1) => tvbh: %f, tv: %f, max_spread: %f, bpv: %f, flow_rate: %f",
                     tvbh_state, tv_state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state);
-                return new_state + "|3UV DHW " + DEFECT;
+                return new_state + "|3UV DHW " + Translation::T_DEFECT;
             }
         }
 
@@ -570,12 +582,12 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
             if (m_bpv_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(ERROR_CODE_TAG, "3UV BPV defekt (1) => tvbh: %f, tr: %f, max_spread: %f, dhw_mixer_pos: %f, flow_rate: %f",
                     tvbh_state, tr_state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state);
-                return new_state + "|3UV BPV " + DEFECT;
+                return new_state + "|3UV BPV " + Translation::T_DEFECT;
             }
         }
 
         if (p_betriebs_art != nullptr && state_compressor != nullptr) {
-            if (Utils::is_in(p_betriebs_art->state, STATE_DHW_PRODUCTION, STATE_HEATING) && state_compressor->state) {
+            if (Utils::is_in(p_betriebs_art->state, Translation::T_HOT_WATER_PRODUCTION, Translation::T_HEATING) && state_compressor->state) {
                 /*
                     Coefficients calculated using the table:
                     Tv  | minimal temperature spread
@@ -600,16 +612,16 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
 
                 if (m_spread_error_detection.handle_error_detection(is_error_state)) {
                     ESP_LOGE(TAG, "Low spread!");
-                    return new_state + "|" + LOW_TEMPERATURE_SPREAD;
+                    return new_state + "|" + Translation::T_LOW_TEMPERATURE_SPREAD;
                 }
             }
         }
 
         if (p_betriebs_art != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr && state_compressor != nullptr) {
-            const bool is_error_state = p_betriebs_art->state == STATE_DHW_PRODUCTION && (flow_rate->state == 0.0f || dhw_mixer_position->state == 0.0f || !state_compressor->state);
+            const bool is_error_state = p_betriebs_art->state == Translation::T_HOT_WATER_PRODUCTION && (flow_rate->state == 0.0f || dhw_mixer_position->state == 0.0f || !state_compressor->state);
             if (m_dhw_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(TAG, "DHW error => flow: %d, mixer_pos: %d, state_compressor: %d", flow_rate->state, dhw_mixer_position->state, state_compressor->state);
-                return new_state + "|" + T_MISSING_FLOW;
+                return new_state + "|" + Translation::T_MISSING_FLOW;
             }
         }
     }

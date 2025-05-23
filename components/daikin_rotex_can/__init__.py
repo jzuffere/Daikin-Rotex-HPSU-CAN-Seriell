@@ -1579,7 +1579,7 @@ entity_schemas = {}
 
 for sensor_conf in sensor_configuration:
     name = sensor_conf.get("name")
-    icon = sensor_conf.get("icon", sensor._UNDEF)
+    icon = sensor_conf.get("icon", cv.UNDEFINED)
     divider = sensor_conf.get("divider", 1.0)
 
     match sensor_conf.get("type"):
@@ -1587,25 +1587,25 @@ for sensor_conf in sensor_configuration:
             entity_schemas.update({
                 cv.Optional(name): sensor.sensor_schema(
                     CanSensor,
-                    device_class=(sensor_conf.get("device_class") if sensor_conf.get("device_class") != None else sensor._UNDEF),
-                    unit_of_measurement=sensor_conf.get("unit_of_measurement", sensor._UNDEF),
-                    accuracy_decimals=sensor_conf.get("accuracy_decimals", sensor._UNDEF),
-                    state_class=sensor_conf.get("state_class", sensor._UNDEF),
-                    icon=sensor_conf.get("icon", sensor._UNDEF)
+                    device_class=(sensor_conf.get("device_class") if sensor_conf.get("device_class") != None else cv.UNDEFINED),
+                    unit_of_measurement=sensor_conf.get("unit_of_measurement", cv.UNDEFINED),
+                    accuracy_decimals=sensor_conf.get("accuracy_decimals", cv.UNDEFINED),
+                    state_class=sensor_conf.get("state_class", cv.UNDEFINED),
+                    icon=sensor_conf.get("icon", cv.UNDEFINED)
                 ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
             })
         case "text_sensor":
             entity_schemas.update({
                 cv.Optional(name): text_sensor.text_sensor_schema(
                     CanTextSensor,
-                    icon=sensor_conf.get("icon", text_sensor._UNDEF)
+                    icon=sensor_conf.get("icon", cv.UNDEFINED)
                 ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
             })
         case "binary_sensor":
             entity_schemas.update({
                 cv.Optional(name): binary_sensor.binary_sensor_schema(
                     CanBinarySensor,
-                    icon=sensor_conf.get("icon", binary_sensor._UNDEF)
+                    icon=sensor_conf.get("icon", cv.UNDEFINED)
                 ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
             })
         case "select":
@@ -1613,7 +1613,7 @@ for sensor_conf in sensor_configuration:
                 cv.Optional(name): select.select_schema(
                     CanSelect,
                     entity_category=ENTITY_CATEGORY_CONFIG,
-                    icon=sensor_conf.get("icon", select._UNDEF)
+                    icon=sensor_conf.get("icon", cv.UNDEFINED)
                 ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
             })
         case "number":
@@ -1624,7 +1624,7 @@ for sensor_conf in sensor_configuration:
                         "number": number.number_schema(
                             CanNumber,
                             entity_category=ENTITY_CATEGORY_CONFIG,
-                            icon=sensor_conf.get("icon", number._UNDEF)
+                            icon=sensor_conf.get("icon", cv.UNDEFINED)
                         ).extend({
                             cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t,
                             cv.Optional(CONF_MODE, default="BOX"): cv.enum(number.NUMBER_MODES, upper=True)
@@ -1632,7 +1632,7 @@ for sensor_conf in sensor_configuration:
                         "select": select.select_schema(
                             CanSelect,
                             entity_category=ENTITY_CATEGORY_CONFIG,
-                            icon=sensor_conf.get("icon", select._UNDEF)
+                            icon=sensor_conf.get("icon", cv.UNDEFINED)
                         ).extend({
                             cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t,
                             select_options_schema: cv.Schema({
@@ -1737,17 +1737,13 @@ CONFIG_SCHEMA = cv.Schema(
 
         ########## Texts ##########
 
-        cv.Optional(CONF_LOG_FILTER_TEXT): text.TEXT_SCHEMA.extend(
-            {
-                cv.GenerateID(): cv.declare_id(LogFilterText),
-                cv.Optional(CONF_MODE, default="TEXT"): cv.enum(text.TEXT_MODES, upper=True),
-            }
+        cv.Optional(CONF_LOG_FILTER_TEXT): text.text_schema(
+            LogFilterText,
+            mode="text"
         ),
-        cv.Optional(CONF_CUSTOM_REQUEST_TEXT): text.TEXT_SCHEMA.extend(
-            {
-                cv.GenerateID(): cv.declare_id(CustomRequestText),
-                cv.Optional(CONF_MODE, default="TEXT"): cv.enum(text.TEXT_MODES, upper=True),
-            }
+        cv.Optional(CONF_CUSTOM_REQUEST_TEXT): text.text_schema(
+            CustomRequestText,
+            mode="text"
         ),
         cv.Required(CONF_PROJECT_GIT_HASH): text_sensor.text_sensor_schema(
             icon="mdi:git",

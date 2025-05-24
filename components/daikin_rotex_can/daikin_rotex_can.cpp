@@ -547,6 +547,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
     CanSensor const* bpv = m_entity_manager.get_sensor("bypass_valve");
     CanSensor const* flow_rate = m_entity_manager.get_sensor(FLOW_RATE);
     CanSensor const* ta = m_entity_manager.get_sensor("temperature_outside");
+    CanSensor const* tdhw1 = m_entity_manager.get_sensor("tdhw1");
     CanTextSensor const* error_code = m_entity_manager.get_text_sensor("error_code");
     CanTextSensor const* p_betriebs_art = m_entity_manager.get_text_sensor(BETRIEBS_ART);
     CanBinarySensor const* state_compressor = m_entity_manager.get_binary_sensor(STATE_COMPRESSOR);
@@ -617,8 +618,8 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
             }
         }
 
-        if (p_betriebs_art != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr && state_compressor != nullptr) {
-            const bool is_error_state = p_betriebs_art->state == Translation::T_HOT_WATER_PRODUCTION && (flow_rate->state == 0.0f || dhw_mixer_position->state == 0.0f || !state_compressor->state);
+        if (p_betriebs_art != nullptr && flow_rate != nullptr && dhw_mixer_position != nullptr && state_compressor != nullptr && tdhw1 != nullptr) {
+            const bool is_error_state = p_betriebs_art->state == Translation::T_HOT_WATER_PRODUCTION && tdhw1->state < 48.0 && (flow_rate->state == 0.0f || dhw_mixer_position->state == 0.0f || !state_compressor->state);
             if (m_dhw_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(TAG, "DHW error => flow: %d, mixer_pos: %d, state_compressor: %d", flow_rate->state, dhw_mixer_position->state, state_compressor->state);
                 return new_state + "|" + Translation::T_MISSING_FLOW;

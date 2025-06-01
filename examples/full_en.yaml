@@ -377,6 +377,24 @@ daikin_rotex_can:
 #Estrich
 #Estrichprogramm
 
+# Konfiguration -> HZK Konfig -> Kühlen
+    start_t_out_cooling:
+      name: Start T-Out Cooling
+    max_t_out_cooling:
+      name: Max T-Out Cooling
+    t_flow_cooling_start:
+      name: T-Flow Cooling start
+    t_flow_cooling_max:
+      name: T-Flow Cooling max
+    min_t_flow_cooling:
+      name: Min T-Flow Cooling
+    t_flow_cooling:
+      name: T-Flow Cooling
+    t_h_c_switch:
+      name: T_H/C Switch
+    cooling_setpoint_adj:
+      name: Cooling Setpoint adjustment
+
 # Konfiguration -> HZK Konfig -> Heizen
 
     heating_limit_day:

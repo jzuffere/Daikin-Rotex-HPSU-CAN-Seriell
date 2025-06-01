@@ -380,6 +380,24 @@ daikin_rotex_can:
 #Estrich
 #Estrichprogramm
 
+# Konfiguration -> HZK Konfig -> Kühlen
+    start_t_out_cooling:
+      name: Start Kühlen A-Temp
+    max_t_out_cooling:
+      name: Max Kühlen A-Temp
+    t_flow_cooling_start:
+      name: VL-Soll Start Kühlen
+    t_flow_cooling_max:
+      name: VL-Soll Max Kühlen
+    min_t_flow_cooling:
+      name: Min VL-Soll Kühlen
+    t_flow_cooling:
+      name: T-VL Kühlen
+    t_h_c_switch:
+      name: T_HK Umschaltung
+    cooling_setpoint_adj:
+      name: Kühlsollwert Korrektur
+
 # Konfiguration -> HZK Konfig -> Heizen
 
     heating_limit_day:

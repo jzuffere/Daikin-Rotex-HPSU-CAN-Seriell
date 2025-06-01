@@ -101,7 +101,12 @@ void CanNumber::control(float value) {
 
 bool CanNumber::handleValue(uint16_t value, TEntity::TVariant& current, TVariant& previous) {
     previous = state;
-    current = value / m_config.divider;
+    if (m_config.isSigned) {
+        current = static_cast<int16_t>(value) / m_config.divider;
+    } else {
+        current = value / m_config.divider;
+    }
+
     publish_state(std::get<float>(current));
     return true;
 }

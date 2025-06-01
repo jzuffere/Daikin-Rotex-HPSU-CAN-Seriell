@@ -380,6 +380,24 @@ daikin_rotex_can:
 #Estrich
 #Estrichprogramm
 
+# Konfiguration -> HZK Konfig -> Kühlen
+    start_t_out_cooling:
+      name: Avvio raffrescamento T esterna
+    max_t_out_cooling:
+      name: Max T esterna per raffrescamento
+    t_flow_cooling_start:
+      name: Mandata target avvio raffrescamento
+    t_flow_cooling_max:
+      name: Mandata target max raffrescamento
+    min_t_flow_cooling:
+      name: Mandata target min raffrescamento
+    t_flow_cooling:
+      name: Temperatura mandata raffrescamento
+    t_h_c_switch:
+      name: Commutazione riscaldamento/raffrescamento
+    cooling_setpoint_adj:
+      name: Correzione setpoint raffrescamento
+
 # Konfiguration -> HZK Konfig -> Heizen
 
     heating_limit_day:

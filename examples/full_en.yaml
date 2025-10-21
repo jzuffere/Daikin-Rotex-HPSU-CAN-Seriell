@@ -117,7 +117,7 @@ daikin_rotex_can:
   #tv_offset: -1.0
   #tvbh_offset: -1.0
   #tr_offset: -1.0
-  
+
   #max_spread_tvbh_tv: 0.5  # Legt Tv-TVBH-Schwellwert fest, bei dem die DHW-Ventil-Fehler-Erkennung auslösen soll
   #max_spread_tvbh_tr: 0.5  # Legt TVBH-Tr-Schwellwert fest, bei dem die BPV-Ventil-Fehler-Erkennung auslösen soll
 

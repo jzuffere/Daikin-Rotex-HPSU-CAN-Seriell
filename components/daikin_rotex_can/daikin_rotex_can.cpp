@@ -536,7 +536,7 @@ bool DaikinRotexCanComponent::is_command_set(TMessage const& message) {
 }
 
 bool DaikinRotexCanComponent::is_modus_heating(std::string const& modus) {
-    return modus == Translation::T_HEATING || modus == Translation::T_AUTOMATIC_1 || modus == Translation::T_AUTOMATIC_2;
+    return modus == Translation::T_HEATING || modus == Translation::T_LOWERING || modus == Translation::T_AUTOMATIC_1 || modus == Translation::T_AUTOMATIC_2;
 }
 
 std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std::string const& new_state) {

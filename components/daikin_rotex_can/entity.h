@@ -109,10 +109,6 @@ public:
         return m_config.pEntity != nullptr ? m_config.pEntity->get_name().str() : "<INVALID>";
     }
 
-    EntityBase* get_entity_base() const {
-        return m_config.pEntity;
-    }
-
     bool isGetSupported() const {
         return m_config.pEntity != nullptr;
     }

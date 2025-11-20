@@ -21,9 +21,6 @@ public:
     TEntity* get(std::string const& id);
     TEntity const* get(std::string const& id) const;
 
-    EntityBase* get_entity_base(std::string const& id, bool log_missing = true);
-    EntityBase const* get_entity_base(std::string const& id, bool log_missing = true) const;
-
     const std::vector<TEntity*>& get_entities() const { return m_entities; }
 
     CanSensor* get_sensor(std::string const& id);

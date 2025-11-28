@@ -1382,6 +1382,18 @@ sensor_configuration = [
     },
     {
         "type": "select",
+        "name": "room_therm" ,
+        "icon": "mdi:pump",
+        "command": "31 00 FA 06 78 00 00",
+        "data_offset": 6,
+        "data_size": 1,
+        "map": {
+            0x00: delayed_translate("off"),
+            0x01: delayed_translate("on")
+        }
+    },
+    {
+        "type": "select",
         "name": "optimized_defrosting",
         "icon": "mdi:snowflake-melt",
         "map": {

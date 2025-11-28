@@ -459,6 +459,8 @@ daikin_rotex_can:
       name: TVBH-Tr Delta
     vorlauf_soll_tv_delta:
       name: Mandata Setpoint - T. Mandata
+    room_therm:
+      name: Termostato ambiente
 
 # Rocon U1
 

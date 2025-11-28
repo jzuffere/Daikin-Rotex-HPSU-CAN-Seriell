@@ -459,6 +459,9 @@ daikin_rotex_can:
       name: TVBH-Tr Delta
     vorlauf_soll_tv_delta:
       name: FlowSetpoint-Tv Delta
+    room_therm:
+      name: Room Thermostat
+
 # Rocon U1
 
     #t_room:

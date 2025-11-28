@@ -55,6 +55,19 @@ _LOGGER.info("Project Git Hash %s", git_hash)
 
 ########## Configuration of Sensors, TextSensors, BinarySensors, Selects and Numbers ##########
 
+dhw_map = {
+    35: "35 °C",
+    40: "40 °C",
+    45: "45 °C",
+    48: "48 °C",
+    49: "49 °C",
+    50: "50 °C",
+    51: "51 °C",
+    52: "52 °C",
+    60: "60 °C",
+    70: "70 °C",
+};
+
 sensor_configuration = [
    {
         "type": "select",
@@ -933,7 +946,7 @@ sensor_configuration = [
     },
     {
         "type": "number",
-        "name": "target_hot_water_temperature",
+        "name": "target_hot_water_temperature_1",
         "device_class": DEVICE_CLASS_TEMPERATURE,
         "unit_of_measurement": UNIT_CELSIUS,
         "accuracy_decimals": 1,
@@ -946,18 +959,41 @@ sensor_configuration = [
         "data_offset": 3,
         "data_size": 2,
         "divider": 10.0,
-        "map": {
-            35: "35 °C",
-            40: "40 °C",
-            45: "45 °C",
-            48: "48 °C",
-            49: "49 °C",
-            50: "50 °C",
-            51: "51 °C",
-            52: "52 °C",
-            60: "60 °C",
-            70: "70 °C",
-        }
+        "map": dhw_map
+    },
+    {
+        "type": "number",
+        "name": "target_hot_water_temperature_2",
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "unit_of_measurement": UNIT_CELSIUS,
+        "accuracy_decimals": 1,
+        "state_class": STATE_CLASS_MEASUREMENT,
+        "icon": "mdi:waves-arrow-right",
+        "min_value": 35,
+        "max_value": 70,
+        "step": 1,
+        "command": "31 00 FA 0A 06 00 00",
+        "data_offset": 5,
+        "data_size": 2,
+        "divider": 10.0,
+        "map": dhw_map
+    },
+    {
+        "type": "number",
+        "name": "target_hot_water_temperature_3",
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "unit_of_measurement": UNIT_CELSIUS,
+        "accuracy_decimals": 1,
+        "state_class": STATE_CLASS_MEASUREMENT,
+        "icon": "mdi:waves-arrow-right",
+        "min_value": 35,
+        "max_value": 70,
+        "step": 1,
+        "command": "31 00 FA 01 3E 00 00",
+        "data_offset": 5,
+        "data_size": 2,
+        "divider": 10.0,
+        "map": dhw_map
     },
     {
         "type": "text_sensor",

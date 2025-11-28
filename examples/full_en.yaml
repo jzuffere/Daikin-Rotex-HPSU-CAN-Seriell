@@ -232,8 +232,14 @@ daikin_rotex_can:
   # T-Abwesend
 
 # WW Solltemp
-    target_hot_water_temperature:
+    target_hot_water_temperature_1:
       name: Target Hot Water Temperature
+      type: select
+    target_hot_water_temperature_2:
+      name: Target Hot Water Temperature 2
+      type: select
+    target_hot_water_temperature_3:
+      name: Target Hot Water Temperature 3
       type: select
 
 # T-WWSoll 2

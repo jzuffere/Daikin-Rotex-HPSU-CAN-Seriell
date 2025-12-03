@@ -17,6 +17,7 @@ static const char* TAG = "daikin_rotex_can";
 static const char* ERROR_CODE_TAG = "error code";
 static const std::string BETRIEBS_ART = "mode_of_operating";
 static const std::string BETRIEBS_MODUS = "operating_mode";
+static const std::string TARGET_HOT_WATER_TEMP_1 = "target_hot_water_temperature_1";
 static const std::string OPTIMIZED_DEFROSTING = "optimized_defrosting";
 static const std::string TEMPERATURE_ANTIFREEZE = "temperature_antifreeze";   // T-Frostschutz
 static const std::string FLOW_RATE = "flow_rate";
@@ -78,8 +79,6 @@ void DaikinRotexCanComponent::ErrorDetection::reset_good_case() {
 
 DaikinRotexCanComponent::DaikinRotexCanComponent()
 : m_entity_manager()
-, m_later_calls()
-, m_dhw_run_lambdas()
 , m_optimized_defrosting(false)
 , m_betriebsmodus_before_dhw_and_defrosting(Translation::T_STANDBY)
 , m_project_git_hash_sensor(nullptr)
@@ -97,6 +96,7 @@ DaikinRotexCanComponent::DaikinRotexCanComponent()
 , m_dhw_error_detection(5 * 60, false)
 , m_supply_setpoint_regulated(nullptr)
 , m_last_supply_setpoint_regulated_ts(0u)
+, m_dhw_set_back_temp_handle()
 {
     m_temperature_spread_sensor->set_smooth(true);
 }
@@ -142,23 +142,24 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
     std::list<std::string> const& update_entities = pEntity->get_update_entity();
     for (std::string const& update_entity : update_entities) {
         if (!update_entity.empty()) {
-            call_later([update_entity, this](){
+            Scheduler::getInstance().call_later([update_entity, this](){
                 updateState(update_entity);
             });
         }
     }
 
     const std::string id = pEntity->get_id();
-    if (id == "target_hot_water_temperature") {
-        call_later([this](){
-            run_dhw_lambdas();
-        });
+    if (id == TARGET_HOT_WATER_TEMP_1) {
+        if (m_dhw_set_back_temp_handle.is_valid()) {
+            ESP_LOGI(TAG, "dhw_run accelerate");
+            m_dhw_set_back_temp_handle.accelerate();
+        }
     } else if (id == BETRIEBS_ART) {
-        call_later([this, current, previous](){
+        Scheduler::getInstance().call_later([this, current, previous](){
             on_betriebsart(current, previous);
         });
     } else if (id == BETRIEBS_MODUS) {
-        call_later([this, current, previous](){
+        Scheduler::getInstance().call_later([this, current, previous](){
             on_betriebsmodus(current, previous);
         });
     } else if (id == TEMPERATURE_ANTIFREEZE) {
@@ -374,8 +375,10 @@ void DaikinRotexCanComponent::custom_request(std::string const& value) {
 
 ///////////////// Buttons /////////////////
 void DaikinRotexCanComponent::dhw_run() {
-    const std::string id {"target_hot_water_temperature"};
-    TEntity const* pEntity = m_entity_manager.get(id);
+    TEntity const* pEntity = m_entity_manager.get(TARGET_HOT_WATER_TEMP_1);
+
+    ESP_LOGI(TAG, "dhw_run()");
+
     if (pEntity != nullptr) {
         float temp1 {70};
         float temp2 {0};
@@ -387,11 +390,15 @@ void DaikinRotexCanComponent::dhw_run() {
         }
 
         if (temp2 > 0) {
+            ESP_LOGI(TAG, "dhw_run(), temp1: %f", temp1);
+
             const std::string name = pEntity->getName();
 
             m_entity_manager.sendSet(name,  temp1);
 
-            call_later([name, temp2, this](){
+            m_dhw_set_back_temp_handle = Scheduler::getInstance().call_later([name, temp2, this](){
+                ESP_LOGI(TAG, "dhw_run(), temp2: %f", temp2);
+
                 m_entity_manager.sendSet(name, temp2);
             }, 10*1000);
         } else {
@@ -434,25 +441,10 @@ void DaikinRotexCanComponent::on_custom_number(number::Number& number, float val
     }
 }
 
-void DaikinRotexCanComponent::run_dhw_lambdas() {
-    if (!m_dhw_run_lambdas.empty()) {
-        auto& lambda = m_dhw_run_lambdas.front();
-        lambda();
-        m_dhw_run_lambdas.pop_front();
-    }
-}
-
 void DaikinRotexCanComponent::loop() {
     m_entity_manager.sendNextPendingGet();
 
-    for (auto it = m_later_calls.begin(); it != m_later_calls.end(); ) {
-        if (millis() > it->second) { // checking millis() here is important for callLater!
-            it->first();
-            it = m_later_calls.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    Scheduler::getInstance().update();
 
     const uint32_t millis = esphome::millis();
     for (TEntity* pEntity : m_entity_manager.get_entities()) {

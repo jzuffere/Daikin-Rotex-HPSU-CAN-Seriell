@@ -3,6 +3,7 @@
 #include "esphome/components/daikin_rotex_can/persistent_value.h"
 #include "esphome/components/daikin_rotex_can/entity_manager.h"
 #include "esphome/components/daikin_rotex_can/sensors.h"
+#include "esphome/components/daikin_rotex_can/scheduler.h"
 #include "esphome/components/daikin_rotex_can/pid.h"
 #include "esphome/components/esp32_can/esp32_can.h"
 #include "esphome/core/component.h"
@@ -38,8 +39,6 @@ class DaikinRotexCanComponent: public Component, public SensorAccessor, public I
         bool m_stop_detection_in_good_case;
     };
 public:
-    using TVoidFunc = std::function<void()>;
-
     DaikinRotexCanComponent();
     void setup() override;
     void loop() override;
@@ -78,12 +77,6 @@ public:
 
     void handle(uint32_t can_id, std::vector<uint8_t> const& data);
 
-    void run_dhw_lambdas();
-    void call_later(TVoidFunc lambda, uint32_t timeout = 0u) {
-        const uint32_t timestamp = millis();
-        m_later_calls.push_back({lambda, timestamp + timeout});
-    }
-
     void update_thermal_power();
     void update_temperature_spread();
 
@@ -117,8 +110,6 @@ private:
     std::shared_ptr<esphome::canbus::CanbusTrigger> m_canbus_trigger;
     std::shared_ptr<TCanbusAutomation> m_canbus_automation;
     std::shared_ptr<MyAction> m_canbus_action;
-    std::list<std::pair<TVoidFunc, uint32_t>> m_later_calls;
-    std::list<TVoidFunc> m_dhw_run_lambdas;
 
     PersistentValue<bool> m_optimized_defrosting;
     std::string m_betriebsmodus_before_dhw_and_defrosting;
@@ -141,6 +132,7 @@ private:
     ErrorDetection m_dhw_error_detection;
     number::Number* m_supply_setpoint_regulated;
     uint32_t m_last_supply_setpoint_regulated_ts;
+    CallHandle m_dhw_set_back_temp_handle;
 };
 
 inline void DaikinRotexCanComponent::set_canbus(esphome::esp32_can::ESP32Can* pCanbus) {

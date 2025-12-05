@@ -1,7 +1,7 @@
 #pragma once
 
 #include "esphome/components/daikin_rotex_can/sensor_accessor.h"
-#include "esphome/components/daikin_rotex_can/BidiMap.h"
+#include "esphome/components/daikin_rotex_can/bidi_map.h"
 #include "esphome/components/daikin_rotex_can/entity.h"
 #include "esphome/components/daikin_rotex_can/pid.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"

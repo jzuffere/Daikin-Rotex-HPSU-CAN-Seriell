@@ -47,6 +47,8 @@ public:
         return key_to_value.end();
     }
 
+    uint16_t getKey(std::string const& value) const;
+
     std::string string() const {
         std::stringstream ss;
         for (const auto& pair : key_to_value) {

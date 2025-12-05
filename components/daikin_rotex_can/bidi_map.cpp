@@ -1,10 +1,12 @@
-#include "esphome/components/daikin_rotex_can/BidiMap.h"
+#include "esphome/components/daikin_rotex_can/bidi_map.h"
 #include "esphome/core/log.h"
 
 #include <limits>
 
 namespace esphome {
 namespace daikin_rotex_can {
+
+static const char* TAG = "bidi_map";
 
 BidiMap::Iterator BidiMap::findNextByKey(uint16_t value) const {
     if (key_to_value.empty()) {
@@ -24,6 +26,16 @@ BidiMap::Iterator BidiMap::findNextByKey(uint16_t value) const {
     }
 
     return closest;
+}
+
+uint16_t BidiMap::getKey(std::string const& value) const {
+    auto it = findByValue(value);
+    if (it != end()) {
+        return it->first;
+    } else {
+        ESP_LOGE(TAG, "BidiMap::getKey(%s) => Value not found!", value.c_str());
+    }
+    return 0;
 }
 
 }

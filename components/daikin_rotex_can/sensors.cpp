@@ -123,13 +123,7 @@ void CanSelect::control(const std::string &value) {
 }
 
 uint16_t CanSelect::getKey(std::string const& value) const {
-    auto it = m_map.findByValue(value);
-    if (it != m_map.end()) {
-        return it->first;
-    } else {
-        ESP_LOGE(TAG, "CanSelect::getValue(%s) => Value not found!", value.c_str());
-    }
-    return 0;
+    return m_map.getKey(value);
 }
 
 void CanSelect::publish_select_key(uint16_t key) {

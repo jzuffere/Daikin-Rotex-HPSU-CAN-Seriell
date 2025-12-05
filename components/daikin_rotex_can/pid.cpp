@@ -33,7 +33,7 @@ float PID::compute(float setpoint, float current_value, float dt, std::string& l
     float output = p_term + i_term + d_term;
     m_previous_error = error;
 
-    m_last_update = millis();
+    m_last_update = esphome::millis();
 
     logstr += Utils::format(", p: %f, i: %f, d: %f, map: %f, fp: %f, mfp: %f, mp: %f, o: %f",
         p_term, i_term, d_term, m_alpha_p, filtered_p, m_filtered_p, m_p, output);

@@ -122,7 +122,7 @@ public:
     }
 
     bool isChangedInLastMilliseconds(uint32_t milliseconds) const {
-        return millis() > (getLastValueChange() + milliseconds);
+        return esphome::millis() > (getLastValueChange() + milliseconds);
     }
 
     void set_canbus(esphome::esp32_can::ESP32Can* pCanbus) {
@@ -189,7 +189,7 @@ private:
 
 inline bool TEntity::isGetNeeded() const {
     const uint32_t update_interval = get_update_interval() * 1000;
-    return getLastUpdate() == 0 || (millis() > (getLastUpdate() + update_interval));
+    return getLastUpdate() == 0 || (esphome::millis() > (getLastUpdate() + update_interval));
 }
 
 inline bool TEntity::is_command_set() const {

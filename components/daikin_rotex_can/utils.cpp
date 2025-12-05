@@ -142,7 +142,7 @@ void Utils::log_impl(std::string const& tag, std::string const& formatted) {
         }
     }
     if (found) {
-        std::string final_log = Utils::format("millis: %d|", millis()) + formatted;
+        std::string final_log = Utils::format("millis: %d|", esphome::millis()) + formatted;
         ESP_LOGI(tag.c_str(), "%s", final_log.c_str());
     }
 }

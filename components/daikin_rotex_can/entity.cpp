@@ -33,7 +33,7 @@ std::array<uint16_t, 7> TEntity::calculate_reponse(TMessage const& message) {
 }
 
 bool TEntity::isGetInProgress() const {
-    return m_last_get_timestamp > m_last_handle_timestamp && ((millis() - m_last_get_timestamp) < 3*1000); // Consider 3 sek => package is lost
+    return m_last_get_timestamp > m_last_handle_timestamp && ((esphome::millis() - m_last_get_timestamp) < 3*1000); // Consider 3 sek => package is lost
 }
 
 bool TEntity::isMatch(uint32_t can_id, TMessage const& responseData) const {
@@ -81,7 +81,7 @@ bool TEntity::handle(uint32_t can_id, TMessage const& responseData) {
         if (valid) {
             const bool changed = current != previous;
             if (changed) {
-                m_last_value_change_timestamp = millis();
+                m_last_value_change_timestamp = esphome::millis();
                 m_post_handle_lambda(this, current, previous);
             }
 
@@ -103,7 +103,7 @@ bool TEntity::handle(uint32_t can_id, TMessage const& responseData) {
             Utils::log("handle ", "%s<%s> can_id<%s> data<%s> changed<%d>",
                 getName().c_str(), value.c_str(), Utils::to_hex(can_id).c_str(), Utils::to_hex(responseData).c_str(), changed);
         }
-        m_last_handle_timestamp = millis();
+        m_last_handle_timestamp = esphome::millis();
         return true;
     }
     return false;
@@ -123,7 +123,7 @@ bool TEntity::sendGet(esphome::esp32_can::ESP32Can* pCanBus) {
     Utils::log("sendGet", "%s can_id<%s> command<%s>",
         getName().c_str(), Utils::to_hex(can_id).c_str(), Utils::to_hex(m_config.command).c_str());
 
-    m_last_get_timestamp = millis();
+    m_last_get_timestamp = esphome::millis();
     return true;
 }
 

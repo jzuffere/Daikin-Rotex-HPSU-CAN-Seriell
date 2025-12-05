@@ -59,10 +59,10 @@ DaikinRotexCanComponent::ErrorDetection::ErrorDetection(uint32_t detection_time_
 bool DaikinRotexCanComponent::ErrorDetection::handle_error_detection(bool is_error_state) {
     if (is_error_state) {
         if (m_error_timestamp == 0u && !m_good_case_detected) {
-            m_error_timestamp = millis();
+            m_error_timestamp = esphome::millis();
         }
 
-        if (m_error_timestamp != 0 && millis() > (m_error_timestamp + m_detection_time_ms)) {
+        if (m_error_timestamp != 0 && esphome::millis() > (m_error_timestamp + m_detection_time_ms)) {
             return true;
         }
     } else {
@@ -484,7 +484,7 @@ void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
         return;
     }
 
-    if (m_last_supply_setpoint_regulated_ts == 0u || millis() > (m_last_supply_setpoint_regulated_ts + 30 * 1000)) {
+    if (m_last_supply_setpoint_regulated_ts == 0u || esphome::millis() > (m_last_supply_setpoint_regulated_ts + 30 * 1000)) {
         if (max_t_vorlauf != vorlauf_soll_reguliert) {
             float vorlauf_soll_request = vorlauf_soll;
             if (tv > vorlauf_soll && (tv - vorlauf_soll) > 2.5) {
@@ -503,7 +503,7 @@ void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
                 m_entity_manager.sendSet(pMaxTVorlauf->get_name(), vorlauf_soll_request);
             }
         }
-        m_last_supply_setpoint_regulated_ts = millis();
+        m_last_supply_setpoint_regulated_ts = esphome::millis();
     }
 }
 
@@ -554,7 +554,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
             Utils::log(ERROR_CODE_TAG, "tv: %f, tvbh: %f, TvBH-Tv: %f, dhw: %f, flow: %f, dhw_ts: %d, millis: %d",
                 tv_state, tvbh_state, m_max_spread.tvbh_tv, dhw_mixer_position->state, flow_rate->state,
                     m_mixer_error_detection.get_error_detection_timestamp(),
-                    millis());
+                    esphome::millis());
 
             if (m_mixer_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(ERROR_CODE_TAG, "3UV DHW defekt (1) => tvbh: %f, tv: %f, max_spread: %f, bpv: %f, flow_rate: %f",
@@ -569,7 +569,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
             Utils::log(ERROR_CODE_TAG, "tvbh: %f, tr: %f, Tr-TvBH: %f, bpv: %f, flow: %f, bpv_ts: %d, millis: %d",
                 tvbh_state, tr_state, m_max_spread.tvbh_tr, bpv->state, flow_rate->state,
                     m_bpv_error_detection.get_error_detection_timestamp(),
-                    millis());
+                    esphome::millis());
 
             if (m_bpv_error_detection.handle_error_detection(is_error_state)) {
                 ESP_LOGE(ERROR_CODE_TAG, "3UV BPV defekt (1) => tvbh: %f, tr: %f, max_spread: %f, dhw_mixer_pos: %f, flow_rate: %f",
@@ -600,7 +600,7 @@ std::string DaikinRotexCanComponent::recalculate_state(EntityBase* pEntity, std:
 
                 Utils::log(TAG, "betriebsart: %s, compressor: %d, spread: %f, min_spread: %f, is_good_case_detected: %d, error_ts: %d, millis: %d",
                     p_betriebs_art->state.c_str(), state_compressor->state, m_temperature_spread_sensor->state, min_spread,
-                    m_spread_error_detection.is_good_case_detected(), m_spread_error_detection.get_error_detection_timestamp(), millis());
+                    m_spread_error_detection.is_good_case_detected(), m_spread_error_detection.get_error_detection_timestamp(), esphome::millis());
 
                 if (m_spread_error_detection.handle_error_detection(is_error_state)) {
                     ESP_LOGE(TAG, "Low spread!");

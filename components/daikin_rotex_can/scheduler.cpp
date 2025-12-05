@@ -30,7 +30,7 @@ CallHandle Scheduler::call_later(CallHandle::TVoidFunc lambda, uint32_t timeout)
 
     m_later_calls.push_back({
         std::move(lambda),
-        millis() + timeout,
+        esphome::millis() + timeout,
         new_id
     });
 
@@ -51,7 +51,7 @@ bool Scheduler::is_call_valid(CallHandle::CallID id) const {
 bool Scheduler::accelerate_call(CallHandle::CallID id) {
     for (auto& call : m_later_calls) {
         if (call.id == id) {
-            call.execution_time = millis();
+            call.execution_time = esphome::millis();
             return true;
         }
     }
@@ -74,7 +74,7 @@ bool Scheduler::cancel_call(CallHandle::CallID id) {
 void Scheduler::update() {
     if (m_later_calls.empty()) return;
 
-    const uint32_t current_time = millis();
+    const uint32_t current_time = esphome::millis();
 
     auto it = m_later_calls.begin();
     while (it != m_later_calls.end()) {

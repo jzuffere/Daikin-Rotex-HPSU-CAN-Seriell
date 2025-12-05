@@ -176,7 +176,7 @@ TEntity const* TEntityManager::get(std::string const& id) const {
 }
 
 TEntity* TEntityManager::getNextRequestToSend() {
-    const uint32_t timestamp = millis();
+    const uint32_t timestamp = esphome::millis();
 
     for (auto pEntity : m_entities) {
         if (pEntity->is_command_set() && pEntity->isGetInProgress()) {

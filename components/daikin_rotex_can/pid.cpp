@@ -1,19 +1,31 @@
 #include "esphome/components/daikin_rotex_can/pid.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
+#include <math.h>
 
 namespace esphome {
 namespace daikin_rotex_can {
 
 static const char* TAG = "pid";
 
-    
 float PID::compute(float setpoint, float current_value, float dt, std::string& logstr) {
+    if (std::isnan(setpoint) || std::isnan(current_value) || std::isnan(dt)) {
+        return 0.f;
+    }
+
+    if (std::isinf(setpoint) || std::isinf(current_value) || std::isinf(dt)) {
+        return 0.f;
+    }
+
+    if (Utils::equals(dt, 0.0f, 0.1f)) {
+        return 0.f;
+    }
+
     const float error = setpoint - current_value;
 
     logstr = Utils::format("sp: %f, cv: %f, e: %f", setpoint, current_value, error);
 
-     // P-Anteil filtern
+    // P-Anteil filtern
     m_filtered_p = m_alpha_p * error + (1 - m_alpha_p) * m_filtered_p;
     const float filtered_p = m_filtered_p;
     float p_term = m_p * m_filtered_p;

@@ -43,11 +43,17 @@ public:
         log_impl(tag, Utils::format(str_format, args...));
     }
 
+    static bool equals(float a, float b, float epsilon);
+
 private:
     static void log_impl(std::string const& tag, std::string const& formatted);
 
     static std::string g_log_filter;
 };
+
+inline bool Utils::equals(float a, float b, float epsilon) {
+    return std::abs(a - b) <= epsilon;
+}
 
 }
 }

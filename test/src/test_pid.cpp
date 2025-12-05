@@ -9,12 +9,6 @@
 
 using namespace esphome::daikin_rotex_can;
 
-std::string unify(const std::string& str) {
-    const std::regex negative_zero_pattern("-0\\.000000");
-    const std::string replacement("0.000000");
-    return std::regex_replace(str, negative_zero_pattern, replacement);
-}
-
 TEST(PIDTest, compute) {
     auto delta = 0.00001f;
 
@@ -39,7 +33,7 @@ TEST(PIDTest, compute) {
     EXPECT_GE(esphome::millis(), pid.get_last_update());
 }
 
-TEST(PIDTest, zero_dt) {
+TEST(PIDTest, invalid_dt) {
     auto delta = 0.00001f;
 
     PID pid(0.2, 0.05f, 0.05f, 0.2, 0.2, 0.1f);

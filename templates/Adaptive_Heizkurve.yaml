@@ -1,0 +1,35 @@
+      - name: "Heizkurve"
+        unique_id: heizkurve
+        unit_of_measurement: °C
+        state_class: measurement
+        state: >
+             {# Sensorwerte und Eingabewerte #}
+             {% set aussentemp = states('sensor.rotex_atom_can_aussentemperatur') | float(0) %}
+             {% set innen_temp = states('sensor.durchschnitt_haus_temp') | float(20) %}
+             {% set target_temp = states('input_number.target_temperature') | float(21) %}
+             {% set adjust_factor = states('input_number.temperature_factor') | float(1) %}
+
+             {# Feste Werte für die Heizkurve #}
+             {% set max_vorlauf = 35 %}
+             {% set min_vorlauf = 24 %}
+             {% set log_faktor = 2.9 %}
+
+             {# Begrenzung der Außentemperatur #}
+             {% if aussentemp < -15 %}
+             {% set aussentemp = -15 %}
+             {% endif %}
+
+             {# Berechnung der Basis-Vorlauftemperatur (wie im alten Code) #}
+             {% set base_vorlauf = max_vorlauf - (log_faktor * log(aussentemp + 16)) %}
+
+             {# Anpassung durch Innentemperatur, nur wenn adjust_factor ≠ 1 #}
+             {% if adjust_factor == 1 %}
+             {% set final_vorlauf = base_vorlauf %}
+             {% else %}
+             {% set temp_diff = target_temp - innen_temp %}
+             {% set adjustment = temp_diff * adjust_factor %}
+             {% set final_vorlauf = base_vorlauf + adjustment %}
+             {% endif %}
+
+             {# Begrenzung des Vorlaufs auf den zulässigen Bereich #}
+             {{ final_vorlauf | round(1) if final_vorlauf > min_vorlauf and final_vorlauf < max_vorlauf else min_vorlauf if final_vorlauf < min_vorlauf else max_vorlauf }}

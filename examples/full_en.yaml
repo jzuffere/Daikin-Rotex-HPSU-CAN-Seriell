@@ -250,6 +250,7 @@ daikin_rotex_can:
       name: DHW Run
     1_dhw:
       name: 1 x Domestic Hot Water
+      #type: switch
     hp_hyst_tdhw:
       name: HP Hyst TDHW
     delay_time_for_backup_heating:
@@ -294,10 +295,12 @@ daikin_rotex_can:
       name: Function EHS
     ch_support:
       name: CH Support
+      #type: switch
     bivalence_function:
       name: Bivalence Function
     smart_grid:
       name: Smart Grid
+      #type: switch
     sg_mode:
       name: SG Mode
 # HT/NT Funktion
@@ -419,6 +422,7 @@ daikin_rotex_can:
       name: Min Target Flow Temperature
     heating_curve_adaptation:
       name: Heating Curve Adaptation
+      #type: switch
 
 # Konfiguration -> HZK Konfig -> Kühlen
 
@@ -435,6 +439,7 @@ daikin_rotex_can:
 
     circulation_with_dhw_program:
       name: Circulation with DHW Program
+      #type: switch
     circulation_interval_on:
       name: Circulation Interval On
     circulation_interval_off:
@@ -457,6 +462,7 @@ daikin_rotex_can:
       name: Thermal Power
     optimized_defrosting:
       name: Optimized Defrosting
+      #type: switch
     temperature_spread:
       name: Spreizung
     tv_tvbh_delta:
@@ -467,6 +473,7 @@ daikin_rotex_can:
       name: FlowSetpoint-Tv Delta
     room_therm:
       name: Room Thermostat
+      #type: switch
 
 # Rocon U1
 

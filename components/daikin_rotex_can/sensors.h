@@ -9,6 +9,7 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/number/number.h"
 #include "esphome/components/select/select.h"
+#include "esphome/components/switch/switch.h"
 
 namespace esphome {
 namespace daikin_rotex_can {
@@ -103,6 +104,17 @@ private:
 inline std::string CanSelect::findNextByKey(uint16_t value, std::string const& fallback) const { 
     auto it = m_map.findNextByKey(value);
     return it != m_map.end() ? it->second : Utils::format("INVALID<%f>", value);
+};
+
+/////////////////////// CanSwitch ///////////////////////
+
+class CanSwitch : public switch_::Switch, public TEntity, public Parented<SensorAccessor> {
+    using TCustomSelectLambda = std::function<bool(std::string const& id, uint16_t key)>;
+public:
+    CanSwitch() = default;
+protected:
+    virtual void write_state(bool state) override;
+    virtual bool handleValue(uint16_t value, TVariant& current, TVariant& previous) override;
 };
 
 }  // namespace ld2410

@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import sensor, binary_sensor, button, number, select, text_sensor, canbus, text
+from esphome.components import sensor, binary_sensor, button, number, select, switch, text_sensor, canbus, text
 from esphome.const import *
 from esphome.core import Lambda
 from esphome.cpp_generator import MockObj
@@ -11,6 +11,7 @@ from .translations.translate import (
     CONF_LANGUAGE,
     SUPPORTED_LANGUAGES,
     delayed_translate,
+    translate,
     apply_translation_to_mapping,
     set_language,
     check_translations_integrity,
@@ -29,11 +30,12 @@ check_translations_integrity()
 daikin_rotex_can_ns = cg.esphome_ns.namespace('daikin_rotex_can')
 DaikinRotexCanComponent = daikin_rotex_can_ns.class_('DaikinRotexCanComponent', cg.Component)
 
-CanSelect = daikin_rotex_can_ns.class_("CanSelect", select.Select)
-CanNumber = daikin_rotex_can_ns.class_("CanNumber", number.Number)
-CanSensor = daikin_rotex_can_ns.class_("CanSensor", sensor.Sensor)
-CanTextSensor = daikin_rotex_can_ns.class_("CanTextSensor", text_sensor.TextSensor)
 CanBinarySensor = daikin_rotex_can_ns.class_("CanBinarySensor", binary_sensor.BinarySensor)
+CanNumber = daikin_rotex_can_ns.class_("CanNumber", number.Number)
+CanSelect = daikin_rotex_can_ns.class_("CanSelect", select.Select)
+CanSensor = daikin_rotex_can_ns.class_("CanSensor", sensor.Sensor)
+CanSwitch = daikin_rotex_can_ns.class_("CanSwitch", switch.Switch)
+CanTextSensor = daikin_rotex_can_ns.class_("CanTextSensor", text_sensor.TextSensor)
 
 LogFilterText = daikin_rotex_can_ns.class_("LogFilterText", text.Text)
 CustomRequestText = daikin_rotex_can_ns.class_("CustomRequestText", text.Text)
@@ -53,7 +55,7 @@ result = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], stdout=subproce
 git_hash = result.stdout.strip()
 _LOGGER.info("Project Git Hash %s", git_hash)
 
-########## Configuration of Sensors, TextSensors, BinarySensors, Selects and Numbers ##########
+########## Configuration of Sensors, TextSensors, BinarySensors, Selects, Switches and Numbers ##########
 
 dhw_map = {
     35: "35 °C",
@@ -70,16 +72,12 @@ dhw_map = {
 
 sensor_configuration = [
    {
-        "type": "select",
+        "type": "switch",
         "name": "1_dhw" ,
         "icon": "mdi:hand-water",
         "command": "31 00 FA 01 44 00 00",
         "data_offset": 6,
-        "data_size": 1,
-        "map": {
-            0x00: delayed_translate("off"),
-            0x01: delayed_translate("on")
-        }
+        "data_size": 1
     },
     {
         "type": "number",
@@ -222,16 +220,12 @@ sensor_configuration = [
         "divider": 1
     },
     {
-        "type": "select",
+        "type": "switch",
         "name": "circulation_with_dhw_program" ,
         "icon": ICON_SUN_SNOWFLAKE_VARIANT,
         "command": "31 00 FA 01 82 00 00",
         "data_offset": 6,
-        "data_size": 1,
-        "map": {
-            0x00: delayed_translate("off"),
-            0x01: delayed_translate("on")
-        }
+        "data_size": 1
     },
     {
         "type": "number",
@@ -1171,16 +1165,12 @@ sensor_configuration = [
         }
     },
     {
-        "type": "select",
+        "type": "switch",
         "name": "smart_grid" ,
         "icon": "mdi:weather-partly-cloudy",
         "command": "31 00 FA 06 93 00 00",
         "data_offset": 6,
-        "data_size": 1,
-        "map": {
-            0x00: delayed_translate("off"),
-            0x01: delayed_translate("on")
-        }
+        "data_size": 1
     },
     {
         "type": "select",
@@ -1197,16 +1187,12 @@ sensor_configuration = [
         }
     },
     {
-        "type": "select",
+        "type": "switch",
         "name": "ch_support" ,
         "icon": ICON_SUN_SNOWFLAKE_VARIANT,
         "command": "31 00 FA 06 6C 00 00",
         "data_offset": 6,
-        "data_size": 1,
-        "map": {
-            0x00: delayed_translate("off"),
-            0x01: delayed_translate("on")
-        }
+        "data_size": 1
     },
     {
         "type": "number",
@@ -1417,37 +1403,25 @@ sensor_configuration = [
         "divider": 10.0
     },
     {
-        "type": "select",
+        "type": "switch",
         "name": "room_therm" ,
         "icon": "mdi:pump",
         "command": "31 00 FA 06 78 00 00",
         "data_offset": 6,
-        "data_size": 1,
-        "map": {
-            0x00: delayed_translate("off"),
-            0x01: delayed_translate("on")
-        }
+        "data_size": 1
     },
     {
-        "type": "select",
+        "type": "switch",
         "name": "optimized_defrosting",
-        "icon": "mdi:snowflake-melt",
-        "map": {
-            0x00: delayed_translate("off"),
-            0x01: delayed_translate("on")
-        }
+        "icon": "mdi:snowflake-melt"
     },
     {
-        "type": "select",
+        "type": "switch",
         "name": "heating_curve_adaptation" ,
         "can_id": 0x300,
         "command": "61 00 FA 01 15 00 00",
         "data_offset": 5,
-        "data_size": 1,
-        "map": {
-            0x00: delayed_translate("off"),
-            0x01: delayed_translate("on")
-        }
+        "data_size": 1
     },
     {
         "type": "sensor",
@@ -1706,7 +1680,7 @@ sensor_configuration = [
 
 CODEOWNERS = ["@wrfz"]
 DEPENDENCIES = []
-AUTO_LOAD = ['binary_sensor', 'button', 'number', 'sensor', 'select', 'text', 'text_sensor']
+AUTO_LOAD = ['binary_sensor', 'button', 'number', 'sensor', 'select', 'switch', 'text', 'text_sensor']
 
 CONF_CAN_ID = "canbus_id"
 CONF_UPDATE_INTERVAL = "update_interval"
@@ -1782,6 +1756,24 @@ for sensor_conf in sensor_configuration:
                     entity_category=ENTITY_CATEGORY_CONFIG,
                     icon=sensor_conf.get("icon", cv.UNDEFINED)
                 ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
+            })
+        case "switch":
+            entity_schemas.update({
+                cv.Optional(name): cv.typed_schema(
+                    {
+                        "switch": switch.switch_schema(
+                            CanSwitch,
+                            entity_category=ENTITY_CATEGORY_CONFIG,
+                            icon=sensor_conf.get("icon", cv.UNDEFINED)
+                        ),
+                        "select": select.select_schema(
+                            CanSelect,
+                            entity_category=ENTITY_CATEGORY_CONFIG,
+                            icon=sensor_conf.get("icon", cv.UNDEFINED)
+                        ),
+                    },
+                    default_type="select"
+                )
             })
         case "number":
             select_options_schema = cv.Optional(CONF_SELECT_OPTIONS) if "map" in sensor_conf else cv.Required(CONF_SELECT_OPTIONS)
@@ -2009,6 +2001,17 @@ async def to_code(config):
                         entity = await select.new_select(yaml_sensor_conf, options = list(mapping.values()))
                         cg.add(entity.set_map(str_map))
                         await cg.register_parented(entity, var)
+                    case "switch":
+                        match yaml_sensor_conf.get("type"):
+                            case "switch":
+                                entity = await switch.new_switch(yaml_sensor_conf)
+                            case "select":
+                                mapping = {0x00: translate("off"), 0x01: translate("on")}
+                                str_map = "|".join([f"0x{int(key):02X}:{value}" for key, value in mapping.items()])
+                                entity = await select.new_select(yaml_sensor_conf, options=list(mapping.values()))
+                                cg.add(entity.set_map(str_map))
+                        await cg.register_parented(entity, var)
+
                     case "number":
                         if "min_value" not in sens_conf:
                             raise Exception("min_value is required for number: " + sens_conf.get("name"))

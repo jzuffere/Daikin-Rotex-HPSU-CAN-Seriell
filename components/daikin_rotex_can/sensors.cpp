@@ -143,5 +143,19 @@ bool CanSelect::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
     return true;
 }
 
+/////////////////////// CanSwitch ///////////////////////
+
+void CanSwitch::write_state(bool state) {
+    this->publish_state(state);
+    sendSet(m_pCanbus, state);
+}
+
+bool CanSwitch::handleValue(uint16_t value, TEntity::TVariant& current, TVariant& previous) {
+    previous = state;
+    current = static_cast<bool>(value);
+    publish_state(std::get<bool>(current));
+    return true;
+}
+
 }
 }

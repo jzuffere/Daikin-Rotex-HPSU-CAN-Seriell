@@ -250,6 +250,7 @@ daikin_rotex_can:
       name: Esecuzione ACS
     1_dhw:
       name: 1 x Acqua Calda
+      #type: switch
     hp_hyst_tdhw:
       name: HP Hyst TDHW
     delay_time_for_backup_heating:
@@ -294,10 +295,12 @@ daikin_rotex_can:
       name: Funzione EHS
     ch_support:
       name: Supporto CH
+      #type: switch
     bivalence_function:
       name: Funzione di Bivalenza
     smart_grid:
       name: Smart Grid
+      #type: switch
     sg_mode:
       name: Modalità SG
 # HT/NT Funktion
@@ -419,6 +422,7 @@ daikin_rotex_can:
       name: Temperatura Minima Mandata Obiettivo
     heating_curve_adaptation:
       name: Adattamento delle curve di riscaldamento
+      #type: switch
 
 # Konfiguration -> HZK Konfig -> Kühlen
 
@@ -435,6 +439,7 @@ daikin_rotex_can:
 
     circulation_with_dhw_program:
       name: Circolazione con Programma ACS
+      #type: switch
     circulation_interval_on:
       name: Intervallo Circolazione On
     circulation_interval_off:
@@ -457,6 +462,7 @@ daikin_rotex_can:
       name: Potenza Termica
     optimized_defrosting:
       name: Sbrinamento Ottimizzato
+      #type: switch
     temperature_spread:
       name: Delta Termico"
     tv_tvbh_delta:
@@ -467,6 +473,7 @@ daikin_rotex_can:
       name: Mandata Setpoint - T. Mandata
     room_therm:
       name: Termostato ambiente
+      #type: switch
 
 # Rocon U1
 

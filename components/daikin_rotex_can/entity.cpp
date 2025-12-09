@@ -93,7 +93,7 @@ bool TEntity::handle(uint32_t can_id, TMessage const& responseData) {
             } else if (std::holds_alternative<float>(current)) {
                 value = std::to_string(std::get<float>(current));
             } else if (std::holds_alternative<bool>(current)) {
-                value = std::get<bool>(current);
+                value = std::get<bool>(current) ? "on" : "off";
             } else if (std::holds_alternative<std::string>(current)) {
                 value = std::get<std::string>(current);
             } else {

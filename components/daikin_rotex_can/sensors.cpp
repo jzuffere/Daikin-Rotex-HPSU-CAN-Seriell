@@ -4,7 +4,8 @@
 namespace esphome {
 namespace daikin_rotex_can {
 
-static const char* TAG = "daikin_rotex_can";
+static const char* CAN_SENSOR_TAG = "CanSensor";
+static const char* CAN_SELECT_TAG = "CanSelect";
 
 /////////////////////// CanSensor ///////////////////////
 
@@ -38,7 +39,7 @@ bool CanSensor::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
     if (valid) {
         publish_state(float_value);
     } else {
-        ESP_LOGE(TAG, "CanSensor::handleValue() => Sensor<%s> hex<%s> uint16<%d> float<%f> out of range[%f, %f]",
+        ESP_LOGE(CAN_SENSOR_TAG, "handleValue() => Sensor<%s> hex<%s> uint16<%d> float<%f> out of range[%f, %f]",
             get_id().c_str(), Utils::to_hex(value).c_str(), value, float_value, m_range.min, m_range.max);
     }
 
@@ -131,7 +132,7 @@ void CanSelect::publish_select_key(uint16_t key) {
     if (it != m_map.end()) {
         publish_state(it->second);
     } else {
-        ESP_LOGE(TAG, "CanSelect::publish_select_key(%s) => Key not found!", key);
+        ESP_LOGE(CAN_SELECT_TAG, "publish_select_key(%s) => Key not found!", key);
     }
 }
 

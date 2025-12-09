@@ -6,7 +6,7 @@
 namespace esphome {
 namespace daikin_rotex_can {
 
-static const char* TAG = "bidi_map";
+static const char* TAG = "BidiMap";
 
 BidiMap::Iterator BidiMap::findNextByKey(uint16_t value) const {
     if (key_to_value.empty()) {
@@ -33,7 +33,7 @@ uint16_t BidiMap::getKey(std::string const& value) const {
     if (it != end()) {
         return it->first;
     } else {
-        ESP_LOGE(TAG, "BidiMap::getKey(%s) => Value not found!", value.c_str());
+        ESP_LOGE(TAG, "getKey(%s) => Value not found!", value.c_str());
     }
     return 0;
 }

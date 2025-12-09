@@ -5,7 +5,7 @@
 namespace esphome {
 namespace daikin_rotex_can {
 
-static const char* TAG = "daikin_rotex_can";
+static const char* TAG = "TEntity";
 
 TEntity::TEntity()
 : m_config()
@@ -72,10 +72,10 @@ bool TEntity::handle(uint32_t can_id, TMessage const& responseData) {
                     );
                 valid = handleValue(value, current, previous);
             } else {
-                ESP_LOGE(TAG, "handle: Invalid data size: %d", m_config.data_size);
+                ESP_LOGE(TAG, "handle() => Invalid data size: %d", m_config.data_size);
             }
         } else {
-            ESP_LOGE(TAG, "handle: Invalid data_offset: %d", m_config.data_offset);
+            ESP_LOGE(TAG, "handle() => Invalid data_offset: %d", m_config.data_offset);
         }
 
         if (valid) {
@@ -111,7 +111,7 @@ bool TEntity::handle(uint32_t can_id, TMessage const& responseData) {
 
 bool TEntity::sendGet(esphome::esp32_can::ESP32Can* pCanBus) {
     if (pCanBus == nullptr) {
-        ESP_LOGE(TAG, "sendGet: pCanbus is null!");
+        ESP_LOGE(TAG, "sendGet() => pCanbus is null!");
         return false;
     }
 
@@ -129,7 +129,7 @@ bool TEntity::sendGet(esphome::esp32_can::ESP32Can* pCanBus) {
 
 bool TEntity::sendSet(esphome::esp32_can::ESP32Can* pCanBus, float value) {
     if (pCanBus == nullptr) {
-        ESP_LOGE(TAG, "sendSet: pCanbus is null!");
+        ESP_LOGE(TAG, "sendSet() => pCanbus is null!");
         return false;
     }
 
@@ -156,7 +156,7 @@ bool TEntity::sendSet(esphome::esp32_can::ESP32Can* pCanBus, float value) {
 
 void TEntity::update(uint32_t millis) {
     if (isGetInProgress() && millis > (m_last_get_timestamp + 5 * 1000)) {
-        ESP_LOGE(TAG, "TEntity::update() sedGet timeout! id: %s", m_config.id.c_str());
+        ESP_LOGE(TAG, "update() sedGet timeout! id: %s", m_config.id.c_str());
     }
 }
 

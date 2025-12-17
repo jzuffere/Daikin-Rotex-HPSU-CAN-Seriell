@@ -1,0 +1,18 @@
+alias: Heizkurve zu Rotex
+description: ""
+triggers:
+  - trigger: time_pattern
+    minutes: "35"
+conditions: []
+actions:
+  - data:
+      value: "{{ states('sensor.heizkurve') }}"
+    target:
+      entity_id: number.rotex_atom_can_t_vorlauf_tag
+    action: number.set_value
+  - data:
+      value: "{{ states('sensor.heizkurve') }}"
+    target:
+      entity_id: number.rotex_atom_can_t_vorlauf_nacht
+    action: number.set_value
+mode: single

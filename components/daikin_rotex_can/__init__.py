@@ -2131,7 +2131,7 @@ async def to_code(config):
                 number_conf,
                 min_value=20.0,
                 max_value=90.0,
-                step=1.0
+                step=0.1
             )
             cg.add(var.set_supply_setpoint_regulated(num))
 

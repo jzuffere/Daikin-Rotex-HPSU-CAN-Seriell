@@ -5,6 +5,7 @@ namespace esphome {
 namespace daikin_rotex_can {
 
 static const char* CAN_SENSOR_TAG = "CanSensor";
+static const char* CAN_NUMBER_TAG = "CanNumber";
 static const char* CAN_SELECT_TAG = "CanSelect";
 
 /////////////////////// CanSensor ///////////////////////
@@ -96,8 +97,11 @@ bool CanBinarySensor::handleValue(uint16_t value, TEntity::TVariant& current, TV
 /////////////////////// CanNumber ///////////////////////
 
 void CanNumber::control(float value) {
-    this->publish_state(value);
-    sendSet(m_pCanbus, value * get_config().divider);
+    ESP_LOGI(CAN_NUMBER_TAG, "control(%f), state: %f", value, this->state);
+    if (abs(value - this->state) >= 0.001f) {
+        this->publish_state(value);
+        sendSet(m_pCanbus, value * get_config().divider);
+    }
 }
 
 bool CanNumber::handleValue(uint16_t value, TEntity::TVariant& current, TVariant& previous) {
@@ -146,8 +150,11 @@ bool CanSelect::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
 /////////////////////// CanSwitch ///////////////////////
 
 void CanSwitch::write_state(bool state) {
-    this->publish_state(state);
-    sendSet(m_pCanbus, state);
+    ESP_LOGI(CAN_NUMBER_TAG, "write_state(%s), state: %s", state ? "ON" : "OFF", this->state ? "ON" : "OFF");
+    if (state != this->state) {
+        this->publish_state(state);
+        sendSet(m_pCanbus, state);
+    }
 }
 
 bool CanSwitch::handleValue(uint16_t value, TEntity::TVariant& current, TVariant& previous) {

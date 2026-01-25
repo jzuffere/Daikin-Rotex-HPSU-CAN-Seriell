@@ -11,6 +11,7 @@ TEntityManager::TEntityManager()
 , m_pCanbus(nullptr)
 , m_last_handle(0u)
 , m_delay_between_requests(250)
+, m_set_request_queue()
 {
 }
 
@@ -127,23 +128,41 @@ CanSelect const* TEntityManager::get_select(std::string const& id) const {
     return nullptr;
 }
 
-bool TEntityManager::sendNextPendingGet() {
-    TEntity* pEntity = getNextRequestToSend();
+bool TEntityManager::sendNextPendingRequest() {
+    if (m_set_request_queue.empty() == false && is_allowed_by_delay_between_requests()) {
+        auto request = m_set_request_queue.front();
+        m_set_request_queue.pop_front();
+        ESP_LOGI(TAG, "sendNextPendingRequest: Process queued set request => name: %s, value: %f", request.first.c_str(), request.second);
+        return sendSet(request.first, request.second);
+    }
+
+    TEntity* pEntity = getNextGetRequestToSend();
     if (pEntity != nullptr) {
         return pEntity->sendGet(m_pCanbus);
     }
     return false;
 }
 
-void TEntityManager::sendSet(std::string const& request_name, float value) {
+bool TEntityManager::sendSet(std::string const& request_name, float value) {
+    const uint32_t now = esphome::millis();
+
+    if (!is_allowed_by_delay_between_requests()) {
+        ESP_LOGE(TAG, "sendSet: Add to queue => name: %s, value: %f", request_name.c_str(), value);
+        m_set_request_queue.push_back(std::make_pair(request_name, value));
+        return false;
+    }
+
     const auto it = std::find_if(m_entities.begin(), m_entities.end(),
         [&request_name](auto pEntity) { return pEntity->getName() == request_name; }
     );
+    bool result = false;
     if (it != m_entities.end()) {
-        (*it)->sendSet(m_pCanbus, value * (*it)->get_config().divider);
+        result = (*it)->sendSet(m_pCanbus, value * (*it)->get_config().divider);
+        m_last_handle = esphome::millis();
     } else {
         ESP_LOGE(TAG, "sendSet: Unknown request: %s", request_name.c_str());
     }
+    return result;
 }
 
 void TEntityManager::handle(uint32_t can_id, TMessage const& responseData) {
@@ -178,10 +197,10 @@ TEntity const* TEntityManager::get(std::string const& id) const {
     return nullptr;
 }
 
-TEntity* TEntityManager::getNextRequestToSend() {
+TEntity* TEntityManager::getNextGetRequestToSend() {
     const uint32_t now = esphome::millis();
 
-    if (now < (m_last_handle + m_delay_between_requests)) {
+    if (!is_allowed_by_delay_between_requests()) {
         return nullptr;
     }
 

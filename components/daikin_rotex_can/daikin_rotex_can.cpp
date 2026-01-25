@@ -443,7 +443,7 @@ void DaikinRotexCanComponent::on_custom_number(number::Number& number, float val
 }
 
 void DaikinRotexCanComponent::loop() {
-    m_entity_manager.sendNextPendingGet();
+    m_entity_manager.sendNextPendingRequest();
 
     Scheduler::getInstance().update();
 

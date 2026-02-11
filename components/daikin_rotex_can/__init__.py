@@ -57,18 +57,24 @@ _LOGGER.info("Project Git Hash %s", git_hash)
 
 ########## Configuration of Sensors, TextSensors, BinarySensors, Selects, Switches and Numbers ##########
 
-dhw_map = {
-    35: "35 °C",
-    40: "40 °C",
-    45: "45 °C",
-    48: "48 °C",
-    49: "49 °C",
-    50: "50 °C",
-    51: "51 °C",
-    52: "52 °C",
-    60: "60 °C",
-    70: "70 °C",
-};
+def temp_map(*ranges):
+    room_map = {}
+
+    for start, stop, step in ranges:
+        current = float(start)
+        while current <= stop:
+            key = int(current) if current.is_integer() else round(current, 2)
+
+            val_str = f"{str(key).replace('.', ',')} °C"
+
+            room_map[key] = val_str
+            current = round(current + step, 2)
+
+    return dict(sorted(room_map.items()))
+
+room_map = temp_map((15, 25, 1), (19.5, 23.5, 0.5))
+dhw_map = temp_map((35, 70, 5), (45, 55, 1))
+
 
 sensor_configuration = [
    {
@@ -815,19 +821,39 @@ sensor_configuration = [
         "data_offset": 3,
         "data_size": 2,
         "divider": 10.0,
-        "map": {
-            15: "15 °C",
-            16: "16 °C",
-            17: "17 °C",
-            18: "18 °C",
-            19: "19 °C",
-            20: "20 °C",
-            21: "21 °C",
-            22: "22 °C",
-            23: "23 °C",
-            24: "24 °C",
-            25: "25 °C"
-        }
+        "map": room_map
+    },
+    {
+        "type": "number",
+        "name": "target_room2_temperature",
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "unit_of_measurement": UNIT_CELSIUS,
+        "accuracy_decimals": 1,
+        "state_class": STATE_CLASS_MEASUREMENT,
+        "min_value": 5,
+        "max_value": 40,
+        "step": 0.1,
+        "command": "31 00 06 00 00 00 00",
+        "data_offset": 3,
+        "data_size": 2,
+        "divider": 10.0,
+        "map": room_map
+    },
+    {
+        "type": "number",
+        "name": "target_room3_temperature",
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "unit_of_measurement": UNIT_CELSIUS,
+        "accuracy_decimals": 1,
+        "state_class": STATE_CLASS_MEASUREMENT,
+        "min_value": 5,
+        "max_value": 40,
+        "step": 0.1,
+        "command": "31 00 07 00 00 00 00",
+        "data_offset": 3,
+        "data_size": 2,
+        "divider": 10.0,
+        "map": room_map
     },
     {
         "type": "number",

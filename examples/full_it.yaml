@@ -224,8 +224,12 @@ daikin_rotex_can:
     target_room1_temperature:
       name: Temperatura Obiettivo Stanza 1
       type: select
-# T-RaumSoll 2
-# T-RaumSoll 3
+    target_room2_temperature:
+      name: Temperatura Obiettivo Stanza 2
+      type: select
+    target_room3_temperature:
+      name: Temperatura Obiettivo Stanza 3
+      type: select
 
 # Raum Soll Nacht
   # T-Absenkung

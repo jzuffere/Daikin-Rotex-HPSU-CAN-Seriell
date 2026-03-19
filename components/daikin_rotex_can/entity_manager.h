@@ -2,6 +2,7 @@
 
 #include "esphome/components/daikin_rotex_can/sensors.h"
 #include "esphome/components/daikin_rotex_can/entity.h"
+#include <deque>
 
 namespace esphome {
 namespace daikin_rotex_can {

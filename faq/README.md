@@ -65,3 +65,51 @@ Durch den Einsatz eines PID-Reglers und eines Tiefpassfilters werden die Daten g
 - Reduzierung von Rauschen und Sprüngen: Die Daten werden stabiler und weniger volatil.
 - Bessere Lesbarkeit und Verständlichkeit: Geglättete Daten sind einfacher zu interpretieren.
 - Zuverlässige Fehlererkennung: Glatte Daten ermöglichen eine präzisere Identifikation von Fehlverhalten der Pumpe.
+
+## 🔹 Warum kann man `Warmwasser-Soll` nur in 5K-Schritten und `Raum-Soll` nur in 1K-Schritten einstellen?
+
+Standardmäßig sind die Auswahllisten auf wenige gebräuchliche Werte begrenzt, um sie übersichtlich zu halten – besonders auf Smartphones wäre eine vollständige Liste unhandlich.
+
+Beide Entities lassen sich auf zwei Arten an eigene Bedürfnisse anpassen:
+
+### Option 1 – Benutzerdefinierte Auswahlliste (`type: select`)
+
+Über `options` können beliebige Werte innerhalb des gültigen Bereichs eingetragen werden.
+
+**`Warmwasser-Soll`** – gültiger Bereich: 35,0 – 70,0 °C (Schrittweite 0,1 °C)
+```yaml
+    target_hot_water_temperature_1:
+      name: T-WW-Soll1
+      type: select
+      options:
+        40: 40 °C
+        41: 41 °C
+        45.7: 45.7 °C
+        55.1: 55.1 °C
+```
+
+**`Raum-Soll`** – gültiger Bereich: 5,0 – 40,0 °C (Schrittweite 0,1 °C)
+```yaml
+    target_room1_temperature:
+      name: Raumsoll 1
+      type: select
+      options:
+        18: 18 °C
+        20: 20 °C
+        21.5: 21.5 °C
+        23.3: 23.3 °C
+```
+
+### Option 2 – Numerisches Eingabefeld (`type: number`)
+
+Statt einer Auswahlliste kann ein numerisches Eingabefeld verwendet werden. Es prüft automatisch, ob der eingegebene Wert im gültigen Bereich liegt.
+
+```yaml
+    target_hot_water_temperature_1:
+      name: T-WW-Soll1
+      type: number
+
+    target_room1_temperature:
+      name: Raumsoll 1
+      type: number
+```

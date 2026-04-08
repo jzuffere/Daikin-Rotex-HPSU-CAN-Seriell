@@ -974,7 +974,7 @@ sensor_configuration = [
         "icon": "mdi:waves-arrow-right",
         "min_value": 35,
         "max_value": 70,
-        "step": 1,
+        "step": 0.1,
         "command": "31 00 13 00 00 00 00",
         "data_offset": 3,
         "data_size": 2,

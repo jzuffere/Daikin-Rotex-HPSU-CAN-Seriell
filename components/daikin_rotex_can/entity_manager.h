@@ -2,6 +2,7 @@
 
 #include "esphome/components/daikin_rotex_can/sensors.h"
 #include "esphome/components/daikin_rotex_can/entity.h"
+#include <deque>
 
 namespace esphome {
 namespace daikin_rotex_can {
@@ -22,6 +23,7 @@ public:
     TEntity const* get(std::string const& id) const;
 
     const std::vector<TEntity*>& get_entities() const { return m_entities; }
+    void set_delay_between_requests(uint16_t milliseconds);
 
     CanSensor* get_sensor(std::string const& id);
     CanSensor const* get_sensor(std::string const& id) const;
@@ -36,15 +38,20 @@ public:
     CanSelect* get_select(std::string const& id);
     CanSelect const* get_select(std::string const& id) const;
 
-    bool sendNextPendingGet();
-    void sendSet(std::string const& request_name, float value);
+    bool is_allowed_by_delay_between_requests() const;
+
+    bool sendNextPendingRequest();
+    bool sendSet(std::string const& request_name, float value);
     void handle(uint32_t can_id, TMessage const& responseData);
 
 private:
-    TEntity* getNextRequestToSend();
+    TEntity* getNextGetRequestToSend();
 
     std::vector<TEntity*> m_entities;
     esphome::esp32_can::ESP32Can* m_pCanbus;
+    uint32_t m_last_handle;
+    uint16_t m_delay_between_requests;
+    std::deque<std::pair<std::string, float>> m_set_request_queue;
 };
 
 inline void TEntityManager::setCanbus(esphome::esp32_can::ESP32Can* pCanbus) {
@@ -61,6 +68,15 @@ inline uint32_t TEntityManager::size() const {
 
 inline TEntity const* TEntityManager::get(uint32_t index) const {
     return (index < m_entities.size()) ? m_entities[index] : nullptr;
+}
+
+inline void TEntityManager::set_delay_between_requests(uint16_t milliseconds) {
+    m_delay_between_requests = milliseconds;
+}
+
+inline bool TEntityManager::is_allowed_by_delay_between_requests() const {
+    const uint32_t now = esphome::millis();
+    return now >= (m_last_handle + m_delay_between_requests);
 }
 
 }

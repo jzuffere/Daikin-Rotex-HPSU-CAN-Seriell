@@ -33,7 +33,7 @@ std::array<uint16_t, 7> TEntity::calculate_reponse(TMessage const& message) {
 }
 
 bool TEntity::isGetInProgress() const {
-    return m_last_get_timestamp > m_last_handle_timestamp && ((esphome::millis() - m_last_get_timestamp) < 3*1000); // Consider 3 sek => package is lost
+    return is_command_configured() && m_last_get_timestamp > m_last_handle_timestamp && ((esphome::millis() - m_last_get_timestamp) < 3*1000); // Consider 3 sek => package is lost
 }
 
 bool TEntity::isMatch(uint32_t can_id, TMessage const& responseData) const {

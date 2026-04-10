@@ -142,13 +142,13 @@ daikin_rotex_can:
     bypass_valve:
       name: Bypass Valve
     tv:
-      name: Flow Temperature (TV)
+      name: TV
       update_interval: 5
     tvbh:
-      name: Flow Temperature Heating (TVBH)
+      name: TVBH
       update_interval: 5
     tr:
-      name: Return Temperature Heating
+      name: TR
       update_interval: 5
     tdhw1:
       name: Hot Water Temperature
@@ -224,8 +224,12 @@ daikin_rotex_can:
     target_room1_temperature:
       name: Target Room 1 Temperature
       type: select
-# T-RaumSoll 2
-# T-RaumSoll 3
+    target_room2_temperature:
+      name: Target Room 2 Temperature
+      type: select
+    target_room3_temperature:
+      name: Target Room 3 Temperature
+      type: select
 
 # Room Set Night
   # T-Absenkung
@@ -464,7 +468,7 @@ daikin_rotex_can:
       name: Optimized Defrosting
       #type: switch
     temperature_spread:
-      name: Spreizung
+      name: Temperature Spread
     tv_tvbh_delta:
       name: Tv-TVBH Delta
     tvbh_tr_delta:

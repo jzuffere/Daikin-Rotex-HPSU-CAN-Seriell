@@ -18,7 +18,7 @@ public:
     T const& value() const { return m_value; }
 
     void load(EntityBase* p_entity_base) {
-        m_pref = global_preferences->make_preference<T>(p_entity_base->get_object_id_hash());
+        m_pref = p_entity_base->make_entity_preference<T>();
         if (!m_pref.load(&m_value)) {
             m_value = m_default_value;
         }

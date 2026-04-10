@@ -57,18 +57,24 @@ _LOGGER.info("Project Git Hash %s", git_hash)
 
 ########## Configuration of Sensors, TextSensors, BinarySensors, Selects, Switches and Numbers ##########
 
-dhw_map = {
-    35: "35 °C",
-    40: "40 °C",
-    45: "45 °C",
-    48: "48 °C",
-    49: "49 °C",
-    50: "50 °C",
-    51: "51 °C",
-    52: "52 °C",
-    60: "60 °C",
-    70: "70 °C",
-};
+def temp_map(*ranges):
+    room_map = {}
+
+    for start, stop, step in ranges:
+        current = float(start)
+        while current <= stop:
+            key = int(current) if current.is_integer() else round(current, 2)
+
+            val_str = f"{str(key).replace('.', ',')} °C"
+
+            room_map[key] = val_str
+            current = round(current + step, 2)
+
+    return dict(sorted(room_map.items()))
+
+room_map = temp_map((15, 25, 1), (19.5, 23.5, 0.5))
+dhw_map = temp_map((35, 70, 5), (45, 55, 1))
+
 
 sensor_configuration = [
    {
@@ -676,7 +682,7 @@ sensor_configuration = [
         "data_offset": 5,
         "data_size": 2,
         "divider": 10.0,
-        "update_entities": ["thermal_power", "tv_tvbh_delta", "tvbh_tr_delta"],
+        "update_entities": ["tv_tvbh_delta", "tvbh_tr_delta"],
         "range": [1, 90]
     },
     {
@@ -815,19 +821,39 @@ sensor_configuration = [
         "data_offset": 3,
         "data_size": 2,
         "divider": 10.0,
-        "map": {
-            15: "15 °C",
-            16: "16 °C",
-            17: "17 °C",
-            18: "18 °C",
-            19: "19 °C",
-            20: "20 °C",
-            21: "21 °C",
-            22: "22 °C",
-            23: "23 °C",
-            24: "24 °C",
-            25: "25 °C"
-        }
+        "map": room_map
+    },
+    {
+        "type": "number",
+        "name": "target_room2_temperature",
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "unit_of_measurement": UNIT_CELSIUS,
+        "accuracy_decimals": 1,
+        "state_class": STATE_CLASS_MEASUREMENT,
+        "min_value": 5,
+        "max_value": 40,
+        "step": 0.1,
+        "command": "31 00 06 00 00 00 00",
+        "data_offset": 3,
+        "data_size": 2,
+        "divider": 10.0,
+        "map": room_map
+    },
+    {
+        "type": "number",
+        "name": "target_room3_temperature",
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "unit_of_measurement": UNIT_CELSIUS,
+        "accuracy_decimals": 1,
+        "state_class": STATE_CLASS_MEASUREMENT,
+        "min_value": 5,
+        "max_value": 40,
+        "step": 0.1,
+        "command": "31 00 07 00 00 00 00",
+        "data_offset": 3,
+        "data_size": 2,
+        "divider": 10.0,
+        "map": room_map
     },
     {
         "type": "number",
@@ -948,7 +974,7 @@ sensor_configuration = [
         "icon": "mdi:waves-arrow-right",
         "min_value": 35,
         "max_value": 70,
-        "step": 1,
+        "step": 0.1,
         "command": "31 00 13 00 00 00 00",
         "data_offset": 3,
         "data_size": 2,
@@ -1684,6 +1710,7 @@ AUTO_LOAD = ['binary_sensor', 'button', 'number', 'sensor', 'select', 'switch', 
 
 CONF_CAN_ID = "canbus_id"
 CONF_UPDATE_INTERVAL = "update_interval"
+CONF_DELAY_BETWEEN_REQUESTS = "delay_between_requests"
 CONF_TV_OFFSET = "tv_offset"
 CONF_TVBH_OFFSET = "tvbh_offset"
 CONF_TR_OFFSET = "tr_offset"
@@ -1709,7 +1736,8 @@ CONF_DUMP = "dump"
 CONF_DHW_RUN = "dhw_run"
 CONF_SUPPLY_SETPOINT_REGULATED = "supply_setpoint_regulated"
 
-DEFAULT_UPDATE_INTERVAL = 30 # seconds
+DEFAULT_UPDATE_INTERVAL = 30 * 1000 # milliseconds (30 seconds)
+DEFAULT_DELAY_BETWEEN_REQUESTS = 250 # milliseconds
 DEFAULT_TV_OFFSET = 0.0
 DEFAULT_TVBH_OFFSET = 0.0
 DEFAULT_TR_OFFSET = 0.0
@@ -1733,21 +1761,21 @@ for sensor_conf in sensor_configuration:
                     accuracy_decimals=sensor_conf.get("accuracy_decimals", cv.UNDEFINED),
                     state_class=sensor_conf.get("state_class", cv.UNDEFINED),
                     icon=sensor_conf.get("icon", cv.UNDEFINED)
-                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
+                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.positive_time_period_milliseconds}),
             })
         case "text_sensor":
             entity_schemas.update({
                 cv.Optional(name): text_sensor.text_sensor_schema(
                     CanTextSensor,
                     icon=sensor_conf.get("icon", cv.UNDEFINED)
-                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
+                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.positive_time_period_milliseconds}),
             })
         case "binary_sensor":
             entity_schemas.update({
                 cv.Optional(name): binary_sensor.binary_sensor_schema(
                     CanBinarySensor,
                     icon=sensor_conf.get("icon", cv.UNDEFINED)
-                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
+                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.positive_time_period_milliseconds}),
             })
         case "select":
             entity_schemas.update({
@@ -1755,7 +1783,7 @@ for sensor_conf in sensor_configuration:
                     CanSelect,
                     entity_category=ENTITY_CATEGORY_CONFIG,
                     icon=sensor_conf.get("icon", cv.UNDEFINED)
-                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t}),
+                ).extend({cv.Optional(CONF_UPDATE_INTERVAL): cv.positive_time_period_milliseconds}),
             })
         case "switch":
             entity_schemas.update({
@@ -1785,7 +1813,7 @@ for sensor_conf in sensor_configuration:
                             entity_category=ENTITY_CATEGORY_CONFIG,
                             icon=sensor_conf.get("icon", cv.UNDEFINED)
                         ).extend({
-                            cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t,
+                            cv.Optional(CONF_UPDATE_INTERVAL): cv.positive_time_period_milliseconds,
                             cv.Optional(CONF_MODE, default="BOX"): cv.enum(number.NUMBER_MODES, upper=True)
                         }),
                         "select": select.select_schema(
@@ -1793,7 +1821,7 @@ for sensor_conf in sensor_configuration:
                             entity_category=ENTITY_CATEGORY_CONFIG,
                             icon=sensor_conf.get("icon", cv.UNDEFINED)
                         ).extend({
-                            cv.Optional(CONF_UPDATE_INTERVAL): cv.uint16_t,
+                            cv.Optional(CONF_UPDATE_INTERVAL): cv.positive_time_period_milliseconds,
                             select_options_schema: cv.Schema({
                                 cv.float_range(
                                     min=sensor_conf.get("min_value"),
@@ -1886,7 +1914,8 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(DaikinRotexCanComponent),
         cv.Required(CONF_CAN_ID): cv.use_id(CanbusComponent),
-        cv.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): cv.uint16_t,
+        cv.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): cv.positive_time_period_milliseconds,
+        cv.Optional(CONF_DELAY_BETWEEN_REQUESTS, default=DEFAULT_DELAY_BETWEEN_REQUESTS): cv.uint16_t,
         cv.Optional(CONF_TV_OFFSET, default=DEFAULT_TV_OFFSET): cv.float_,
         cv.Optional(CONF_TVBH_OFFSET, default=DEFAULT_TVBH_OFFSET): cv.float_,
         cv.Optional(CONF_TR_OFFSET, default=DEFAULT_TR_OFFSET): cv.float_,
@@ -1935,7 +1964,6 @@ async def to_code(config):
         lang = config[CONF_LANGUAGE]
         set_language(lang)
 
-    global_ns = MockObj("", "")
     std_array_u8_7_const_ref = std_ns.class_("array<uint8_t, 7> const&")
     std_array_u8_7_ref = std_ns.class_("array<uint8_t, 7>&")
     accessor_const_ref = daikin_rotex_can_ns.class_("IAccessor const&")
@@ -1950,6 +1978,8 @@ async def to_code(config):
 
     cg.add(var.set_max_spread(config[CONF_MAX_SPREAD_TVBH_TV], config[CONF_MAX_SPREAD_TVBH_TR]))
     cg.add(var.set_tv_tvbh_tr_offset(config[CONF_TV_OFFSET], config[CONF_TVBH_OFFSET], config[CONF_TR_OFFSET]))
+
+    cg.add(var.set_delay_between_requests(config[CONF_DELAY_BETWEEN_REQUESTS]))
 
     # Write cpp translation file
     write_cpp_file(os.path.dirname(__file__))
@@ -2036,9 +2066,15 @@ async def to_code(config):
                     case _:
                         raise Exception("Unknown type: " + sens_conf.get("type"))
 
-                update_interval = yaml_sensor_conf.get(CONF_UPDATE_INTERVAL, -1)
-                if update_interval < 0:
+                update_interval = yaml_sensor_conf.get(CONF_UPDATE_INTERVAL, None)
+                if update_interval is None:
                     update_interval = config[CONF_UPDATE_INTERVAL]
+                
+                # Convert TimePeriodMilliseconds to integer milliseconds
+                if hasattr(update_interval, 'total_milliseconds'):
+                    update_interval = int(update_interval.total_milliseconds)
+                else:
+                    update_interval = int(update_interval)
 
                 async def handle_lambda():
                     lamb = str(sens_conf.get("handle_lambda")) if "handle_lambda" in sens_conf else "return 0;"

@@ -58,6 +58,7 @@ public:
     void set_tv_tvbh_tr_offset(float tv_offset, float tvbh_offset, float tr_offset);
     void add_entity(TEntity* pEntity);
     void set_supply_setpoint_regulated(number::Number* pNumber);
+    void set_delay_between_requests(uint16_t milliseconds);
 
     void on_post_handle(TEntity* pRequest, TEntity::TVariant const& current, TEntity::TVariant const& previous);
 
@@ -197,6 +198,11 @@ inline void DaikinRotexCanComponent::add_entity(TEntity* pEntity) {
 inline void DaikinRotexCanComponent::set_supply_setpoint_regulated(number::Number* pNumber) {
     m_supply_setpoint_regulated = pNumber;
 }
+
+inline void DaikinRotexCanComponent::set_delay_between_requests(uint16_t milliseconds) {
+    m_entity_manager.set_delay_between_requests(milliseconds);
+}
+    
 
 } // namespace daikin_rotex_can
 } // namespace esphome

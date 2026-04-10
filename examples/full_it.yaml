@@ -142,13 +142,13 @@ daikin_rotex_can:
     bypass_valve:
       name: Valvola di Bypass
     tv:
-      name: Temperatura di mandata (TV)
+      name: TV
       update_interval: 5
     tvbh:
-      name: Temperatura Mandata Riscaldamento (TVBH)
+      name: TVBH
       update_interval: 5
     tr:
-      name: Temperatura Ritorno Riscaldamento
+      name: TR
       update_interval: 5
     tdhw1:
       name: Temperatura Acqua Calda
@@ -224,8 +224,12 @@ daikin_rotex_can:
     target_room1_temperature:
       name: Temperatura Obiettivo Stanza 1
       type: select
-# T-RaumSoll 2
-# T-RaumSoll 3
+    target_room2_temperature:
+      name: Temperatura Obiettivo Stanza 2
+      type: select
+    target_room3_temperature:
+      name: Temperatura Obiettivo Stanza 3
+      type: select
 
 # Raum Soll Nacht
   # T-Absenkung

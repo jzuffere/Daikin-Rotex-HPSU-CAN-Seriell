@@ -5,7 +5,9 @@ namespace esphome {
 namespace daikin_rotex_can {
 
 static const char* CAN_SENSOR_TAG = "CanSensor";
+static const char* CAN_NUMBER_TAG = "CanNumber";
 static const char* CAN_SELECT_TAG = "CanSelect";
+static const char* CAN_SWITCH_TAG = "CanSwitch";
 
 /////////////////////// CanSensor ///////////////////////
 
@@ -96,8 +98,12 @@ bool CanBinarySensor::handleValue(uint16_t value, TEntity::TVariant& current, TV
 /////////////////////// CanNumber ///////////////////////
 
 void CanNumber::control(float value) {
-    this->publish_state(value);
-    sendSet(m_pCanbus, value * get_config().divider);
+    Utils::log(CAN_NUMBER_TAG, "control(%f), state: %f", value, this->state);
+
+    if (abs(value - this->state) >= 0.001f) {
+        this->publish_state(value);
+        sendSet(m_pCanbus, value * get_config().divider);
+    }
 }
 
 bool CanNumber::handleValue(uint16_t value, TEntity::TVariant& current, TVariant& previous) {
@@ -115,10 +121,15 @@ bool CanNumber::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
 /////////////////////// CanSelect ///////////////////////
 
 void CanSelect::control(const std::string &value) {
+    std::string prevValue = this->current_option().str();
     this->publish_state(value);
     const uint16_t key = getKey(current_option());
     const bool handled = m_custom_select_lambda(get_id(), key);
-    if (!handled) {
+
+    Utils::log(CAN_SELECT_TAG, "control(%s), current_option: %s, prevValue: %s, handled: %d",
+        value.c_str(), this->current_option().str().c_str(), prevValue.c_str(), handled);
+
+    if (!handled && value != prevValue) {
         sendSet(m_pCanbus, key);
     }
 }
@@ -146,8 +157,12 @@ bool CanSelect::handleValue(uint16_t value, TEntity::TVariant& current, TVariant
 /////////////////////// CanSwitch ///////////////////////
 
 void CanSwitch::write_state(bool state) {
-    this->publish_state(state);
-    sendSet(m_pCanbus, state);
+    Utils::log(CAN_SWITCH_TAG, "write_state(%s), state: %s", state ? "ON" : "OFF", this->state ? "ON" : "OFF");
+
+    if (state != this->state) {
+        this->publish_state(state);
+        sendSet(m_pCanbus, state);
+    }
 }
 
 bool CanSwitch::handleValue(uint16_t value, TEntity::TVariant& current, TVariant& previous) {

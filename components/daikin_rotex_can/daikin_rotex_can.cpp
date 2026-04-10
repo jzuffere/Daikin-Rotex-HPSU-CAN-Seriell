@@ -1,7 +1,7 @@
 #include "esphome/components/daikin_rotex_can/daikin_rotex_can.h"
-#include "esphome/components/daikin_rotex_can/entity.h"
-#include "esphome/components/daikin_rotex_can/sensors.h"
 #include "esphome/components/daikin_rotex_can/translations.h"
+#include "esphome/components/daikin_rotex_can/sensors.h"
+#include "esphome/components/daikin_rotex_can/entity.h"
 #include <iostream>
 #include <sstream>
 #include <cstdint>
@@ -140,7 +140,7 @@ void DaikinRotexCanComponent::setup() {
 }
 
 void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant const& current, TEntity::TVariant const& previous) {
-    std::list<std::string> const& update_entities = pEntity->get_update_entity();
+    std::list<std::string> const& update_entities = pEntity->get_update_entities();
     for (std::string const& update_entity : update_entities) {
         if (!update_entity.empty()) {
             Scheduler::getInstance().call_later([update_entity, this](){
@@ -167,7 +167,7 @@ void DaikinRotexCanComponent::on_post_handle(TEntity* pEntity, TEntity::TVariant
         CanSelect* p_optimized_defrosting = m_entity_manager.get_select(OPTIMIZED_DEFROSTING);
         CanSelect* p_temperature_antifreeze = m_entity_manager.get_select(TEMPERATURE_ANTIFREEZE);
         if (p_optimized_defrosting != nullptr && p_temperature_antifreeze != nullptr) {
-            if (p_temperature_antifreeze->current_option() != Translation::T_OFF && m_optimized_defrosting.value() != 0x0) {
+            if (p_temperature_antifreeze->current_option().str() != Translation::T_OFF && m_optimized_defrosting.value() != 0x0) {
                 p_optimized_defrosting->publish_select_key(0x0);
                 m_optimized_defrosting.save(0x0);
                 Utils::log(TAG, "set %s: %d", OPTIMIZED_DEFROSTING.c_str(), m_optimized_defrosting.value());
@@ -443,7 +443,7 @@ void DaikinRotexCanComponent::on_custom_number(number::Number& number, float val
 }
 
 void DaikinRotexCanComponent::loop() {
-    m_entity_manager.sendNextPendingGet();
+    m_entity_manager.sendNextPendingRequest();
 
     Scheduler::getInstance().update();
 
@@ -510,7 +510,7 @@ void DaikinRotexCanComponent::update_supply_setpoint_regulated() {
 
 void DaikinRotexCanComponent::handle(uint32_t can_id, std::vector<uint8_t> const& data) {
     TMessage message;
-    std::copy_n(data.begin(), 7, message.begin());
+    std::copy_n(data.begin(), message.size(), message.begin());
     m_entity_manager.handle(can_id, message);
 }
 

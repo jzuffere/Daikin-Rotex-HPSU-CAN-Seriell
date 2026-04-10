@@ -11,7 +11,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/Trunks1982/Daikin-Rotex-HPSU-CAN.git
-      ref: main   # Replacer “main” par “dev” si vous voulez la branche de développement
+      ref: main   # Remplacer “main” par “dev” si tu veux la branche de développement
     refresh: 0s
 
 logger:
@@ -128,18 +128,18 @@ daikin_rotex_can:
 # Info
 
     error_code:
-      name: Error Code
+      name: Code d'erreur
 
     mode_of_operating:
-      name: Mode of Operating
+      name: Mode de Fonctionnement
     ext:
       name: Ext
 # RT
     circulation_pump:
-      name: Circulation Pump
+      name: Pompe Circulation
 # EHS
     bypass_valve:
-      name: Bypass Valve
+      name: Vanne Bypass
     tv:
       name: TV
       update_interval: 5s
@@ -150,61 +150,61 @@ daikin_rotex_can:
       name: TR
       update_interval: 5s
     tdhw1:
-      name: Hot Water Temperature
+      name: Température eau chaude
     tdhw2:
-      name: Hot Water Temperature 2
+      name: Température eau chaude 2
     temperature_outside:
-      name: Outside Temperature
+      name: Température extérieure
 # V
 # TVBH2
 # TR2
 # Tdhw2
     tliq:
-      name: Liquid Line Temperature
+      name: Température Conduite Liquide
     ta2:
       name: TA2
 # quiet
 
 # Overview
     water_pressure:
-      name: Water Pressure
+      name: Pression d'eau
     t_hs:
       name: T-WE
 # T-WE Soll
     t_ext:
-      name: T-Outside
+      name: T-Extérieure
 # T-WW
 # T-WW Soll
 # T-Rücklauf
     flow_rate:
-      name: Flow Rate
+      name: Débit
       update_interval: 10s
 # T-HK
 # T-HK Soll
     status_kesselpumpe:
-      name: Boiler Pump Status
+      name: Statut Pompe Circulation
     status_kompressor:
-      name: Compressor Status
+      name: Statut Compresseur
     runtime_compressor:
-      name: Compressor Runtime
+      name: Temps Fonctionnement Compresseur
     runtime_pump:
-      name: Pump Runtime
+      name: Temps Fonctionnement Pompe
     dhw_mixer_position:
-      name: DHW Mixer Position
+      name: Position Mélangeur ECS
     qboh:
-      name: EHS for DHW
+      name: EHS pour ECS
     ehs_for_ch:
-      name: EHS for CH
+      name: EHS pour CH
     energy_cooling:
-      name: Cooling Energy
+      name: Energie Refroidissement
     qch:
-      name: Heating Energy
+      name: Energie Chauffage
     total_energy_produced:
-      name: Total Energy Produced
+      name: Total Energie Produite
     qdhw:
-      name: Energy for DHW
+      name: Energie pour ECS
     total_electrical_energy:
-      name: Total Electrical Energy
+      name: Total Energie Electrique
 #WE Typ
 #SwNr B1/U1
 #SwNr Regler
@@ -212,22 +212,22 @@ daikin_rotex_can:
 
 # ESP custom sensors
     energy_saving_mode:
-      name: ES Mode
+      name: Mode Eco
 
 # Betriebsart
     operating_mode:
-      name: Operating Mode
+      name: Mode de Fonctionnement
       update_interval: 5s
 
 # Room Set Day
     target_room1_temperature:
-      name: Target Room 1 Temperature
+      name: Température Consigne Pièce 1
       type: select
     target_room2_temperature:
-      name: Target Room 2 Temperature
+      name: Température Consigne Pièce 2
       type: select
     target_room3_temperature:
-      name: Target Room 3 Temperature
+      name: Température Consigne Pièce 3
       type: select
 
 # Room Set Night
@@ -236,13 +236,13 @@ daikin_rotex_can:
 
 # WW Solltemp
     target_hot_water_temperature_1:
-      name: Target Hot Water Temperature
+      name: Consigne ECS
       type: select
     target_hot_water_temperature_2:
-      name: Target Hot Water Temperature 2
+      name: Consigne ECS 2
       type: select
     target_hot_water_temperature_3:
-      name: Target Hot Water Temperature 3
+      name: Consigne ECS 3
       type: select
 
 # T-WWSoll 2
@@ -250,14 +250,14 @@ daikin_rotex_can:
 
 # WW Install
     dhw_run:
-      name: DHW Run
+      name: Production ECS
     1_dhw:
-      name: 1 x Domestic Hot Water
+      name: 1 x Production ECS
       #type: switch
     hp_hyst_tdhw:
       name: HP Hyst TDHW
     delay_time_for_backup_heating:
-      name: Waiting Time for Backup Heating
+      name: Attente pour Corps de Chauffe
 
 # Configuration
 
@@ -265,47 +265,47 @@ daikin_rotex_can:
 # Sprache
 # Datum
     system_date_day:
-      name: System Date Day
+      name: Jour Date Système
       internal: true
     system_date_month:
-      name: System Date Month
+      name: Mois Date Système
       internal: true
     system_date_year:
-      name: System Date Year
+      name: Année Date Système
       internal: true
     system_date:
-      name: System Date
+      name: Date Système
 # Uhrzeit
     system_time_hour:
-      name: System Time Hour
+      name: Heure Système
       internal: true
     system_time_minute:
-      name: System Time Minute
+      name: Minute Système
       internal: true
     system_time_second:
-      name: System Time Second
+      name: Seconde Système
       internal: true
       update_interval: 1s
-    system_time:         # This entity causes the HA database to grow rapidly! Please add it to HA -> recorder -> exclude -> entities!
-      name: System Time
+    system_time:         # Cette entité fait grossir rapidement la base de données HA ! Veuillez l'ajouter dans HA -> recorder -> exclude -> entities !
+      name: Heure Système
 
 #...
     outdoor_unit:
-      name: Outdoor Unit
+      name: Unité Externe
     indoor_unit:
-      name: Indoor Unit
+      name: Unité Interne
     function_ehs:
-      name: Function EHS
+      name: Fonction EHS
     ch_support:
-      name: CH Support
+      name: Support CH
       #type: switch
     bivalence_function:
-      name: Bivalence Function
+      name: Fonction Bivalence
     smart_grid:
       name: Smart Grid
       #type: switch
     sg_mode:
-      name: SG Mode
+      name: Mode SG
 # HT/NT Funktion
 # HT/NT Anschluss
 # Raumthermostat
@@ -314,13 +314,13 @@ daikin_rotex_can:
 # Entlüftungsfunktion
 # PWM Konfig
     circulation_pump_min:
-      name: Circulation Pump Min
+      name: Pompe de Circulation Min
     circulation_pump_max:
-      name: Circulation Pump Max
+      name: Pompe de Circulation Max
 # ...
 # Sensor Konfig
     external_temp_sensor:
-      name: Config External Temperature
+      name: Configuration Sonde Extérieure
     # SKonfig T-WW
     # SKonfig Druck
 # AF Anspassung
@@ -330,101 +330,101 @@ daikin_rotex_can:
 # Configuration -> System Configuration
 
     power_dhw:
-      name: Power DHW
+      name: Puissance ECS
       #type: select
     power_ehs_1:
-      name: Power EHS Level 1
+      name: Puissance EHS Niveau 1
     power_ehs_2:
-      name: Power EHS Level 2
+      name: Puissance EHS Niveau 2
     power_biv:
-      name: Power BIV
+      name: Puissance BIV
     tdiff_dhw_ch:
-      name: TDiff DHW CH
+      name: TDiff ECS CH
     max_heating_temperature:
-      name: Max Heating Temperature
+      name: Température Max Chauffage
     bivalence_temperature:
-      name: bivalence point
+      name: Température de Bivalence
     quiet:
-      name: Silent Mode
+      name: Mode Silencieux
 #Sonderfunkt Schaltk
 #Wartezeit Sonderfunkt
     t_dhw_1_min:
-      name: Switch Threshold TDHW
+      name: Seuil Activation TDHW
     delta_temp_ch:
-      name: CH Spread
+      name: Ecart de Température CH
     delta_temp_dhw:
-      name: DHW Spread
+      name: Ecart de Température ECS
 #VerzZeitPumpe                # service
     flow_rate_min:
-      name: Flow Rate Min
+      name: Débit Min
     flow_rate_setpoint:
-      name: Flow Rate Setpoint
+      name: Consigne Débit
     flow_rate_calc:
-      name: Flow Rate Calculated
+      name: Débit Calculé
     flow_rate_hyst:
-      name: Flow Rate Hysteresis
+      name: Hystérèse Débit
     supply_temperature_adjustment_heating:
-      name: Supply Temperature Adjustment Heating
+      name: Correction Température Départ Chauffage
     supply_temperature_adjustment_cooling:
-      name: Supply Temperature Adjustment Cooling
+      name: Correction Température Départ Refroidissement
     min_pressure:
-      name: Min Pressure
+      name: Pression Min
     max_pressure:
-      name: Max Pressure
+      name: Pression Max
     set_pressure:
-      name: Set Pressure
+      name: Consigne de Pression
     max_pressure_drop:
-      name: Max Pressure Drop
+      name: Perte de Pression Max
 #Relaistest
 
 # Konfiguration -> HZK Konfig
     hk_function:
-      name: HK Function
+      name: Fonction Circuit Chauffage
     temperature_antifreeze:
-      name: Anti-Freeze Temperature
+      name: Température Antigel
     building_insulation:
-      name: Building Insulation
+      name: Isolation du Bâtiment
 #Estrich
 #Estrichprogramm
 
 # Konfiguration -> HZK Konfig -> Kühlen
     start_t_out_cooling:
-      name: Start T-Out Cooling
+      name: Démarrage T-Ext Refroidissement
     max_t_out_cooling:
-      name: Max T-Out Cooling
+      name: T-Ext Max Refroidissement
     t_flow_cooling_start:
-      name: T-Flow Cooling start
+      name: Température Départ Début Refroidissement
     t_flow_cooling_max:
-      name: T-Flow Cooling max
+      name: Température Départ Max Refroidissement
     min_t_flow_cooling:
-      name: Min T-Flow Cooling
+      name: Température Départ Min Refroidissement
     t_flow_cooling:
-      name: T-Flow Cooling
+      name: Température Départ Refroidissement
     t_h_c_switch:
-      name: T_H/C Switch
+      name: Temp Commutation Chauffage/Refroidissement
     cooling_setpoint_adj:
-      name: Cooling Setpoint adjustment
+      name: Correction Consigne Refroidissement
 
 # Konfiguration -> HZK Konfig -> Heizen
 
     heating_limit_day:
-      name: Heating Limit Day
+      name: Limite Chauffage Jour
     heating_limit_night:
-      name: Heating Limit Night
+      name: Limite Chauffage Nuit
     heating_curve:
-      name: Heating Curve
+      name: Courbe de Chauffe
 #Raumeinfluss
 #RF Anpassung
     flow_temperature_day:
-      name: Flow Temperature Day
+      name: Température Départ Jour
     flow_temperature_night:
-      name: Flow Temperature Night
+      name: Température Départ Nuit
     max_target_flow_temp:
-      name: Max Target Flow Temperature
+      name: Température Départ Max
     min_target_flow_temp:
-      name: Min Target Flow Temperature
+      name: Température Départ Min
     heating_curve_adaptation:
-      name: Heating Curve Adaptation
+      name: Ajustement Courbe de Chauffe
       #type: switch
 
 # Konfiguration -> HZK Konfig -> Kühlen
@@ -441,41 +441,41 @@ daikin_rotex_can:
 #Konfiguration -> WW Konfig
 
     circulation_with_dhw_program:
-      name: Circulation with DHW Program
+      name: Circulation avec Programme ECS
       #type: switch
     circulation_interval_on:
-      name: Circulation Interval On
+      name: Intervalle Circulation — Marche
     circulation_interval_off:
-      name: Circulation Interval Off
+      name: Intervalle Circulation — Arrêt
     antileg_day:
-      name: Anti-Legionella Day
+      name: Jour Anti-Légionellose
 #AntilegZeit
     antileg_temp:
-      name: Anti-Legionella Temperature
+      name: Température Anti-Légionellose
     max_dhw_loading:
-      name: Max DHW Loading Time
+      name: Durée Max Chargement ECS
     dhw_off_time:
-      name: DHW Off Time
+      name: Durée Blocage ECS
 
 # Others
 
     electric_heater:
-      name: Electric Heater - For Pumps After October 2018
+      name: Résistance Électrique - Pour Pompes Après Octobre 2018
     thermal_power:
-      name: Thermal Power
+      name: Puissance Thermique
     optimized_defrosting:
-      name: Optimized Defrosting
+      name: Dégivrage Optimisé
       #type: switch
     temperature_spread:
-      name: Temperature Spread
+      name: Écart de Température
     tv_tvbh_delta:
-      name: Tv-TVBH Delta
+      name: Delta Tv-TVBH
     tvbh_tr_delta:
-      name: TVBH-Tr Delta
+      name: Delta TVBH-Tr
     vorlauf_soll_tv_delta:
-      name: FlowSetpoint-Tv Delta
+      name: Delta Consigne Départ-Tv
     room_therm:
-      name: Room Thermostat
+      name: Thermostat D'Ambiance
       #type: switch
 
 # Rocon U1
@@ -486,6 +486,6 @@ daikin_rotex_can:
 # To be categorized
 
     target_supply_temperature:
-      name: Target Supply Temperature
+      name: Température De Départ Cible
     supply_setpoint_regulated:
-      name: Flow Setpoint Controlled
+      name: Consigne Départ Régulée

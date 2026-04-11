@@ -286,7 +286,7 @@ daikin_rotex_can:
     #system_time_second:
     #  name: Secondo del sistema
     #  internal: true
-    #  update_interval: 1
+    #  update_interval: 1s
     #system_time:         # Questa entità fa crescere rapidamente il database di HA! Per favore, aggiungila in HA -> recorder -> exclude -> entities!
     #  name: Ora di sistema
 

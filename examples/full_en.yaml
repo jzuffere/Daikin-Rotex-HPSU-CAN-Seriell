@@ -102,7 +102,7 @@ daikin_rotex_can:
   id: rotext_hpsu
   language: en
   canbus_id: can_bus
-  update_interval: 30
+  update_interval: 30s
 
   # Some Tv, TvBH, or Tr sensors provide values with deviations.
   # These deviations can be corrected using an offset to improve the accuracy of detecting faulty 3-way valves.
@@ -143,13 +143,13 @@ daikin_rotex_can:
       name: Bypass Valve
     tv:
       name: TV
-      update_interval: 5
+      update_interval: 5s
     tvbh:
       name: TVBH
-      update_interval: 5
+      update_interval: 5s
     tr:
       name: TR
-      update_interval: 5
+      update_interval: 5s
     tdhw1:
       name: Hot Water Temperature
     tdhw2:
@@ -179,7 +179,7 @@ daikin_rotex_can:
 # T-Rücklauf
     flow_rate:
       name: Flow Rate
-      update_interval: 10
+      update_interval: 10s
 # T-HK
 # T-HK Soll
     status_kesselpumpe:
@@ -218,7 +218,7 @@ daikin_rotex_can:
 # Betriebsart
     operating_mode:
       name: Operating Mode
-      update_interval: 5
+      update_interval: 5s
 
 # Room Set Day
     target_room1_temperature:
@@ -286,7 +286,7 @@ daikin_rotex_can:
     system_time_second:
       name: System Time Second
       internal: true
-      update_interval: 1
+      update_interval: 1s
     system_time:         # This entity causes the HA database to grow rapidly! Please add it to HA -> recorder -> exclude -> entities!
       name: System Time
 

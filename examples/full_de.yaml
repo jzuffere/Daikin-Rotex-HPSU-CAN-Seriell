@@ -102,7 +102,7 @@ daikin_rotex_can:
   id: rotext_hpsu
   language: de
   canbus_id: can_bus
-  update_interval: 30
+  update_interval: 30s
 
   # Manche Tv-, TvBH- oder Tr-Sensoren liefern Werte mit Abweichungen.
   # Über ein Offset kann diese Abweichung korrigiert werden, um die Fehlererkennung defekter 3-Wegeventile zu präzisieren.
@@ -179,7 +179,7 @@ daikin_rotex_can:
 # T-Rücklauf
     flow_rate:
       name: Durchfluss
-      update_interval: 10
+      update_interval: 10s
 # T-HK
 # T-HK Soll
     status_kesselpumpe:

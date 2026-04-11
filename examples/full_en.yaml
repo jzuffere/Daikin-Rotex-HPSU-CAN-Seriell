@@ -102,7 +102,7 @@ daikin_rotex_can:
   id: rotext_hpsu
   language: en
   canbus_id: can_bus
-  update_interval: 30
+  update_interval: 30s
 
   # Some Tv, TvBH, or Tr sensors provide values with deviations.
   # These deviations can be corrected using an offset to improve the accuracy of detecting faulty 3-way valves.
@@ -179,7 +179,7 @@ daikin_rotex_can:
 # T-Rücklauf
     flow_rate:
       name: Flow Rate
-      update_interval: 10
+      update_interval: 10s
 # T-HK
 # T-HK Soll
     status_kesselpumpe:

@@ -102,7 +102,7 @@ daikin_rotex_can:
   id: rotext_hpsu
   language: it
   canbus_id: can_bus
-  update_interval: 30
+  update_interval: 30s
 
   # Alcuni sensori Tv, TvBH o Tr forniscono valori con deviazioni.
   # Queste deviazioni possono essere corrette utilizzando un offset per migliorare la precisione nel rilevamento di valvole a 3 vie difettose.

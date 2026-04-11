@@ -143,13 +143,13 @@ daikin_rotex_can:
       name: BPV
     tv:
       name: TV
-      update_interval: 5
+      update_interval: 5s
     tvbh:
       name: TVBH
-      update_interval: 5
+      update_interval: 5s
     tr:
       name: TR
-      update_interval: 5
+      update_interval: 5s
     tdhw1:
       name: Warmwassertemperatur
     tdhw2:
@@ -218,7 +218,7 @@ daikin_rotex_can:
 # Betriebsart
     operating_mode:
       name: Betriebsmodus
-      update_interval: 5
+      update_interval: 5s
 
 # Raum Soll Tag
     target_room1_temperature:
